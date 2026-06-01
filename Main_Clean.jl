@@ -228,30 +228,36 @@ const train_idx   = findall(t -> t <= T_TRAIN_END, tsteps)   # indices used for 
 tspan_train       = (0.0, T_TRAIN_END)
 tsteps_train      = tsteps[train_idx]
 
+
+
 # =============================================================================
 #   Save Figures
 # =============================================================================
 
-println("[Section 4] Saving figures to disk...")
+# println("[Section 4] Saving figures to disk...")
 
-# Set the explicit output directory using a raw string to handle Windows backslashes
-output_dir = raw"D:\SciML\bootcamp\Research Project\HH-SciML-Project\Section_0_to_2"
+# # Set the explicit output directory using a raw string to handle Windows backslashes
+# output_dir = raw"D:\SciML\bootcamp\Research Project\HH-SciML-Project\Figures_Section_0_to_2"
 
-# Create the directory if it doesn't already exist
-mkpath(output_dir)
+# # Create the directory if it doesn't already exist
+# mkpath(output_dir)
 
-# Save the six single-variable figures
-savefig(fig_V, joinpath(output_dir, "01_Membrane_Potential.png"))
-savefig(fig_m, joinpath(output_dir, "02_Na_activation_m.png"))
-savefig(fig_h, joinpath(output_dir, "03_Na_inactivation_h.png"))
-savefig(fig_n, joinpath(output_dir, "04_K_activation_n.png"))
-savefig(fig_p, joinpath(output_dir, "05_Persistent_Na_p.png"))
-savefig(fig_s, joinpath(output_dir, "06_Calcium_s.png"))
+# # Save the six single-variable figures
+# savefig(fig_V, joinpath(output_dir, "01_Membrane_Potential.png"))
+# savefig(fig_m, joinpath(output_dir, "02_Na_activation_m.png"))
+# savefig(fig_h, joinpath(output_dir, "03_Na_inactivation_h.png"))
+# savefig(fig_n, joinpath(output_dir, "04_K_activation_n.png"))
+# savefig(fig_p, joinpath(output_dir, "05_Persistent_Na_p.png"))
+# savefig(fig_s, joinpath(output_dir, "06_Calcium_s.png"))
 
-# Save the stacked overview figure
-savefig(fig_overview, joinpath(output_dir, "07_Stacked_Overview.png"))
+# # Save the stacked overview figure
+# savefig(fig_overview, joinpath(output_dir, "07_Stacked_Overview.png"))
 
-# Save the ground-truth vs noisy data figure
-savefig(fig1, joinpath(output_dir, "08_Noisy_Data_Comparison.png"))
+# # Save the ground-truth vs noisy data figure
+# savefig(fig1, joinpath(output_dir, "08_Noisy_Data_Comparison.png"))
 
-println("All figures successfully saved to: ", output_dir)
+# println("All figures successfully saved to: ", output_dir)
+
+
+
+
