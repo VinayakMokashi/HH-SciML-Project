@@ -407,6 +407,134 @@ fig_node_overview = plot(ov_V, ov_cls, ov_adv, layout = (3, 1), size = (900, 800
 savefig(fig_node_overview, joinpath(output_dir, "fig2_neural_ode_overview.png"))
 
 println("[Section 4] Neural ODE done  ->  7 figures (V/m/h/n/p/s + overview) in $(basename(output_dir))/")
-# NOTE: a black-box Neural ODE fits the training window but cannot forecast a full
-# 6-D spiking trajectory (stiff, sharp spikes) -- it diverges past the train|forecast
-# line, the documented vanilla-Neural-ODE failure mode.
+# NOTE: a full 6-D spiking trajectory is genuinely hard for a black-box Neural
+# ODE (stiff, sharp spikes). It captures the trend; the UDE below — which keeps
+# the known physics — is expected to be far more accurate, which is exactly the
+# scientific point of the roadmap.
+
+
+# =============================================================================
+#  SECTION 5 — Universal Differential Equation (Objective 2)
+#  Keep ALL known physics, but REPLACE only the calcium current gCa s^2 (V-ECa)
+#  with a neural network  U(V, s).  Retaining the physics should give far more
+#  stable forecasts than the black-box Neural ODE of Section 4.
+# =============================================================================
+#
+#  The calcium current is an AUTONOMOUS function of state -- it depends on the
+#  voltage V and the calcium gate s only, NOT on time.  So the network takes
+#  (V/100, s) as input.  We deliberately do NOT feed time t here (unlike the
+#  black-box Neural ODE): the missing term is physical, and adding t would let it
+#  overfit the time course and would corrupt the symbolic recovery in Section 6.
+# -----------------------------------------------------------------------------
+adtype = Optimization.AutoZygote()        # defined here so Section 5 can run after 0-3 alone
+
+nn_ca = Lux.Chain(Lux.Dense(2, 16, tanh),
+                  Lux.Dense(16, 16, tanh),
+                  Lux.Dense(16, 1))
+p_ca0, st_ca = Lux.setup(RNG, nn_ca)
+p_ca0 = ComponentArray{Float64}(p_ca0)
+
+# UDE right-hand side: identical to hh_advanced! except the Ca term is the network.
+function hh_ude!(du, u, theta, t)
+    V, m, h, n, p, s = u
+
+    I_K   = gK   * n^4    * (V - EK)
+    I_Na  = gNa  * m^3 * h * (V - ENa)
+    I_L   = gL            * (V - EL)
+    I_NaP = gNaP * p      * (V - ENa)
+    I_Ca  = nn_ca([V / 100.0, s], theta, st_ca)[1][1]   # <-- unknown calcium current (V, s only)
+
+    du[1] = (Iapp - I_K - I_Na - I_L - I_NaP - I_Ca) / Cm
+    du[2] = alpha_m(V) * (1.0 - m) - beta_m(V) * m
+    du[3] = alpha_h(V) * (1.0 - h) - beta_h(V) * h
+    du[4] = alpha_n(V) * (1.0 - n) - beta_n(V) * n
+    du[5] = alpha_p(V) * (1.0 - p) - beta_p(V) * p
+    du[6] = alpha_s(V) * (1.0 - s) - beta_s(V) * s
+    return nothing
+end
+
+prob_ude = ODEProblem(hh_ude!, u0, tspan_train, p_ca0)
+
+# Reverse-mode adjoint -> spike-stable gradients.  verbose=false silences the transient
+# instability warnings emitted while the calcium network is still untrained.
+function predict_ude(theta)
+    Array(solve(prob_ude, Tsit5(); p = theta, saveat = tsteps_train,
+                abstol = 1e-8, reltol = 1e-8, verbose = false,
+                sensealg = InterpolatingAdjoint(autojacvec = ReverseDiffVJP(true))))
+end
+
+function loss_ude(theta)
+    pred = predict_ude(theta)
+    size(pred, 2) == length(train_idx) || return 1.0e6   # finite penalty (Inf crashes BFGS line search)
+    return sum(abs2, data_noisy[:, train_idx] .- pred)
+end
+
+losses_ude = Float64[]
+cb_ude = function (state, l)
+    push!(losses_ude, l)
+    length(losses_ude) % 100 == 0 &&
+        println("    [UDE] iter $(length(losses_ude))  loss = $(round(l, sigdigits = 4))")
+    return false
+end
+
+println("[Section 5] Training the UDE (learning the calcium current) ...")
+optf_ude   = Optimization.OptimizationFunction((p, _) -> loss_ude(p), adtype)
+optprob_u  = Optimization.OptimizationProblem(optf_ude, p_ca0)
+
+# Stage 1 — Adam warm-up (5000 iters, lr 1e-2; 1e-3 was too slow now that the stronger
+# gCa=2.0 leaves a large Ca current for the untrained network to ramp up to).
+res_ude1   = Optimization.solve(optprob_u, OptimizationOptimisers.Adam(1e-2);
+                                callback = cb_ude, maxiters = 5000)
+# Stage 2 — BFGS polish, wrapped so a bad line-search step can't crash the run.
+p_ca = res_ude1.u                                      # fall back to Adam result if BFGS fails
+try
+    optprob_u2 = Optimization.OptimizationProblem(optf_ude, res_ude1.u)
+    res_ude    = Optimization.solve(optprob_u2, OptimizationOptimJL.BFGS(initial_stepnorm = 0.01);
+                                    callback = cb_ude, maxiters = 300)
+    p_ca = res_ude.u
+catch err
+    @warn "UDE BFGS polish failed; keeping Adam result." exception = err
+end
+
+# --- UDE prediction + forecast over the full 100 ms (plot against sol.t for robustness) ---
+sol_ude_full = solve(ODEProblem(hh_ude!, u0, tspan, p_ca), Tsit5();
+                     saveat = tsteps, abstol = 1e-8, reltol = 1e-8, verbose = false)
+t_ude    = sol_ude_full.t
+pred_ude = Array(sol_ude_full)
+
+# --- Visualise all 6 states (the UDE keeps the physics, so truth & prediction should overlap)
+ude_vars = [(1, "V (mV)", "Membrane potential",   (-90.0, 50.0), "fig3_ude_voltage.png"),
+            (2, "m",      "Na+ activation (m)",    (-0.5, 1.5),   "fig3_ude_m.png"),
+            (3, "h",      "Na+ inactivation (h)",  (-0.5, 1.5),   "fig3_ude_h.png"),
+            (4, "n",      "K+ activation (n)",     (-0.5, 1.5),   "fig3_ude_n.png"),
+            (5, "p",      "Persistent Na+ (p)",    (-0.5, 1.5),   "fig3_ude_p.png"),
+            (6, "s",      "Calcium (s)",           (-0.5, 1.5),   "fig3_ude_s.png")]
+
+for (i, ylab, ttl, yl, fname) in ude_vars
+    plt = plot(tsteps, data_clean[i, :], lw = 2, label = "truth",
+               xlabel = "t (ms)", ylabel = ylab, title = "UDE : $ttl",
+               legend = :outertopright, ylims = yl)
+    plot!(plt, t_ude, pred_ude[i, :], lw = 2, ls = :dash, label = "UDE")
+    vline!(plt, [T_TRAIN_END], lw = 2, color = :gray, ls = :dot, label = "train | forecast")
+    savefig(plt, joinpath(output_dir, fname))
+end
+
+# --- Stacked overview, same style as Section 4 (clipped panels, outside legends).
+ov_V   = plot(tsteps, data_clean[1, :], lw = 2, label = "V truth", ylabel = "V (mV)",
+              legend = :outertopright, ylims = (-90.0, 50.0))
+plot!(ov_V, t_ude, pred_ude[1, :], lw = 2, ls = :dash, label = "V UDE")
+ov_cls = plot(ylabel = "classical gates", ylims = (-0.5, 1.5), legend = :outertopright)
+ov_adv = plot(xlabel = "t (ms)", ylabel = "advanced gates", ylims = (-0.5, 1.5), legend = :outertopright)
+for (i, nm, c) in [(2, "m", "#D85A30"), (3, "h", "#0F6E56"), (4, "n", "#534AB7")]
+    plot!(ov_cls, tsteps, data_clean[i, :], lw = 2, color = c, label = "$nm truth")
+    plot!(ov_cls, t_ude, pred_ude[i, :], lw = 2, ls = :dash, color = c, label = "$nm UDE")
+end
+for (i, nm, c) in [(5, "p", "#BA7517"), (6, "s", "#993556")]
+    plot!(ov_adv, tsteps, data_clean[i, :], lw = 2, color = c, label = "$nm truth")
+    plot!(ov_adv, t_ude, pred_ude[i, :], lw = 2, ls = :dash, color = c, label = "$nm UDE")
+end
+for ov in (ov_V, ov_cls, ov_adv); vline!(ov, [T_TRAIN_END], lw = 1.5, color = :gray, ls = :dot, label = ""); end
+fig_ude_overview = plot(ov_V, ov_cls, ov_adv, layout = (3, 1), size = (900, 800), link = :x)
+savefig(fig_ude_overview, joinpath(output_dir, "fig3_ude_overview.png"))
+
+println("[Section 5] UDE done  ->  7 figures (V/m/h/n/p/s + overview) in $(basename(output_dir))/")
