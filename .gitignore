@@ -1,0 +1,27 @@
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*~
+.vscode/
+.idea/
+
+# Claude Code tooling state (not part of the project)
+.claude/
+
+# Julia coverage / profiling artifacts
+*.jl.cov
+*.jl.*.cov
+*.jl.mem
+/docs/build/
+
+# Local-only working files (kept off GitHub on purpose):
+#   HANDOFF.md      — internal session-to-session reference
+#   Main_Clean.jl   — full narrative incl. the Objective-3 (SINDy) attempt
+#   main.jl         — single-script narrative incl. Objective 3
+HANDOFF.md
+Main_Clean.jl
+main.jl
+
+# NOTE: results/ — including results/params/*.jld parameter snapshots — IS
+# tracked on purpose. It is the committed quantitative evidence (metric CSVs +
+# trained-network snapshots) that backs the reported figures.

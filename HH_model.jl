@@ -23,6 +23,12 @@ using Plots
 gr()                                     # GR plotting backend
 
 # One RNG, fixed seed -> every run (data noise + NN init) is reproducible.
+# NOTE: this narrative script draws noise, the Neural-ODE init, and the UDE init
+# sequentially from this ONE shared RNG, so its trained networks differ from the
+# experiment engine (src/experiment.jl), which gives each network a *fresh*
+# StableRNG(seed).  Same model/architecture/hyperparameters, different random
+# init -> this file reproduces the results QUALITATIVELY; the engine + the
+# numbers in results/metrics_all.csv are the authoritative reported metrics.
 const RNG = StableRNG(1111)
 
 
