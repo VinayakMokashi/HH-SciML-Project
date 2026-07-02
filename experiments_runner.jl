@@ -242,17 +242,19 @@ end
 # floor; the printed number is the mean.
 function logbar_err(labels, means, errs, ttl, ylab, colors)
     n = length(means); v = max.(means, 1e-4)
-    fin = filter(isfinite, v)
-    lo  = isempty(fin) ? 1e-4 : minimum(fin)
-    hi  = isempty(fin) ? 1.0  : maximum(fin)
     lower = [isfinite(e) ? min(e, v[i]*0.999) : 0.0 for (i, e) in enumerate(errs)]
     upper = [isfinite(e) ? e : 0.0 for e in errs]
+    caps  = [v[i] + upper[i] for i in 1:n]                 # top of each error whisker
+    fin   = filter(isfinite, v)
+    lo    = isempty(fin) ? 1e-4 : minimum(fin)
+    hi    = maximum(filter(isfinite, caps); init = 1.0)    # frame includes the whiskers
     p = bar(1:n, v; legend=false, ylabel=ylab, yscale=:log10, title=ttl, color=colors,
-            xticks=(1:n, labels), xlims=(0.3, n+0.7), ylims=(lo*0.30, hi*30),
+            xticks=(1:n, labels), xlims=(0.3, n+0.7), ylims=(lo*0.30, hi*6),
             bar_width=0.62, yerror=(lower, upper), left_margin=9mm, bottom_margin=7mm, right_margin=6mm)
-    for (x, raw) in enumerate(means)
-        isfinite(raw) || continue
-        annotate!(p, x, max(raw, 1e-4)*1.6, text(string(round(raw, sigdigits=3)), 7, :center, :bottom))
+    # place each value label just ABOVE its whisker cap so the two never overlap
+    for x in 1:n
+        isfinite(means[x]) || continue
+        annotate!(p, x, caps[x]*1.35, text(string(round(means[x], sigdigits=3)), 7, :center, :bottom))
     end
     return p
 end
@@ -279,17 +281,19 @@ end
 # describe each single-series panel). x-ticks sit exactly on the sampled values.
 function ablation_fig(axiscol, xlab, fname; extra_metric = nothing, extra_lab = "", xt = :auto,
                       window = "forecast")
-    wl = window == "common_eval" ? "common-eval (t>$(COMMON_EVAL_START) ms)" : window
+    wl = window == "common_eval" ? "common-eval, t>$(Int(COMMON_EVAL_START)) ms" : window
     xv, vr = axis_series(df, axiscol, "V_rmse";         window = window)
     _,  gr = axis_series(df, axiscol, "gate_rmse_mean"; window = window)
     _,  rh = axis_series(df, axiscol, "rollout_horizon_ms"; window = window)
     common = (; xlabel=xlab, legend=false, marker=:circle, lw=2,
                 left_margin=8mm, bottom_margin=5mm, xticks=xt)
-    p1 = plot(xv, vr; ylabel="$wl V RMSE (mV)", title="Voltage error ($wl)",
+    # ylabels stay short; the evaluation window is named in each panel title instead
+    # (a "$wl ..." ylabel is long enough to clip off the top of the panel).
+    p1 = plot(xv, vr; ylabel="V RMSE (mV)", title="Voltage error ($wl)",
               color=:dodgerblue, common...)
-    p2 = plot(xv, gr; ylabel="$wl gate RMSE", title="Gating-variable error ($wl)",
+    p2 = plot(xv, gr; ylabel="gate RMSE", title="Gating-variable error ($wl)",
               color=:seagreen, common...)
-    p3 = plot(xv, rh; ylabel="rollout horizon (ms)", title="Forecast validity (rollout, capped at 70 ms)",
+    p3 = plot(xv, rh; ylabel="rollout horizon (ms)", title="Forecast validity ($wl, cap 70 ms)",
               color=:purple, ylims=(0, 75), common...)
     panels = Any[p1, p2, p3]
     if extra_metric !== nothing
@@ -330,11 +334,13 @@ let
         top   = maximum(means .+ errs) * 1.3
         top   = top > 0 ? top : 1.0
         push!(panels, bar(["full", "voltage-only"], means; legend=false,
-                          title="$ttl (mean±std, $ns seeds)", ylabel=ylab,
+                          title=ttl, ylabel=ylab, titlefontsize=10,
                           color=[:seagreen, :darkorange], yerror=errs,
-                          ylims=(0, top), left_margin=9mm, bottom_margin=8mm))
+                          ylims=(0, top), left_margin=9mm, right_margin=5mm, bottom_margin=8mm))
     end
-    savefig(plot(panels..., layout=(1,3), size=(1180,460)),
+    savefig(plot(panels..., layout=(1,3), size=(1220,470),
+                 plot_title="Forecast error: full vs voltage-only (mean±std, $ns seeds)",
+                 plot_titlefontsize=12),
             joinpath(FIG_DIR, "fig8_full_vs_voltage_metrics_bar.png"))
 end
 
