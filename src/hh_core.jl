@@ -76,6 +76,14 @@ const DATASIZE   = 512
 const TSTEPS     = range(TSPAN_FULL[1], TSPAN_FULL[2]; length = DATASIZE)
 const SCALE      = [100.0, 1.0, 1.0, 1.0, 1.0, 1.0]   # divide V by 100 (Neural ODE)
 
+# Fixed common evaluation window for the training-window ablation.  It starts at
+# the LARGEST training window in the sweep (50 ms), so the interval (50, 100] is
+# unseen (forecast) for EVERY training length {15,20,30,40,50}.  Scoring all of
+# them on this one shared interval makes the ablation an apples-to-apples
+# comparison (mentor request) — the forecast window otherwise shifts with the
+# training window, so its metrics are not directly comparable across runs.
+const COMMON_EVAL_START = 50.0
+
 # OU noise process parameters (paper §3.5; never swept — only the level is).
 const OU_THETA = 5.0
 const OU_SIGMA = 0.5
@@ -170,3 +178,8 @@ function make_split(t_train_end::Float64)
               tspan_train  = (0.0, t_train_end),
               tsteps_train = TSTEPS[train_idx])
 end
+
+# Indices into TSTEPS for the fixed common evaluation window (t > t_start).  The
+# training-window ablation passes these so every training length is scored on the
+# SAME forecast interval, independent of where its own train|forecast split falls.
+common_eval_indices(t_start::Float64 = COMMON_EVAL_START) = findall(t -> t > t_start, TSTEPS)

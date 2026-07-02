@@ -218,6 +218,46 @@ function save_calcium_parity(prefix, ICa_true, ICa_nn)
     return nothing
 end
 
+# --- Calcium-current probe savers (raw data for Objective 3 / SINDy) ----------
+#  The learned calcium term is otherwise only turned into a figure + one RMSE.
+#  These persist the underlying (input -> output) data so symbolic recovery needs
+#  no retraining.  Files land under results/calcium/.
+const CALCIUM_DIR = joinpath(RESULTS_DIR, "calcium")
+
+# Build a unique run id for calcium filenames.  Non-representative seeds already
+# carry "_seed<n>" in their tag; the representative seed's tag does not — so append
+# the seed only when it isn't already there (avoids "..._seed3333_seed3333").
+_calcium_id(tag, seed) = occursin(r"_seed\d+$", tag) ? tag : "$(tag)_seed$(seed)"
+
+# On-trajectory samples: the learned I_Ca and the true I_Ca at every timestep,
+# with the network inputs (V, s and the V/100 normalisation the net actually sees).
+function save_calcium_probe(tag, seed, t, V, s, Vnorm, ICa_true, ICa_nn)
+    isempty(tag) && return nothing
+    mkpath(CALCIUM_DIR)
+    df = DataFrame(t = collect(t), V = collect(V), s = collect(s), V_norm = collect(Vnorm),
+                   ICa_true = collect(ICa_true), ICa_nn = collect(ICa_nn))
+    CSV.write(joinpath(CALCIUM_DIR, "probe_$(_calcium_id(tag, seed)).csv"), df)
+    return nothing
+end
+
+# Off-trajectory grid: the learned network sampled on a regular (V, s) grid over
+# the observed domain, so symbolic regression is not confined to the on-trajectory
+# manifold.  ICa_true here is the analytic gCa*s^2*(V-ECa) on the same grid.
+function save_calcium_grid_probe(nn, p_ca, st_ca, gCa, tag, seed, Vtraj, straj; nV = 80, ns = 80)
+    isempty(tag) && return nothing
+    mkpath(CALCIUM_DIR)
+    Vgrid = range(minimum(Vtraj), maximum(Vtraj); length = nV)
+    sgrid = range(minimum(straj), maximum(straj); length = ns)
+    rows = NamedTuple[]
+    for Vv in Vgrid, sv in sgrid
+        inn   = nn([Vv / 100.0, sv], p_ca, st_ca)[1][1]
+        itrue = gCa * sv^2 * (Vv - ECa)
+        push!(rows, (; V = Vv, s = sv, V_norm = Vv / 100.0, ICa_true = itrue, ICa_nn = inn))
+    end
+    CSV.write(joinpath(CALCIUM_DIR, "grid_$(_calcium_id(tag, seed)).csv"), DataFrame(rows))
+    return nothing
+end
+
 # --- Regeneration helpers (rebuild figures from saved params — no retraining) -
 function load_ude_params(tag, seed)
     nn, p_template, st = make_ca_network(seed)
@@ -236,6 +276,8 @@ function regenerate_ude_figs(tag, fig_prefix; gCa, noise_level, t_train_end, see
     ICa_true = gCa .* s .^ 2 .* (Vt .- ECa)
     save_trajectory_figs(fig_prefix, "UDE", data_clean, pred, t_train_end)
     save_calcium_parity(fig_prefix, ICa_true, ICa_nn)
+    save_calcium_probe(tag, seed, TSTEPS, Vt, s, Vn, ICa_true, ICa_nn)
+    save_calcium_grid_probe(nn, p_ca, st, gCa, tag, seed, Vt, s)
     return nothing
 end
 
@@ -296,7 +338,8 @@ end
 function run_experiment(; gCa = 2.0, noise_level = 0.02, t_train_end = 30.0,
                           observed = :full, seed = 1111,
                           adam_iters = 5000, bfgs_iters = 300,
-                          make_figs = false, tag = "", fig_prefix = "")
+                          make_figs = false, tag = "", fig_prefix = "",
+                          common_eval_start = nothing)
     println("[run_experiment] gCa=$gCa noise=$noise_level t_train=$t_train_end observed=$observed tag=$tag")
     data_clean = gen_clean_data(gCa).data_clean
     data_noisy = gen_noisy_data(data_clean, noise_level; seed = seed)
@@ -321,11 +364,13 @@ function run_experiment(; gCa = 2.0, noise_level = 0.02, t_train_end = 30.0,
     ICa_nn   = [nn_ca([Vn[i], st_[i]], p_ca, st_ca)[1][1] for i in eachindex(Vt)]
     ICa_true = gCa .* st_ .^ 2 .* (Vt .- ECa)
 
+    cidx = common_eval_start === nothing ? nothing : common_eval_indices(Float64(common_eval_start))
     metrics = compute_metrics(; model = "UDE", observed = observed, gCa = gCa,
                                 noise_level = noise_level, t_train_end = t_train_end, seed = seed,
                                 t = TSTEPS, truth = data_clean, pred = pred_full,
                                 train_idx = split.train_idx, forecast_idx = split.forecast_idx,
-                                truth_noisy = data_noisy, ICa_true = ICa_true, ICa_nn = ICa_nn)
+                                truth_noisy = data_noisy, ICa_true = ICa_true, ICa_nn = ICa_nn,
+                                common_idx = cidx)
 
     if make_figs
         prefix = !isempty(fig_prefix) ? fig_prefix :
@@ -334,6 +379,8 @@ function run_experiment(; gCa = 2.0, noise_level = 0.02, t_train_end = 30.0,
         save_calcium_parity(prefix, ICa_true, ICa_nn)
     end
     snapshot_params(tag, p_ca)
+    save_calcium_probe(tag, seed, TSTEPS, Vt, st_, Vn, ICa_true, ICa_nn)
+    save_calcium_grid_probe(nn_ca, p_ca, st_ca, gCa, tag, seed, Vt, st_)
 
     return (; gCa, noise_level, t_train_end, observed, seed, p_ca,
               final_loss = tr.final_loss, bfgs_ok = tr.bfgs_ok,

@@ -108,9 +108,15 @@ _row(id, window, metric, value) =
 #  truth/pred are 6 x N aligned to `t` (pred NaN-padded past any early stop).
 #  Optional: truth_noisy (secondary vs-noisy V RMSE), ICa_true/ICa_nn (calcium
 #  recovery), and the spike/rollout knobs.
+#  `common_idx` (optional): a fixed evaluation window (indices into `t`), scored
+#  in addition to train/forecast and tagged window="common_eval".  Used by the
+#  training-window ablation so every training length is judged on ONE shared
+#  forecast interval.  Purely additive — the tidy schema is unchanged; runs that
+#  omit it simply produce no common_eval rows.
 function compute_metrics(; model, observed, gCa, noise_level, t_train_end, seed,
                            t, truth, pred, train_idx, forecast_idx,
                            truth_noisy = nothing, ICa_true = nothing, ICa_nn = nothing,
+                           common_idx = nothing,
                            vthresh = 0.0, min_dist_ms = 2.0, match_tol_ms = 2.0,
                            rollout_thresh_mv = 10.0, rollout_sustained_ms = 1.0,
                            rollout_cap_ms = 70.0)
@@ -119,7 +125,9 @@ function compute_metrics(; model, observed, gCa, noise_level, t_train_end, seed,
     gate_names = ("m", "h", "n", "p", "s")
     rows = NamedTuple[]
 
-    for (wname, widx) in ((:train, train_idx), (:forecast, forecast_idx))
+    windows = Any[(:train, train_idx), (:forecast, forecast_idx)]
+    common_idx !== nothing && push!(windows, (:common_eval, common_idx))
+    for (wname, widx) in windows
         isempty(widx) && continue
         # voltage + per-gate RMSE vs clean truth
         push!(rows, _row(id, wname, "V_rmse", rmse_safe(truth[1, widx], pred[1, widx])))
@@ -161,6 +169,24 @@ function compute_metrics(; model, observed, gCa, noise_level, t_train_end, seed,
                              thresh_mv = rollout_thresh_mv, t_start = t_start,
                              sustained_ms = rollout_sustained_ms, cap_ms = rollout_cap_ms)
         push!(rows, _row(id, :forecast, "rollout_horizon_ms", rh))
+    end
+
+    # same spike + rollout metrics over the fixed common evaluation window, so the
+    # training-window ablation can compare them on one shared interval.
+    if common_idx !== nothing && !isempty(common_idx)
+        sp_true = detect_spikes(truth[1, common_idx], t[common_idx];
+                                vthresh = vthresh, min_dist_ms = min_dist_ms)
+        sp_pred = detect_spikes(pred[1, common_idx],  t[common_idx];
+                                vthresh = vthresh, min_dist_ms = min_dist_ms)
+        se = spike_time_error(sp_pred, sp_true; match_tol_ms = match_tol_ms)
+        push!(rows, _row(id, :common_eval, "spike_mean_abs_dev_ms", se.mean_abs_dev_ms))
+        push!(rows, _row(id, :common_eval, "spike_count_diff", se.count_diff))
+
+        t_start = t[common_idx[1]]
+        rh = rollout_horizon(pred[1, :], truth[1, :], t;
+                             thresh_mv = rollout_thresh_mv, t_start = t_start,
+                             sustained_ms = rollout_sustained_ms, cap_ms = rollout_cap_ms)
+        push!(rows, _row(id, :common_eval, "rollout_horizon_ms", rh))
     end
 
     return rows
