@@ -286,9 +286,9 @@ end
 # --- fig10: I_Ca(t) along the trajectory — true / neural / symbolic ----------
 let
     p = plot(r0.t, r0.ICa_true, lw = 2.5, color = :black, label = "true I_Ca",
-             xlabel = "t (ms)", ylabel = "I_Ca (μA/cm²)", legend = :topright,
+             xlabel = "t (ms)", ylabel = "I_Ca (μA/cm²)", legend = :outertop, legendcolumns = 3,
              title = "Learned vs true calcium current (gCa=2.0)", titlefontsize = 11,
-             left_margin = 4mm, bottom_margin = 4mm)
+             size = (820, 420), left_margin = 4mm, bottom_margin = 4mm)
     plot!(p, r0.t, r0.ICa_nn,   lw = 2, ls = :dash, color = :darkorange, label = "neural U(V,s)")
     plot!(p, r0.t, r0.ICa_cond, lw = 2, ls = :dot,  color = :seagreen,   label = "symbolic s²(aV+b)")
     savefig(p, joinpath(FIG_DIR, "fig10_calcium_symbolic_timeseries.png"))
@@ -297,24 +297,28 @@ end
 # --- fig11: coefficient recovery vs truth (gCa=2.0, mean±std over seeds) ------
 let
     a_hats = [r.a_hat for r in res_main]; b_hats = [r.b_hat for r in res_main]
-    p1 = bar(["true", "recovered"], [2.0, mean(a_hats)], legend = false, yerror = [0.0, std(a_hats)],
+    am_, as_ = mean(a_hats), std(a_hats); bm_, bs_ = mean(b_hats), std(b_hats)
+    p1 = bar(["true", "recovered"], [2.0, am_], legend = false, yerror = [0.0, as_],
              color = [:gray, :seagreen], title = "a = gCa  (per-seed mean±std)", ylabel = "conductance",
-             left_margin = 6mm, bottom_margin = 4mm)
-    p2 = bar(["true", "recovered"], [-240.0, mean(b_hats)], legend = false, yerror = [0.0, std(b_hats)],
+             ylims = (0, max(2.0, am_ + as_) * 1.18), bar_width = 0.6,
+             left_margin = 7mm, bottom_margin = 5mm, top_margin = 3mm)
+    p2 = bar(["true", "recovered"], [-240.0, bm_], legend = false, yerror = [0.0, bs_],
              color = [:gray, :seagreen], title = "b = -gCa*ECa  (per-seed mean±std)", ylabel = "coefficient",
-             left_margin = 6mm, bottom_margin = 4mm)
+             ylims = (min(-240.0, bm_ - bs_) * 1.15, 15), bar_width = 0.6,
+             left_margin = 7mm, bottom_margin = 5mm, top_margin = 3mm)
     p3 = bar(["true", "recovered"], [120.0, Erev_ens], legend = false,
              color = [:gray, :steelblue], title = "Erev = -b/a  (ensemble)", ylabel = "reversal potential (mV)",
-             left_margin = 6mm, bottom_margin = 4mm)
-    savefig(plot(p1, p2, p3, layout = (1, 3), size = (1200, 430),
+             ylims = (0, max(120.0, Erev_ens) * 1.18), bar_width = 0.6,
+             left_margin = 7mm, bottom_margin = 5mm, top_margin = 3mm)
+    savefig(plot(p1, p2, p3, layout = (1, 3), size = (1500, 560),
                  plot_title = "Recovered calcium parameters vs truth (gCa=2.0, 5 seeds)",
-                 plot_titlefontsize = 12),
+                 plot_titlefontsize = 13),
             joinpath(FIG_DIR, "fig11_calcium_coeff_recovery.png"))
 end
 
 # --- fig12: identifiability — gCa=2.0 (recoverable) vs gCa=0.4 (not) ----------
 let
-    common = (; xlabel = "t (ms)", ylabel = "I_Ca (μA/cm²)", legend = :topright,
+    common = (; xlabel = "t (ms)", ylabel = "I_Ca (μA/cm²)", legend = :outertop, legendcolumns = 2,
                 left_margin = 4mm, bottom_margin = 4mm)
     pg = plot(r0.t, r0.ICa_true, lw = 2.5, color = :black, label = "true",
               title = @sprintf("gCa=2.0: recoverable (R²=%.3f)", r0.r2_cond_true); common...)
@@ -322,7 +326,7 @@ let
     pb = plot(res_neg.t, res_neg.ICa_true, lw = 2.5, color = :black, label = "true",
               title = @sprintf("gCa=0.4: non-identifiable (R²=%.3f)", res_neg.r2_cond_true); common...)
     plot!(pb, res_neg.t, res_neg.ICa_cond, lw = 2, ls = :dot, color = :crimson, label = "symbolic")
-    savefig(plot(pg, pb, layout = (1, 2), size = (1100, 440),
+    savefig(plot(pg, pb, layout = (1, 2), size = (1150, 500),
                  plot_title = "Symbolic recovery is meaningful only when the current is identifiable",
                  plot_titlefontsize = 11),
             joinpath(FIG_DIR, "fig12_calcium_identifiability.png"))
