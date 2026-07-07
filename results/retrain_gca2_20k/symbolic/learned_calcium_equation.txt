@@ -1,0 +1,17 @@
+Objective 3 — symbolic recovery of the learned calcium current
+True form: I_Ca = gCa*s^2*(V-ECa) = (+gCa)*V*s^2 + (-gCa*ECa)*s^2 ,  ECa=120.0
+
+== gCa = 2.0 (main setting) ==
+Conductance-form recovery  I_Ca = s^2*(a*V + b):
+  per-seed  a = 1.495 +/- 1.484 (true 2.000)   b = -256.0 +/- 137.4 (true -240.0)
+  ensemble  a = gCa ~ 1.495   b ~ -256.0   Erev = -b/a ~ 171.3 mV (true 120.0)
+  R2(symbolic vs true I_Ca) = 0.8455 +/- 0.1603 (per-seed) ; 0.9973 (ensemble)
+
+Representative seed 1111:
+  I_Ca ~ +2.272*V*s^2  -83.0*s^2
+  Unconstrained SINDy (6-term library): I_Ca ~ -7.207*1  +0.1215*V  +100.6*s  -3.244*V*s  -362.3*s^2  +14.12*V*s^2
+  R2(SINDy vs true) = 0.3037
+
+== gCa = 0.4 (physiological; negative / non-identifiable case) ==
+  conductance: a=-0.372 (true 0.40) b=-89.2 (true -48.0) Erev=-239.9 mV
+  R2(symbolic vs true I_Ca) = 0.7806  -> recovery fails
