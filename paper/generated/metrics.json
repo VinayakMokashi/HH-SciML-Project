@@ -1,0 +1,1635 @@
+{
+  "NodeForecastVRmse": {
+    "macro": "valNodeForecastVRmse",
+    "value": "3951 \\pm 3561",
+    "raw": {
+      "mean": 3951.178018885416,
+      "std": 3561.340803031814
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "NODE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "NodeForecastVRmseMeanStd": {
+    "macro": "valNodeForecastVRmseMeanStd",
+    "value": "3951 \\pm 3561",
+    "raw": {
+      "mean": 3951.178018885416,
+      "std": 3561.340803031814
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "NODE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "NodeForecastVRmseMean": {
+    "macro": "valNodeForecastVRmseMean",
+    "value": "3951",
+    "raw": 3951.178018885416,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "NODE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "NodeForecastVRmseStd": {
+    "macro": "valNodeForecastVRmseStd",
+    "value": "3561",
+    "raw": 3561.340803031814,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "NODE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "NodeForecastVRmseN": {
+    "macro": "valNodeForecastVRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "NODE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeForecastVRmse": {
+    "macro": "valUdeForecastVRmse",
+    "value": "0.245 \\pm 0.028",
+    "raw": {
+      "mean": 0.24523933188134714,
+      "std": 0.028375840021892113
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeForecastVRmseMeanStd": {
+    "macro": "valUdeForecastVRmseMeanStd",
+    "value": "0.245 \\pm 0.028",
+    "raw": {
+      "mean": 0.24523933188134714,
+      "std": 0.028375840021892113
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeForecastVRmseMean": {
+    "macro": "valUdeForecastVRmseMean",
+    "value": "0.245",
+    "raw": 0.24523933188134714,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeForecastVRmseStd": {
+    "macro": "valUdeForecastVRmseStd",
+    "value": "0.028",
+    "raw": 0.028375840021892113,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeForecastVRmseN": {
+    "macro": "valUdeForecastVRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastVRmse": {
+    "macro": "valUdeVoltageForecastVRmse",
+    "value": "0.264 \\pm 0.118",
+    "raw": {
+      "mean": 0.2635508680094284,
+      "std": 0.11760231838630762
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastVRmseMeanStd": {
+    "macro": "valUdeVoltageForecastVRmseMeanStd",
+    "value": "0.264 \\pm 0.118",
+    "raw": {
+      "mean": 0.2635508680094284,
+      "std": 0.11760231838630762
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastVRmseMean": {
+    "macro": "valUdeVoltageForecastVRmseMean",
+    "value": "0.264",
+    "raw": 0.2635508680094284,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastVRmseStd": {
+    "macro": "valUdeVoltageForecastVRmseStd",
+    "value": "0.118",
+    "raw": 0.11760231838630762,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastVRmseN": {
+    "macro": "valUdeVoltageForecastVRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeForecastGateRmse": {
+    "macro": "valUdeForecastGateRmse",
+    "value": "0.0010 \\pm 0.0002",
+    "raw": {
+      "mean": 0.000951766817970978,
+      "std": 0.00017026484222479465
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "gate_rmse_mean"
+    },
+    "n": 5
+  },
+  "UdeForecastGateRmseMeanStd": {
+    "macro": "valUdeForecastGateRmseMeanStd",
+    "value": "0.0010 \\pm 0.0002",
+    "raw": {
+      "mean": 0.000951766817970978,
+      "std": 0.00017026484222479465
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "gate_rmse_mean"
+    },
+    "n": 5
+  },
+  "UdeForecastGateRmseMean": {
+    "macro": "valUdeForecastGateRmseMean",
+    "value": "0.0010",
+    "raw": 0.000951766817970978,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "gate_rmse_mean"
+    },
+    "n": 5
+  },
+  "UdeForecastGateRmseStd": {
+    "macro": "valUdeForecastGateRmseStd",
+    "value": "0.0002",
+    "raw": 0.00017026484222479465,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "gate_rmse_mean"
+    },
+    "n": 5
+  },
+  "UdeForecastGateRmseN": {
+    "macro": "valUdeForecastGateRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "gate_rmse_mean"
+    },
+    "n": 5
+  },
+  "UdeForecastICaRmse": {
+    "macro": "valUdeForecastICaRmse",
+    "value": "1.189 \\pm 0.208",
+    "raw": {
+      "mean": 1.189072098980375,
+      "std": 0.20829298482831607
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "UdeForecastICaRmseMeanStd": {
+    "macro": "valUdeForecastICaRmseMeanStd",
+    "value": "1.189 \\pm 0.208",
+    "raw": {
+      "mean": 1.189072098980375,
+      "std": 0.20829298482831607
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "UdeForecastICaRmseMean": {
+    "macro": "valUdeForecastICaRmseMean",
+    "value": "1.189",
+    "raw": 1.189072098980375,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "UdeForecastICaRmseStd": {
+    "macro": "valUdeForecastICaRmseStd",
+    "value": "0.208",
+    "raw": 0.20829298482831607,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "UdeForecastICaRmseN": {
+    "macro": "valUdeForecastICaRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastICaRmse": {
+    "macro": "valUdeVoltageForecastICaRmse",
+    "value": "1.309 \\pm 0.447",
+    "raw": {
+      "mean": 1.3092265677039077,
+      "std": 0.44677450570074734
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastICaRmseMeanStd": {
+    "macro": "valUdeVoltageForecastICaRmseMeanStd",
+    "value": "1.309 \\pm 0.447",
+    "raw": {
+      "mean": 1.3092265677039077,
+      "std": 0.44677450570074734
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastICaRmseMean": {
+    "macro": "valUdeVoltageForecastICaRmseMean",
+    "value": "1.309",
+    "raw": 1.3092265677039077,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastICaRmseStd": {
+    "macro": "valUdeVoltageForecastICaRmseStd",
+    "value": "0.447",
+    "raw": 0.44677450570074734,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastICaRmseN": {
+    "macro": "valUdeVoltageForecastICaRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "UdeForecastICaRmseNorm": {
+    "macro": "valUdeForecastICaRmseNorm",
+    "value": "0.140 \\pm 0.025",
+    "raw": {
+      "mean": 0.1403411215254637,
+      "std": 0.02458393492014376
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "UdeForecastICaRmseNormMeanStd": {
+    "macro": "valUdeForecastICaRmseNormMeanStd",
+    "value": "0.140 \\pm 0.025",
+    "raw": {
+      "mean": 0.1403411215254637,
+      "std": 0.02458393492014376
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "UdeForecastICaRmseNormMean": {
+    "macro": "valUdeForecastICaRmseNormMean",
+    "value": "0.140",
+    "raw": 0.1403411215254637,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "UdeForecastICaRmseNormStd": {
+    "macro": "valUdeForecastICaRmseNormStd",
+    "value": "0.025",
+    "raw": 0.02458393492014376,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "UdeForecastICaRmseNormN": {
+    "macro": "valUdeForecastICaRmseNormN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastICaRmseNorm": {
+    "macro": "valUdeVoltageForecastICaRmseNorm",
+    "value": "0.155 \\pm 0.053",
+    "raw": {
+      "mean": 0.15452244233133955,
+      "std": 0.05273089432742834
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastICaRmseNormMeanStd": {
+    "macro": "valUdeVoltageForecastICaRmseNormMeanStd",
+    "value": "0.155 \\pm 0.053",
+    "raw": {
+      "mean": 0.15452244233133955,
+      "std": 0.05273089432742834
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastICaRmseNormMean": {
+    "macro": "valUdeVoltageForecastICaRmseNormMean",
+    "value": "0.155",
+    "raw": 0.15452244233133955,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastICaRmseNormStd": {
+    "macro": "valUdeVoltageForecastICaRmseNormStd",
+    "value": "0.053",
+    "raw": 0.05273089432742834,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastICaRmseNormN": {
+    "macro": "valUdeVoltageForecastICaRmseNormN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "UdeTrainVRmse": {
+    "macro": "valUdeTrainVRmse",
+    "value": "0.148 \\pm 0.045",
+    "raw": {
+      "mean": 0.14750473251115578,
+      "std": 0.04544861830300034
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "train",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeTrainVRmseMeanStd": {
+    "macro": "valUdeTrainVRmseMeanStd",
+    "value": "0.148 \\pm 0.045",
+    "raw": {
+      "mean": 0.14750473251115578,
+      "std": 0.04544861830300034
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "train",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeTrainVRmseMean": {
+    "macro": "valUdeTrainVRmseMean",
+    "value": "0.148",
+    "raw": 0.14750473251115578,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "train",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeTrainVRmseStd": {
+    "macro": "valUdeTrainVRmseStd",
+    "value": "0.045",
+    "raw": 0.04544861830300034,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "train",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeTrainVRmseN": {
+    "macro": "valUdeTrainVRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "train",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "UdeTrainVRmseVsNoisy": {
+    "macro": "valUdeTrainVRmseVsNoisy",
+    "value": "0.481 \\pm 0.012",
+    "raw": {
+      "mean": 0.48134884129865074,
+      "std": 0.012359910532320035
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "train",
+      "metric": "V_rmse_vs_noisy"
+    },
+    "n": 5
+  },
+  "UdeTrainVRmseVsNoisyMeanStd": {
+    "macro": "valUdeTrainVRmseVsNoisyMeanStd",
+    "value": "0.481 \\pm 0.012",
+    "raw": {
+      "mean": 0.48134884129865074,
+      "std": 0.012359910532320035
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "train",
+      "metric": "V_rmse_vs_noisy"
+    },
+    "n": 5
+  },
+  "UdeTrainVRmseVsNoisyMean": {
+    "macro": "valUdeTrainVRmseVsNoisyMean",
+    "value": "0.481",
+    "raw": 0.48134884129865074,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "train",
+      "metric": "V_rmse_vs_noisy"
+    },
+    "n": 5
+  },
+  "UdeTrainVRmseVsNoisyStd": {
+    "macro": "valUdeTrainVRmseVsNoisyStd",
+    "value": "0.012",
+    "raw": 0.012359910532320035,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "train",
+      "metric": "V_rmse_vs_noisy"
+    },
+    "n": 5
+  },
+  "UdeTrainVRmseVsNoisyN": {
+    "macro": "valUdeTrainVRmseVsNoisyN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "train",
+      "metric": "V_rmse_vs_noisy"
+    },
+    "n": 5
+  },
+  "NodeForecastRollout": {
+    "macro": "valNodeForecastRollout",
+    "value": "0.55 \\pm 0.65",
+    "raw": {
+      "mean": 0.5479452054794521,
+      "std": 0.6549197859366547
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "NODE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeForecastRolloutMeanStd": {
+    "macro": "valNodeForecastRolloutMeanStd",
+    "value": "0.55 \\pm 0.65",
+    "raw": {
+      "mean": 0.5479452054794521,
+      "std": 0.6549197859366547
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "NODE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeForecastRolloutMean": {
+    "macro": "valNodeForecastRolloutMean",
+    "value": "0.55",
+    "raw": 0.5479452054794521,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "NODE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeForecastRolloutStd": {
+    "macro": "valNodeForecastRolloutStd",
+    "value": "0.65",
+    "raw": 0.6549197859366547,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "NODE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeForecastRolloutN": {
+    "macro": "valNodeForecastRolloutN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "NODE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "UdeForecastRollout": {
+    "macro": "valUdeForecastRollout",
+    "value": "\\ge 70",
+    "raw": 70.0,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 1
+  },
+  "GcaAblICaNormPointFour": {
+    "macro": "valGcaAblICaNormPointFour",
+    "value": "1.179",
+    "raw": 1.1791588919620495,
+    "source": "results/ablation_gca.csv",
+    "filter": {
+      "gCa": 0.4
+    },
+    "n": 1
+  },
+  "GcaAblICaNormOne": {
+    "macro": "valGcaAblICaNormOne",
+    "value": "0.333",
+    "raw": 0.3325491936637111,
+    "source": "results/ablation_gca.csv",
+    "filter": {
+      "gCa": 1.0
+    },
+    "n": 1
+  },
+  "GcaAblICaNormTwo": {
+    "macro": "valGcaAblICaNormTwo",
+    "value": "0.112",
+    "raw": 0.11229216448147902,
+    "source": "results/ablation_gca.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 1
+  },
+  "GcaAblICaNormFour": {
+    "macro": "valGcaAblICaNormFour",
+    "value": "0.068",
+    "raw": 0.06772530981692793,
+    "source": "results/ablation_gca.csv",
+    "filter": {
+      "gCa": 4.0
+    },
+    "n": 1
+  },
+  "WindowAblCommonEvalVRmseFifteen": {
+    "macro": "valWindowAblCommonEvalVRmseFifteen",
+    "value": "1.559",
+    "raw": 1.5586033539127329,
+    "source": "results/ablation_window.csv",
+    "filter": {
+      "t_train_end": 15.0
+    },
+    "n": 1
+  },
+  "WindowAblCommonEvalVRmseTwenty": {
+    "macro": "valWindowAblCommonEvalVRmseTwenty",
+    "value": "0.225",
+    "raw": 0.22523666920122537,
+    "source": "results/ablation_window.csv",
+    "filter": {
+      "t_train_end": 20.0
+    },
+    "n": 1
+  },
+  "WindowAblCommonEvalVRmseThirty": {
+    "macro": "valWindowAblCommonEvalVRmseThirty",
+    "value": "0.236",
+    "raw": 0.23608373353853263,
+    "source": "results/ablation_window.csv",
+    "filter": {
+      "t_train_end": 30.0
+    },
+    "n": 1
+  },
+  "WindowAblCommonEvalVRmseForty": {
+    "macro": "valWindowAblCommonEvalVRmseForty",
+    "value": "0.367",
+    "raw": 0.3671703369134956,
+    "source": "results/ablation_window.csv",
+    "filter": {
+      "t_train_end": 40.0
+    },
+    "n": 1
+  },
+  "WindowAblCommonEvalVRmseFifty": {
+    "macro": "valWindowAblCommonEvalVRmseFifty",
+    "value": "0.418",
+    "raw": 0.4177206252114012,
+    "source": "results/ablation_window.csv",
+    "filter": {
+      "t_train_end": 50.0
+    },
+    "n": 1
+  },
+  "SymbolicAHatRange": {
+    "macro": "valSymbolicAHatRange",
+    "value": "0.673--3.095",
+    "raw": {
+      "min": 0.6730558988367701,
+      "max": 3.094842062703728
+    },
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicAHat": {
+    "macro": "valSymbolicAHat",
+    "value": "1.60 \\pm 0.90",
+    "raw": {
+      "mean": 1.595549902182419,
+      "std": 0.9045688330069698
+    },
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicAHatMeanStd": {
+    "macro": "valSymbolicAHatMeanStd",
+    "value": "1.60 \\pm 0.90",
+    "raw": {
+      "mean": 1.595549902182419,
+      "std": 0.9045688330069698
+    },
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicAHatMean": {
+    "macro": "valSymbolicAHatMean",
+    "value": "1.60",
+    "raw": 1.595549902182419,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicAHatStd": {
+    "macro": "valSymbolicAHatStd",
+    "value": "0.90",
+    "raw": 0.9045688330069698,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicAHatN": {
+    "macro": "valSymbolicAHatN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicBHat": {
+    "macro": "valSymbolicBHat",
+    "value": "-259.3 \\pm 59.5",
+    "raw": {
+      "mean": -259.33239319241306,
+      "std": 59.501608270568674
+    },
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicBHatMeanStd": {
+    "macro": "valSymbolicBHatMeanStd",
+    "value": "-259.3 \\pm 59.5",
+    "raw": {
+      "mean": -259.33239319241306,
+      "std": 59.501608270568674
+    },
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicBHatMean": {
+    "macro": "valSymbolicBHatMean",
+    "value": "-259.3",
+    "raw": -259.33239319241306,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicBHatStd": {
+    "macro": "valSymbolicBHatStd",
+    "value": "59.5",
+    "raw": 59.501608270568674,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicBHatN": {
+    "macro": "valSymbolicBHatN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicRTwoCondTrue": {
+    "macro": "valSymbolicRTwoCondTrue",
+    "value": "0.984 \\pm 0.014",
+    "raw": {
+      "mean": 0.9835864514706014,
+      "std": 0.014493538574901191
+    },
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicRTwoCondTrueMeanStd": {
+    "macro": "valSymbolicRTwoCondTrueMeanStd",
+    "value": "0.984 \\pm 0.014",
+    "raw": {
+      "mean": 0.9835864514706014,
+      "std": 0.014493538574901191
+    },
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicRTwoCondTrueMean": {
+    "macro": "valSymbolicRTwoCondTrueMean",
+    "value": "0.984",
+    "raw": 0.9835864514706014,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicRTwoCondTrueStd": {
+    "macro": "valSymbolicRTwoCondTrueStd",
+    "value": "0.014",
+    "raw": 0.014493538574901191,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicRTwoCondTrueN": {
+    "macro": "valSymbolicRTwoCondTrueN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicRTwoSindyTrue": {
+    "macro": "valSymbolicRTwoSindyTrue",
+    "value": "0.956 \\pm 0.059",
+    "raw": {
+      "mean": 0.9557821118990294,
+      "std": 0.05915713448295907
+    },
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicRTwoSindyTrueMeanStd": {
+    "macro": "valSymbolicRTwoSindyTrueMeanStd",
+    "value": "0.956 \\pm 0.059",
+    "raw": {
+      "mean": 0.9557821118990294,
+      "std": 0.05915713448295907
+    },
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicRTwoSindyTrueMean": {
+    "macro": "valSymbolicRTwoSindyTrueMean",
+    "value": "0.956",
+    "raw": 0.9557821118990294,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicRTwoSindyTrueStd": {
+    "macro": "valSymbolicRTwoSindyTrueStd",
+    "value": "0.059",
+    "raw": 0.05915713448295907,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicRTwoSindyTrueN": {
+    "macro": "valSymbolicRTwoSindyTrueN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "SymbolicAHatNegControl": {
+    "macro": "valSymbolicAHatNegControl",
+    "value": "-0.372",
+    "raw": -0.3719798574860592,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 0.4
+    },
+    "n": 1
+  },
+  "SymbolicRTwoCondTrueNegControl": {
+    "macro": "valSymbolicRTwoCondTrueNegControl",
+    "value": "0.781",
+    "raw": 0.7806472493640154,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 0.4
+    },
+    "n": 1
+  },
+  "SymbolicRTwoSindyTrueNegControl": {
+    "macro": "valSymbolicRTwoSindyTrueNegControl",
+    "value": "-0.359",
+    "raw": -0.35870485913710626,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 0.4
+    },
+    "n": 1
+  },
+  "RetrainAHat": {
+    "macro": "valRetrainAHat",
+    "value": "1.49 \\pm 1.48",
+    "raw": {
+      "mean": 1.4947096308576968,
+      "std": 1.4842865354496968
+    },
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainAHatMeanStd": {
+    "macro": "valRetrainAHatMeanStd",
+    "value": "1.49 \\pm 1.48",
+    "raw": {
+      "mean": 1.4947096308576968,
+      "std": 1.4842865354496968
+    },
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainAHatMean": {
+    "macro": "valRetrainAHatMean",
+    "value": "1.49",
+    "raw": 1.4947096308576968,
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainAHatStd": {
+    "macro": "valRetrainAHatStd",
+    "value": "1.48",
+    "raw": 1.4842865354496968,
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainAHatN": {
+    "macro": "valRetrainAHatN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainRTwoCondTrue": {
+    "macro": "valRetrainRTwoCondTrue",
+    "value": "0.845 \\pm 0.160",
+    "raw": {
+      "mean": 0.8454749165905042,
+      "std": 0.1602837711598065
+    },
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainRTwoCondTrueMeanStd": {
+    "macro": "valRetrainRTwoCondTrueMeanStd",
+    "value": "0.845 \\pm 0.160",
+    "raw": {
+      "mean": 0.8454749165905042,
+      "std": 0.1602837711598065
+    },
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainRTwoCondTrueMean": {
+    "macro": "valRetrainRTwoCondTrueMean",
+    "value": "0.845",
+    "raw": 0.8454749165905042,
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainRTwoCondTrueStd": {
+    "macro": "valRetrainRTwoCondTrueStd",
+    "value": "0.160",
+    "raw": 0.1602837711598065,
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainRTwoCondTrueN": {
+    "macro": "valRetrainRTwoCondTrueN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainRmseNnTrue": {
+    "macro": "valRetrainRmseNnTrue",
+    "value": "4.059 \\pm 1.477",
+    "raw": {
+      "mean": 4.058756617984395,
+      "std": 1.476993005944329
+    },
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainRmseNnTrueMeanStd": {
+    "macro": "valRetrainRmseNnTrueMeanStd",
+    "value": "4.059 \\pm 1.477",
+    "raw": {
+      "mean": 4.058756617984395,
+      "std": 1.476993005944329
+    },
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainRmseNnTrueMean": {
+    "macro": "valRetrainRmseNnTrueMean",
+    "value": "4.059",
+    "raw": 4.058756617984395,
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainRmseNnTrueStd": {
+    "macro": "valRetrainRmseNnTrueStd",
+    "value": "1.477",
+    "raw": 1.476993005944329,
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainRmseNnTrueN": {
+    "macro": "valRetrainRmseNnTrueN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "RetrainForecastVRmse": {
+    "macro": "valRetrainForecastVRmse",
+    "value": "0.756 \\pm 0.411",
+    "raw": {
+      "mean": 0.7556217438591413,
+      "std": 0.41136054939200517
+    },
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainForecastVRmseMeanStd": {
+    "macro": "valRetrainForecastVRmseMeanStd",
+    "value": "0.756 \\pm 0.411",
+    "raw": {
+      "mean": 0.7556217438591413,
+      "std": 0.41136054939200517
+    },
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainForecastVRmseMean": {
+    "macro": "valRetrainForecastVRmseMean",
+    "value": "0.756",
+    "raw": 0.7556217438591413,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainForecastVRmseStd": {
+    "macro": "valRetrainForecastVRmseStd",
+    "value": "0.411",
+    "raw": 0.41136054939200517,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainForecastVRmseN": {
+    "macro": "valRetrainForecastVRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainForecastICaRmse": {
+    "macro": "valRetrainForecastICaRmse",
+    "value": "3.847 \\pm 1.465",
+    "raw": {
+      "mean": 3.8469099071166952,
+      "std": 1.464938408895774
+    },
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainForecastICaRmseMeanStd": {
+    "macro": "valRetrainForecastICaRmseMeanStd",
+    "value": "3.847 \\pm 1.465",
+    "raw": {
+      "mean": 3.8469099071166952,
+      "std": 1.464938408895774
+    },
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainForecastICaRmseMean": {
+    "macro": "valRetrainForecastICaRmseMean",
+    "value": "3.847",
+    "raw": 3.8469099071166952,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainForecastICaRmseStd": {
+    "macro": "valRetrainForecastICaRmseStd",
+    "value": "1.465",
+    "raw": 1.464938408895774,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainForecastICaRmseN": {
+    "macro": "valRetrainForecastICaRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainFinalLoss": {
+    "macro": "valRetrainFinalLoss",
+    "value": "29.66 \\pm 2.66",
+    "raw": {
+      "mean": 29.65990124147882,
+      "std": 2.663394792238203
+    },
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainFinalLossMeanStd": {
+    "macro": "valRetrainFinalLossMeanStd",
+    "value": "29.66 \\pm 2.66",
+    "raw": {
+      "mean": 29.65990124147882,
+      "std": 2.663394792238203
+    },
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainFinalLossMean": {
+    "macro": "valRetrainFinalLossMean",
+    "value": "29.66",
+    "raw": 29.65990124147882,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainFinalLossStd": {
+    "macro": "valRetrainFinalLossStd",
+    "value": "2.66",
+    "raw": 2.663394792238203,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainFinalLossN": {
+    "macro": "valRetrainFinalLossN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "UdeSeedCount": {
+    "macro": "valUdeSeedCount",
+    "value": "5",
+    "raw": 5.0,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse"
+    },
+    "n": 1
+  },
+  "NodeSpikeDevSeedCount": {
+    "macro": "valNodeSpikeDevSeedCount",
+    "value": "2",
+    "raw": 2.0,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "NODE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "spike_mean_abs_dev_ms"
+    },
+    "n": 1
+  },
+  "UdeVoltageForecastGateRmse": {
+    "macro": "valUdeVoltageForecastGateRmse",
+    "value": "0.00106 \\pm 0.00043",
+    "raw": {
+      "mean": 0.0010597619993722,
+      "std": 0.0004335527474268237
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "gate_rmse_mean"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastGateRmseMeanStd": {
+    "macro": "valUdeVoltageForecastGateRmseMeanStd",
+    "value": "0.00106 \\pm 0.00043",
+    "raw": {
+      "mean": 0.0010597619993722,
+      "std": 0.0004335527474268237
+    },
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "gate_rmse_mean"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastGateRmseMean": {
+    "macro": "valUdeVoltageForecastGateRmseMean",
+    "value": "0.00106",
+    "raw": 0.0010597619993722,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "gate_rmse_mean"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastGateRmseStd": {
+    "macro": "valUdeVoltageForecastGateRmseStd",
+    "value": "0.00043",
+    "raw": 0.0004335527474268237,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "gate_rmse_mean"
+    },
+    "n": 5
+  },
+  "UdeVoltageForecastGateRmseN": {
+    "macro": "valUdeVoltageForecastGateRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "gate_rmse_mean"
+    },
+    "n": 5
+  },
+  "RetrainBfgsOk": {
+    "macro": "valRetrainBfgsOk",
+    "value": "true, true, true, true, true",
+    "raw": [
+      true,
+      true,
+      true,
+      true,
+      true
+    ],
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "SindyNTermsRetained": {
+    "macro": "valSindyNTermsRetained",
+    "value": "6, 6, 6, 6, 6",
+    "raw": [
+      6.0,
+      6.0,
+      6.0,
+      6.0,
+      6.0
+    ],
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0
+    },
+    "n": 5
+  },
+  "BaselineRepSeedForecastVRmse": {
+    "macro": "valBaselineRepSeedForecastVRmse",
+    "value": "0.219",
+    "raw": 0.2191970340109573,
+    "source": "results/metrics_all.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "forecast",
+      "metric": "V_rmse",
+      "seed": 1111,
+      "gCa": 2.0,
+      "noise_level": 0.02,
+      "t_train_end": 30.0
+    },
+    "n": 1
+  },
+  "RetrainRepSeedForecastVRmse": {
+    "macro": "valRetrainRepSeedForecastVRmse",
+    "value": "0.251",
+    "raw": 0.2509357938396778,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {
+      "seed": 1111
+    },
+    "n": 1
+  },
+  "BaselineRepSeedRTwoCondTrue": {
+    "macro": "valBaselineRepSeedRTwoCondTrue",
+    "value": "0.988",
+    "raw": 0.9881456983773574,
+    "source": "results/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0,
+      "seed": 1111
+    },
+    "n": 1
+  },
+  "RetrainRepSeedRTwoCondTrue": {
+    "macro": "valRetrainRepSeedRTwoCondTrue",
+    "value": "0.580",
+    "raw": 0.579578157193855,
+    "source": "results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv",
+    "filter": {
+      "gCa": 2.0,
+      "seed": 1111
+    },
+    "n": 1
+  }
+}

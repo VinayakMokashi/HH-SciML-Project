@@ -25,3 +25,7 @@ main.jl
 # NOTE: results/ — including results/params/*.jld parameter snapshots — IS
 # tracked on purpose. It is the committed quantitative evidence (metric CSVs +
 # trained-network snapshots) that backs the reported figures.
+
+# Private tooling — lives in its own private repo (VinayakMokashi/research-paper-skill).
+# Kept out of this public research repo on purpose.
+Paper Writing Skills/

@@ -1,0 +1,470 @@
+% =============================================================================
+%  references.bib — Hodgkin-Huxley x SciML identifiability paper
+% -----------------------------------------------------------------------------
+%  natbib + BibTeX, style unsrtnat (numeric, order of first citation).
+%  Every entry verified against the publication record; fields that could not be
+%  confirmed are STRIPPED rather than guessed (see Paper Writing Skills/
+%  references/bibliography.md sec 4a/4b). Do not add unverified volume/pages/doi.
+% =============================================================================
+
+% ============================================================
+% NEURAL ODEs / UDEs / SciML FOUNDATIONS
+% ============================================================
+
+% pages deliberately omitted: sources disagree (6571--6583 vs 6572--6583).
+@inproceedings{chen2018neural,
+  author    = {Chen, Ricky T. Q. and Rubanova, Yulia and Bettencourt, Jesse and Duvenaud, David K.},
+  title     = {Neural Ordinary Differential Equations},
+  booktitle = {Advances in Neural Information Processing Systems 31 (NeurIPS 2018)},
+  year      = {2018},
+  address   = {Montr\'eal, Canada},
+  eprint    = {1806.07366},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  doi       = {10.48550/arXiv.1806.07366},
+  note      = {Best Paper Award}
+}
+
+% NEVER published in a journal. Cite as preprint; do not invent volume/pages.
+@article{rackauckas2020universal,
+  author  = {Rackauckas, Christopher and Ma, Yingbo and Martensen, Julius and Warner, Collin
+             and Zubov, Kirill and Supekar, Rohit and Skinner, Dominic and Ramadhan, Ali
+             and Edelman, Alan},
+  title   = {Universal Differential Equations for Scientific Machine Learning},
+  journal = {arXiv preprint arXiv:2001.04385},
+  year    = {2020},
+  eprint  = {2001.04385},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  doi     = {10.48550/arXiv.2001.04385}
+}
+
+@article{raissi2019pinn,
+  author  = {Raissi, M. and Perdikaris, P. and Karniadakis, G. E.},
+  title   = {Physics-informed neural networks: A deep learning framework for solving forward
+             and inverse problems involving nonlinear partial differential equations},
+  journal = {Journal of Computational Physics},
+  volume  = {378},
+  pages   = {686--707},
+  year    = {2019},
+  doi     = {10.1016/j.jcp.2018.10.045}
+}
+
+% Stripped form: LNCS volume/pages and Springer DOI did not verify; arXiv/venue did.
+@inproceedings{silvestri2023analysis,
+  author    = {Silvestri, Mattia and Baldo, Federico and Misino, Eleonora and Lombardi, Michele},
+  title     = {An Analysis of Universal Differential Equations for Data-Driven Discovery of
+               Ordinary Differential Equations},
+  booktitle = {Computational Science -- ICCS 2023},
+  series    = {Lecture Notes in Computer Science},
+  publisher = {Springer},
+  year      = {2023},
+  eprint    = {2306.10335},
+  archivePrefix = {arXiv}
+}
+
+@article{philipps2025ude,
+  author  = {Philipps, Maren and Schmid, Nina and Hasenauer, Jan},
+  title   = {Current state and open problems in universal differential equations for systems biology},
+  journal = {npj Systems Biology and Applications},
+  volume  = {11},
+  number  = {101},
+  year    = {2025},
+  doi     = {10.1038/s41540-025-00550-w},
+  note    = {Preprint version: bioRxiv 2024.11.29.626122, doi:10.1101/2024.11.29.626122}
+}
+
+% ============================================================
+% SINDy AND VARIANTS
+% ============================================================
+
+@article{brunton2016sindy,
+  author  = {Brunton, Steven L. and Proctor, Joshua L. and Kutz, J. Nathan},
+  title   = {Discovering governing equations from data by sparse identification of
+             nonlinear dynamical systems},
+  journal = {Proceedings of the National Academy of Sciences},
+  volume  = {113},
+  number  = {15},
+  pages   = {3932--3937},
+  year    = {2016},
+  doi     = {10.1073/pnas.1517384113}
+}
+
+@article{zheng2019sr3,
+  author  = {Zheng, Peng and Askham, Travis and Brunton, Steven L. and Kutz, J. Nathan
+             and Aravkin, Aleksandr Y.},
+  title   = {A Unified Framework for Sparse Relaxed Regularized Regression: {SR3}},
+  journal = {IEEE Access},
+  volume  = {7},
+  pages   = {1404--1423},
+  year    = {2019},
+  doi     = {10.1109/ACCESS.2018.2886528},
+  eprint  = {1807.05411},
+  archivePrefix = {arXiv}
+}
+
+@article{rudy2017pdefind,
+  author  = {Rudy, Samuel H. and Brunton, Steven L. and Proctor, Joshua L. and Kutz, J. Nathan},
+  title   = {Data-driven discovery of partial differential equations},
+  journal = {Science Advances},
+  volume  = {3},
+  number  = {4},
+  pages   = {e1602614},
+  year    = {2017},
+  doi     = {10.1126/sciadv.1602614}
+}
+
+@article{fasel2022ensemblesindy,
+  author  = {Fasel, U. and Kutz, J. N. and Brunton, B. W. and Brunton, S. L.},
+  title   = {Ensemble-{SINDy}: Robust sparse model discovery in the low-data, high-noise limit,
+             with active learning and control},
+  journal = {Proceedings of the Royal Society A},
+  volume  = {478},
+  number  = {2260},
+  pages   = {20210904},
+  year    = {2022},
+  doi     = {10.1098/rspa.2021.0904}
+}
+
+@article{desilva2020pysindy,
+  author  = {de Silva, Brian M. and Champion, Kathleen and Quade, Markus and Loiseau,
+             Jean-Christophe and Kutz, J. Nathan and Brunton, Steven L.},
+  title   = {{PySINDy}: A Python package for the sparse identification of nonlinear
+             dynamical systems from data},
+  journal = {Journal of Open Source Software},
+  volume  = {5},
+  number  = {49},
+  pages   = {2104},
+  year    = {2020},
+  doi     = {10.21105/joss.02104}
+}
+
+% ============================================================
+% SYMBOLIC REGRESSION
+% ============================================================
+
+@article{udrescu2020aifeynman,
+  author  = {Udrescu, Silviu-Marian and Tegmark, Max},
+  title   = {{AI Feynman}: A physics-inspired method for symbolic regression},
+  journal = {Science Advances},
+  volume  = {6},
+  number  = {16},
+  pages   = {eaay2631},
+  year    = {2020},
+  doi     = {10.1126/sciadv.aay2631}
+}
+
+@article{cranmer2023pysr,
+  author  = {Cranmer, Miles},
+  title   = {Interpretable Machine Learning for Science with {PySR} and {SymbolicRegression.jl}},
+  journal = {arXiv preprint arXiv:2305.01582},
+  year    = {2023},
+  eprint  = {2305.01582},
+  archivePrefix = {arXiv},
+  primaryClass  = {astro-ph.IM},
+  doi     = {10.48550/arXiv.2305.01582}
+}
+
+% ============================================================
+% HODGKIN-HUXLEY AND CONDUCTANCE-BASED MODELS
+% ============================================================
+
+@article{hodgkin1952,
+  author  = {Hodgkin, A. L. and Huxley, A. F.},
+  title   = {A quantitative description of membrane current and its application to
+             conduction and excitation in nerve},
+  journal = {The Journal of Physiology},
+  volume  = {117},
+  number  = {4},
+  pages   = {500--544},
+  year    = {1952},
+  doi     = {10.1113/jphysiol.1952.sp004764}
+}
+
+@article{pospischil2008,
+  author  = {Pospischil, Martin and Toledo-Rodriguez, Maria and Monier, Cyril and
+             Piwkowska, Zuzanna and Bal, Thierry and Fr{\'e}gnac, Yves and
+             Markram, Henry and Destexhe, Alain},
+  title   = {Minimal {Hodgkin--Huxley} type models for different classes of cortical
+             and thalamic neurons},
+  journal = {Biological Cybernetics},
+  volume  = {99},
+  number  = {4--5},
+  pages   = {427--441},
+  year    = {2008},
+  doi     = {10.1007/s00422-008-0263-8}
+}
+
+@article{reuveni1993,
+  author  = {Reuveni, I. and Friedman, A. and Amitai, Y. and Gutnick, M. J.},
+  title   = {Stepwise repolarization from {Ca$^{2+}$} plateaus in neocortical pyramidal cells:
+             evidence for nonhomogeneous distribution of {HVA} {Ca$^{2+}$} channels in dendrites},
+  journal = {The Journal of Neuroscience},
+  volume  = {13},
+  number  = {11},
+  pages   = {4609--4621},
+  year    = {1993},
+  doi     = {10.1523/JNEUROSCI.13-11-04609.1993}
+}
+
+@article{golomb1997,
+  author  = {Golomb, David and Amitai, Yael},
+  title   = {Propagating neuronal discharges in neocortical slices: computational and
+             experimental study},
+  journal = {Journal of Neurophysiology},
+  volume  = {78},
+  number  = {3},
+  pages   = {1199--1211},
+  year    = {1997},
+  doi     = {10.1152/jn.1997.78.3.1199}
+}
+
+@article{magistretti1999,
+  author  = {Magistretti, Jacopo and Alonso, Angel},
+  title   = {Biophysical Properties and Slow Voltage-Dependent Inactivation of a Sustained
+             Sodium Current in Entorhinal Cortex Layer-{II} Principal Neurons:
+             A Whole-Cell and Single-Channel Study},
+  journal = {The Journal of General Physiology},
+  volume  = {114},
+  number  = {4},
+  pages   = {491--509},
+  year    = {1999},
+  doi     = {10.1085/jgp.114.4.491}
+}
+
+% ============================================================
+% DEGENERACY AND IDENTIFIABILITY IN NEUROSCIENCE
+% ============================================================
+
+@article{prinz2004,
+  author  = {Prinz, Astrid A. and Bucher, Dirk and Marder, Eve},
+  title   = {Similar network activity from disparate circuit parameters},
+  journal = {Nature Neuroscience},
+  volume  = {7},
+  number  = {12},
+  pages   = {1345--1352},
+  year    = {2004},
+  doi     = {10.1038/nn1352}
+}
+
+@article{marder2011,
+  author  = {Marder, Eve and Taylor, Adam L.},
+  title   = {Multiple models to capture the variability in biological neurons and networks},
+  journal = {Nature Neuroscience},
+  volume  = {14},
+  number  = {2},
+  pages   = {133--138},
+  year    = {2011},
+  doi     = {10.1038/nn.2735}
+}
+
+@article{golowasch2002,
+  author  = {Golowasch, Jorge and Goldman, Mark S. and Abbott, L. F. and Marder, Eve},
+  title   = {Failure of averaging in the construction of a conductance-based neuron model},
+  journal = {Journal of Neurophysiology},
+  volume  = {87},
+  number  = {2},
+  pages   = {1129--1131},
+  year    = {2002},
+  doi     = {10.1152/jn.00412.2001}
+}
+
+% pages deliberately omitted: E8211--E8218 was inferred; Crossref returned no page field.
+@article{ori2018,
+  author  = {Ori, Hillel and Marder, Eve and Marom, Shimon},
+  title   = {Cellular function given parametric variation in the {Hodgkin} and {Huxley}
+             model of excitability},
+  journal = {Proceedings of the National Academy of Sciences},
+  volume  = {115},
+  number  = {35},
+  year    = {2018},
+  doi     = {10.1073/pnas.1808552115}
+}
+
+@article{walch2016,
+  author  = {Walch, Olivia J. and Eisenberg, Marisa C.},
+  title   = {Parameter identifiability and identifiable combinations in generalized
+             {Hodgkin--Huxley} models},
+  journal = {Neurocomputing},
+  volume  = {199},
+  pages   = {137--143},
+  year    = {2016},
+  doi     = {10.1016/j.neucom.2016.03.027},
+  eprint  = {1511.05227},
+  archivePrefix = {arXiv}
+}
+
+@article{daly2015,
+  author  = {Daly, Aidan C. and Gavaghan, David J. and Holmes, Chris and Cooper, Jonathan},
+  title   = {{Hodgkin--Huxley} revisited: reparametrization and identifiability analysis of
+             the classic action potential model with approximate {Bayesian} methods},
+  journal = {Royal Society Open Science},
+  volume  = {2},
+  number  = {12},
+  pages   = {150499},
+  year    = {2015},
+  doi     = {10.1098/rsos.150499}
+}
+
+% ============================================================
+% GENERAL IDENTIFIABILITY THEORY
+% ============================================================
+
+@article{raue2009,
+  author  = {Raue, A. and Kreutz, C. and Maiwald, T. and Bachmann, J. and Schilling, M.
+             and Klingm{\"u}ller, U. and Timmer, J.},
+  title   = {Structural and practical identifiability analysis of partially observed
+             dynamical models by exploiting the profile likelihood},
+  journal = {Bioinformatics},
+  volume  = {25},
+  number  = {15},
+  pages   = {1923--1929},
+  year    = {2009},
+  doi     = {10.1093/bioinformatics/btp358}
+}
+
+@article{wieland2021,
+  author  = {Wieland, Franz-Georg and Hauber, Adrian L. and Rosenblatt, Marcus and
+             T{\"o}nsing, Christian and Timmer, Jens},
+  title   = {On structural and practical identifiability},
+  journal = {Current Opinion in Systems Biology},
+  volume  = {25},
+  pages   = {60--69},
+  year    = {2021},
+  doi     = {10.1016/j.coisb.2021.03.005},
+  eprint  = {2102.05100},
+  archivePrefix = {arXiv}
+}
+
+@article{loman2025ude,
+  author  = {Loman, Torkel E. and Baker, Ruth E.},
+  title   = {Functional and parametric identifiability for universal differential equations
+             applied to chemical reaction networks},
+  journal = {arXiv preprint arXiv:2510.14140},
+  year    = {2025},
+  eprint  = {2510.14140},
+  archivePrefix = {arXiv},
+  doi     = {10.48550/arXiv.2510.14140}
+}
+
+@article{norden2025structural,
+  author  = {Norden, Janis and Oostwal, Elisa and Chappell, Michael and Tino, Peter
+             and Bunte, Kerstin},
+  title   = {On the importance of structural identifiability for machine learning with
+             partially observed dynamical systems},
+  journal = {arXiv preprint arXiv:2502.04131},
+  year    = {2025},
+  eprint  = {2502.04131},
+  archivePrefix = {arXiv},
+  doi     = {10.48550/arXiv.2502.04131}
+}
+
+% ============================================================
+% SciML / NEURAL ODEs APPLIED TO NEURONS  (closest prior work)
+% ============================================================
+
+@article{beck2026hybrid,
+  author  = {Beck, Jonas and Deistler, Michael and Moln{\'a}r, D{\'o}ra Vikt{\'o}ria
+             and Macke, Jakob H. and Berens, Philipp},
+  title   = {Learning Hybrid Biophysical Neuron Models with Neural {ODEs}},
+  journal = {arXiv preprint arXiv:2606.16693},
+  year    = {2026},
+  eprint  = {2606.16693},
+  archivePrefix = {arXiv},
+  doi     = {10.48550/arXiv.2606.16693},
+  note    = {Submitted 15 June 2026}
+}
+
+@article{elgazzar2025ude,
+  author  = {El-Gazzar, Ahmed and van Gerven, Marcel},
+  title   = {Universal differential equations as a unifying modeling language for neuroscience},
+  journal = {Frontiers in Computational Neuroscience},
+  volume  = {19},
+  pages   = {1677930},
+  year    = {2025},
+  doi     = {10.3389/fncom.2025.1677930}
+}
+
+% doi omitted: inferred from PII, never resolved. Reachable via eprint.
+@article{burghi2021feedback,
+  author  = {Burghi, Thiago B. and Schoukens, Maarten and Sepulchre, Rodolphe},
+  title   = {Feedback identification of conductance-based models},
+  journal = {Automatica},
+  volume  = {123},
+  pages   = {109297},
+  year    = {2021},
+  eprint  = {2002.09626},
+  archivePrefix = {arXiv}
+}
+
+@article{meliza2014,
+  author  = {Meliza, C. Daniel and Kostuk, Mark and Huang, Hao and Nogaret, Alain and
+             Margoliash, Daniel and Abarbanel, Henry D. I.},
+  title   = {Estimating parameters and predicting membrane voltages with conductance-based
+             neuron models},
+  journal = {Biological Cybernetics},
+  volume  = {108},
+  number  = {4},
+  pages   = {495--516},
+  year    = {2014},
+  doi     = {10.1007/s00422-014-0615-5}
+}
+
+@article{iravanian2020,
+  author  = {Iravanian, Shahriar},
+  title   = {Discovery of the Hidden State in Ionic Models Using a Domain-Specific
+             Recurrent Neural Network},
+  journal = {arXiv preprint arXiv:2011.07388},
+  year    = {2020},
+  eprint  = {2011.07388},
+  archivePrefix = {arXiv},
+  doi     = {10.48550/arXiv.2011.07388}
+}
+
+% ============================================================
+% SOFTWARE / SENSITIVITY METHODS
+% ============================================================
+
+@article{rackauckas2017diffeq,
+  author  = {Rackauckas, Christopher and Nie, Qing},
+  title   = {{DifferentialEquations.jl} -- A Performant and Feature-Rich Ecosystem for
+             Solving Differential Equations in {Julia}},
+  journal = {Journal of Open Research Software},
+  volume  = {5},
+  number  = {1},
+  pages   = {15},
+  year    = {2017},
+  doi     = {10.5334/jors.151}
+}
+
+% Safe-fallback form: arXiv only. HPEC 2021 proceedings DOI/pages did not verify.
+@article{ma2021comparison,
+  author  = {Ma, Yingbo and Dixit, Vaibhav and Innes, Michael J. and Guo, Xingjian and
+             Rackauckas, Chris},
+  title   = {A Comparison of Automatic Differentiation and Continuous Sensitivity Analysis
+             for Derivatives of Differential Equation Solutions},
+  journal = {arXiv preprint arXiv:1812.01892},
+  year    = {2021},
+  eprint  = {1812.01892},
+  archivePrefix = {arXiv},
+  note    = {arXiv v1 5 Dec 2018; latest revision 20 Jul 2021}
+}
+
+@software{pal2023lux,
+  author    = {Pal, Avik},
+  title     = {{Lux: Explicit Parameterization of Deep Neural Networks in Julia}},
+  month     = apr,
+  year      = {2023},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.7808903}
+}
+
+@software{dixit2023optimization,
+  author    = {Dixit, Vaibhav Kumar and Rackauckas, Christopher},
+  title     = {{Optimization.jl}: A Unified Optimization Package},
+  version   = {v3.12.1},
+  month     = mar,
+  year      = {2023},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.7738525}
+}

@@ -1,0 +1,810 @@
+# claims.yaml — the claim ledger for the Hodgkin–Huxley SciML paper
+# ============================================================================
+#
+# WHAT THIS FILE IS
+#   The complete list of every falsifiable statement the paper makes. Written in
+#   the Claims phase, BEFORE any prose exists. Schema: CONTRACT §6.
+#
+# HOW IT IS USED
+#   1. Draft phase: every paragraph that asserts something is anchored in the .tex
+#      with `% claim: <id>`. If you cannot name the claim, you are not making one —
+#      you are padding. Delete the paragraph.
+#   2. scripts/check_claims.py cross-checks ledger ↔ paper and exits 1 if:
+#        - a claim's referenced macro is missing from the GENERATED macro file
+#          (`paper/generated/metrics.tex`, via --metrics-tex; or --metrics-json).
+#          NOTE: the checker does NOT read metrics_map.yaml — it resolves macros against the
+#          artifact extract_metrics.py *builds* from that map. A macro can be spec'd in the map
+#          and still fail here if extraction never ran. [verified: check_claims.py --help]
+#        - a claim with `status: supported` is never anchored in the .tex
+#          (`unsupported`/`retired`/`overreaching` are exempt from the anchoring requirement)
+#        - a .tex anchor references an unknown claim id
+#        - ANY claim carries `status: overreaching` — anchored or not
+#   3. Rebuttal: reviewer objections are answered by pointing at a claim's `scope`,
+#      not by arguing. If the objection lands outside `scope`, the paper never
+#      claimed it. If it lands inside, the claim was wrong and gets downgraded.
+#
+# IDS ARE PERMANENT HANDLES
+#   An `id` is a stable reference used by .tex anchors, claim-guards.md, figure-plan.md,
+#   commit messages, and reviewer correspondence. NEVER rename an id — the cross-links
+#   are not automatically repaired and check_claims.py cannot tell a rename from a
+#   deletion. To kill a claim, change its `status`, keep the id, and leave a comment
+#   saying what it was and why it died. A ledger with tombstones in it is doing its job;
+#   a ledger that only ever contained true things was written after the fact.
+#
+# STATUS LIFECYCLE
+#   supported     evidence exists, statement is inside what the evidence licenses. Shippable.
+#   overreaching  the measurement exists but the statement outruns it. BLOCKS THE BUILD
+#                 until narrowed to `supported` or demoted to `retired`. Transient by design.
+#   unsupported   no evidence exists and none can be produced from the current runs.
+#                 Either a run must be added or the claim must go.
+#   retired       was believed, is now known to be wrong/vacuous. Kept as a tombstone
+#                 so it cannot be re-derived by the next person to read the CSVs.
+#
+#   NOTE: running check_claims.py against THIS file exits 1 with
+#   `ERROR [E-OVERREACHING] voltage-only-lower-variance`. That is the demonstration, not a bug:
+#   an overreaching claim is build-blocking debt, and the checker fires on it whether or not it is
+#   anchored. The real HH paper must resolve it (it resolves to `retired`) before build_paper.ps1.
+#   The two `unsupported` claims below emit W-UNSUPPORTED *warnings*, not errors — legitimate
+#   during Claims, but they must reach zero before Submit (they fail under --strict).
+#   [verified: python scripts/check_claims.py --claims examples/hh-sciml/claims.yaml --tex paper.tex]
+#   Expect additional E-CLAIM-NOT-ANCHORED errors until the Draft phase anchors each supported
+#   claim — those track the paper's state, not this ledger's.
+#
+# SCOPE IS WHERE OVER-CLAIMING DIES
+#   `scope` is not a caveat and not a hedge — it is the exact experimental extent the
+#   evidence covers. Write it before the statement, not after. Every number in this project
+#   comes from ONE trajectory: one Iapp, one initial condition, one 100 ms window. n=5 means
+#   five seeds, and a seed jointly redraws the network initialization AND the OU noise
+#   realization (src/experiment.jl — the two variance sources are inseparable in these runs).
+#   No statistical test was run anywhere in the codebase. Say so, every time.
+#
+# ---------------------------------------------------------------------------
+# MACRO RECONCILIATION — READ BEFORE EDITING
+# ---------------------------------------------------------------------------
+# Every `macro:` below must resolve to a `name:` in examples/hh-sciml/metrics_map.yaml, and
+# thence to a `\val<Name>` in the generated paper/generated/metrics.tex.
+#
+# RECONCILED against metrics_map.yaml as it now stands (36 macros defined). The 20 macros this
+# ledger uses that ARE defined there need no action. The following 7 are referenced here, are
+# extractable from the CSVs, and are NOT YET in metrics_map.yaml. Add them there with the
+# source/filter/column given — do NOT delete the evidence line:
+#   RetrainBfgsOk                results/retrain_gca2_20k/metrics_retrain.csv, col bfgs_ok, emit list
+#                                (all 5 seeds true [verified] — this is the convergence control)
+#   SindyNTermsRetained          results/symbolic/symbolic_recovery_metrics.csv, gCa==2.0, col n_sindy_terms, emit list
+#                                (6,6,6,6,6 [verified]; the gCa=0.4 row is also 6)
+#   UdeVoltageForecastGateRmse   results/metrics_baseline_multiseed.csv,
+#                                {model:UDE, observed:voltage, window:forecast, metric:gate_rmse_mean}
+#                                emit mean_std → 0.00106 +/- 0.000434, n_seeds=5 [verified]
+#     *** DO NOT substitute the already-defined `UdeForecastGateRmse` — that macro filters
+#         observed:full. physics-prior-reconstructs-unobserved-gates is ABOUT the voltage-only
+#         runs; using the full-state gate error would make the claim's own subject wrong. ***
+#   BaselineRepSeedForecastVRmse results/metrics_all.csv, {model:UDE, observed:full, window:forecast,
+#                                metric:V_rmse, seed:1111, @base}  → 0.219197 [verified]
+#   RetrainRepSeedForecastVRmse  results/retrain_gca2_20k/metrics_retrain.csv, seed==1111,
+#                                col forecast_V_rmse → 0.250936 [verified]
+#   BaselineRepSeedRTwoCondTrue  results/symbolic/symbolic_recovery_metrics.csv, {gCa:2.0, seed:1111},
+#                                col r2_cond_true → 0.988146 [verified]
+#   RetrainRepSeedRTwoCondTrue   results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv,
+#                                {gCa:2.0, seed:1111}, col r2_cond_true → 0.579578 [verified]
+#
+# WindowAblCommonEvalVRmse{Fifteen,Thirty} were previously listed here as missing; metrics_map.yaml
+# now defines them (plus Twenty/Forty/Fifty). No action.
+# Macro names are LaTeX control sequences: letters only. That is why the gCa sweep uses
+# `PointFour` not `0.4`, and why seed 1111 is `RepSeed` (REP_SEED, experiments_runner.jl:46).
+#
+# FIGURE NAMING HAZARD — AND THE INVOCATION IT FORCES
+# `figures/fig9..fig12` and `results/retrain_gca2_20k/figures/fig9..fig12` are FOUR pairs of
+# colliding basenames telling OPPOSITE stories. EVERY `figure:` below is therefore a
+# repo-root-relative PATH, never a bare basename.
+#
+#   *** check_claims.py MUST be invoked with `--figures-root .` (the repo root), NOT
+#       `--figures-root figures`. ***
+# check_claims.py's resolve_figure() tries `root/name` first, then falls back to a recursive
+# BASENAME search (`root.rglob(stem)`). Verified live:
+#     resolve_figure('figures', 'results/retrain_gca2_20k/figures/fig11_...png')
+#       -> figures/fig11_calcium_coeff_recovery.png    # WRONG FILE, the baseline's, silently
+#     resolve_figure('.',       'results/retrain_gca2_20k/figures/fig11_...png')
+#       -> results/retrain_gca2_20k/figures/fig11_...png   # correct, via the direct hit
+# With repo-root-relative paths and `--figures-root .` every reference takes the direct hit and
+# the rglob fallback never runs, so no collision can occur. Bare basenames would be ambiguous
+# under EITHER root — which is why none are used here.
+#
+# GUARD RECONCILIATION — [verified in sync, 2026-07-16]
+# THIS FILE OWNS THE GUARD IDS; claim-guards.md follows. That direction is fixed by
+# claim-guards.md's own "Id-sync invariant" and by the fact that this side is the machine-parsed
+# one (check_claims.py validates `guard:` here; nothing parses the .md). So: to rename a guard,
+# edit this file FIRST, then its `**Guard id:**` section — never the reverse.
+# All 11 refs below resolve to a `**Guard id:**` section in claim-guards.md (18 defined; the 7
+# unreferenced ones forbid sentences rather than qualify a claim, which is legitimate).
+# Verify with the command in claim-guards.md's invariant block; `dangling (FAIL)` must print `none`.
+# `guard:` is a scalar in the contract schema, so a claim can cite only ONE guard even where
+# several apply; the extra ones are named in that claim's comment instead.
+#
+# SECTION IDS
+# `section` values are node ids in the Outline phase's section tree. They must match
+# outline exactly; check_claims.py routes anchors by them.
+# ============================================================================
+
+claims:
+
+  # =========================================================================
+  # RESULTS — FORECASTING (the baseline comparison)
+  # =========================================================================
+
+  - id: node-diverges
+    statement: >-
+      A black-box Neural ODE trained on the same data leaves the 10 mV accuracy tube within
+      the first few samples past the training window, and its forecast integration blows up
+      rather than degrading gracefully.
+    section: results.forecasting
+    kind: empirical
+    evidence:
+      - macro: NodeForecastRollout
+      - figure: figures/fig2_neural_ode_overview.png
+    scope: >-
+      single trajectory (Iapp=10 uA/cm2, steady-state IC at V0=-65 mV, t in [0,100] ms, 512 samples),
+      gCa=2.0, OU noise level 0.02, train t<=30 ms, Adam 3000 + BFGS 300, n=5 seeds {1111,2222,3333,4444,5555},
+      no statistical test. Forecast is the tail of one uninterrupted rollout from t=0; the model is never
+      re-initialized at t=30.
+    guard: node-no-meanstd
+    status: supported
+    # The temptation here is the V_rmse number (3951 +/- 3561 mV). Do not use it: per-seed values
+    # span 229 -> 9213 mV (40x), rmse_safe() computed each one over an unreported finite subset of
+    # timesteps, and a std larger than any physical voltage scale is not an error bar. The rollout
+    # horizon is the honest headline — two of five seeds breach at the FIRST forecast sample.
+
+  - id: ude-forecasts-accurately
+    statement: >-
+      The UDE, which retains all known physics and learns only the calcium current, tracks the true
+      voltage across the entire un-trained remainder of the trajectory without ever leaving the 10 mV
+      tube, at a sub-millivolt forecast RMSE.
+    section: results.forecasting
+    kind: empirical
+    evidence:
+      - macro: UdeForecastVRmse
+      - macro: UdeForecastRollout
+      - figure: figures/fig3_ude_overview.png
+      - figure: figures/fig5_metrics_bar_train_vs_forecast.png
+    scope: >-
+      single trajectory (Iapp=10 uA/cm2, steady-state IC, 0-100 ms), gCa=2.0, OU noise level 0.02,
+      train t<=30 ms (154 points), forecast t>30 ms (358 points), Adam 5000 + BFGS 300, n=5 seeds,
+      no statistical test.
+    guard: rollout-is-censored
+    status: supported
+    # UdeForecastRollout is RIGHT-CENSORED, not measured. cap_ms=70.0 (src/metrics.jl:81-82) and
+    # 70 ms = 100-30 = the whole remaining trajectory, so "70.0 +/- 0.0 ms" across all 5 seeds means
+    # "never breached, in any seed" — the metric is saturated and cannot discriminate. It must render
+    # as ">=70 ms (capped)". A macro emitting `70.0 \pm 0.0` asserts a precision that does not exist.
+    # This is why metrics_map.yaml uses `emit: ge` with `censored_at: 70.0` for this one.
+
+  - id: ude-learns-true-dynamics-not-noise
+    statement: >-
+      The UDE's training-window error against the clean trajectory is well below its error against the
+      noisy signal it was actually fit to, so the model recovered the underlying dynamics rather than
+      interpolating the observation noise.
+    section: results.forecasting
+    kind: empirical
+    evidence:
+      - macro: UdeTrainVRmse
+      - macro: UdeTrainVRmseVsNoisy
+      - figure: figures/08_Noisy_Data_Comparison.png
+    scope: >-
+      single trajectory, gCa=2.0, OU noise level 0.02 (temporally correlated, renormalized to
+      noise_level x per-channel std of the clean signal), train t<=30 ms, n=5 seeds, no statistical test.
+      All metrics are scored against data_clean; V_rmse_vs_noisy is the noise-floor reference channel
+      (src/metrics.jl). A model that fit the clean signal perfectly would score ~the noise std here, not 0.
+    status: supported
+    # This is the claim that makes every other error number interpretable, and it is nearly free —
+    # the codebase already emits V_rmse_vs_noisy "for transparency". Most papers with a noisy-data
+    # setup never report it and leave the reader unable to tell fitting from overfitting.
+
+  - id: forecast-is-one-uninterrupted-rollout
+    statement: >-
+      Forecast error is measured as the tail of a single continuous integration from the true initial
+      condition at t=0, with no re-initialization at the train/forecast boundary; it is extrapolation
+      error, not one-step-ahead error.
+    section: methods.evaluation
+    kind: methodological
+    evidence:
+      - figure: figures/fig3_ude_overview.png
+      - figure: figures/fig2_neural_ode_overview.png
+    scope: >-
+      applies to every run in the paper. solve_aligned() integrates over the full TSPAN_FULL=(0,100) ms
+      from steady_state_u0(), NaN-padding any early-terminated tail (src/experiment.jl). Training
+      integrates only over tspan_train.
+    status: supported
+    # No macro: this is a property of the protocol, not a measurement. It is in the ledger because
+    # reviewers WILL assume teacher-forcing or windowed re-initialization unless told otherwise, and
+    # because it is what makes `ude-forecasts-accurately` a strong result rather than a trivial one.
+
+  - id: rep-seed-is-guarded-not-cherry-picked
+    statement: >-
+      The single seed used for every trajectory and parity panel was fixed before the seed spread was
+      known, and is verified post-hoc to be representative of the five-seed distribution rather than
+      selected from it.
+    section: methods.evaluation
+    kind: methodological
+    evidence:
+      - macro: UdeForecastVRmse
+      - figure: figures/fig3_ude_overview.png
+    scope: >-
+      REP_SEED=1111 = B_SEED, the pre-registered baseline seed (experiments_runner.jl:46). The guardrail
+      (experiments_runner.jl:405-441) takes UDE/full forecast V_rmse across the 5 seeds and passes only if
+      REP_SEED is the median-closest seed OR falls inside the IQR [q1,q3]; otherwise it prints the exact
+      regenerate_ude_figs(...) command to rebuild the panels from the median-closest seed's saved params.
+      This is a pre-registered choice with a post-hoc representativeness check, not a selection procedure.
+    status: supported
+
+  # =========================================================================
+  # RESULTS — PARTIAL OBSERVATION
+  # =========================================================================
+
+  - id: physics-prior-reconstructs-unobserved-gates
+    statement: >-
+      When only voltage enters the loss, the five gating variables — which are never observed, never
+      scored during training, and never supervised — are nonetheless reconstructed to low error, because
+      the retained gate kinetics propagate voltage information into the hidden states.
+    section: results.partial-observation
+    kind: empirical
+    evidence:
+      - macro: UdeVoltageForecastGateRmse
+      - figure: figures/fig6_voltage_only_overview.png
+      - figure: figures/fig6_voltage_only_s.png
+    scope: >-
+      single trajectory (Iapp=10 uA/cm2, steady-state IC, 0-100 ms), gCa=2.0, OU noise level 0.02,
+      train t<=30 ms, n=5 seeds, forecast window, no statistical test. Voltage-only restricts the LOSS
+      to row 1 (make_ude_loss selects data_noisy[1:1, train_idx]); the solver still integrates all six
+      states from the full true initial condition u0 = steady_state_u0(). gate_rmse_mean is the plain
+      arithmetic mean of the five per-gate RMSEs, not a pooled RMSE — each gate is weighted equally
+      regardless of dynamic range.
+    status: supported
+    # Say "voltage-only OBSERVATION in the loss", never "only V is known" — the initial condition is
+    # the full true 6-state vector in every run, and noise is added to all six channels even in the
+    # voltage-only runs. Overstating the hiding is the easiest way to lose this claim in review.
+
+  - id: voltage-only-equivalent
+    statement: >-
+      Restricting the loss to voltage alone matches full-state observation to within seed noise on
+      forecast voltage error and on calcium-current error; we find no evidence that the additional
+      state supervision helps.
+    section: results.partial-observation
+    kind: empirical
+    evidence:
+      - macro: UdeForecastVRmse
+      - macro: UdeVoltageForecastVRmse
+      - macro: UdeForecastICaRmse
+      - macro: UdeVoltageForecastICaRmse
+      - figure: figures/fig8_full_vs_voltage_metrics_bar.png
+    scope: >-
+      single trajectory, gCa=2.0, OU noise level 0.02, train t<=30 ms, n=5 seeds, forecast window,
+      NO statistical test was run. Gaps are ~0.02 mV on V_rmse and ~0.12 uA/cm2 on ICa_rmse against
+      pooled stds of ~0.09 and ~0.35 respectively. This is an equivalence-within-noise statement about
+      one system at n=5; it is not a TOST, not a power analysis, and not a claim that the two are equal.
+    guard: voltage-only-no-superiority
+    status: supported
+    # "Within seed noise" is doing real work in the statement and must survive editing. The point
+    # estimates happen to favor full-state on both metrics — which is exactly the trap. At n=5 with
+    # no test, the direction of a sub-sigma gap is noise. Equivalence is also the STRONGER finding:
+    # "you can drop 5 of 6 observed channels for free" beats "full-state wins by 0.02 mV".
+    # NOTE: this comparison cannot be made on the common_eval window — see voltage-only-common-eval-matches-full.
+
+  - id: voltage-only-lower-variance
+    statement: >-
+      Voltage-only observation yields a lower-variance forecast across seeds than full-state observation.
+    section: results.partial-observation
+    kind: empirical
+    evidence:
+      - macro: UdeForecastVRmse
+      - macro: UdeVoltageForecastVRmse
+    scope: >-
+      single trajectory, gCa=2.0, OU noise level 0.02, train t<=30 ms, n=5 seeds, forecast window,
+      no variance test of any kind.
+    guard: voltage-only-no-superiority
+    status: retired
+    # ===== RETIRED (was overreaching). The evidence is closed, so it is shrunk, not fixed:
+    # the descriptive stds are folded into voltage-only-equivalent's scope and this comparative
+    # claim is tombstoned (id kept). check_claims.py now passes; before demotion it exited 1 here
+    # BY DESIGN, which is the mechanism working. Original kill note follows. =====
+    # ===== KILLED. This is the worked example of a claim the ledger stopped. =====
+    # It arose from staring at the std column of metrics_baseline_multiseed.csv and narrating it.
+    # Two independent reasons it dies, and the second is the one that matters:
+    #   1. The point estimates run the OTHER WAY — voltage-only's forecast V_rmse std is roughly 4x
+    #      full-state's, not lower. So the statement is not merely unlicensed, it is backwards.
+    #   2. Even had it pointed the right way, n=5 with no variance test licenses NO claim about spread
+    #      in either direction. An F-test on 5 vs 5 has essentially no power; a 4x ratio of sample stds
+    #      at n=5 is unremarkable under equal variances. The overreach is not the direction — it is that
+    #      a variance comparison was attempted at all at this n.
+    # Resolution: fold the observation into voltage-only-equivalent's scope (where the stds are stated
+    # as descriptive context, not compared) and set this to `retired`. Left at `overreaching` here so the
+    # example shows the state that blocks the build. check_claims.py exits 1 on this claim BY DESIGN.
+
+  - id: voltage-only-common-eval-matches-full
+    statement: >-
+      Voltage-only and full-state observation agree on the shared common-evaluation window (t>50 ms),
+      confirming the equivalence on an interval that is unseen for both.
+    section: results.partial-observation
+    kind: empirical
+    evidence: []
+    scope: >-
+      would require window=common_eval rows for observed=voltage. NONE EXIST.
+    guard: no-commoneval-voltage
+    status: unsupported
+    # ===== NO EVIDENCE EXISTS AND NONE CAN BE EXTRACTED. =====
+    # run_experiment is called WITHOUT common_eval_start for the voltage-only runs
+    # (experiments_runner.jl:98-103), so metrics_all.csv contains zero common_eval rows for
+    # observed=voltage — only the UDE/full baseline and the window ablation emit that window at all.
+    # This claim is in the ledger, with empty evidence and this comment, for one reason: it is the
+    # obvious next thing a reader (or a co-author, or the drafting model) will try to write, and the
+    # absence is invisible unless you go looking. A tombstone here costs nothing; silently pooling the
+    # forecast window and calling it common_eval costs the paper.
+    # To make it supported: re-run the voltage-only family passing common_eval_start=COMMON_EVAL_START.
+    # Until then it must not appear in the .tex in any form.
+
+  - id: calcium-error-is-decoupled-from-trajectory-error
+    statement: >-
+      The calcium-current error and the voltage forecast error measure different objects: the learned
+      closure is probed at the true clean (V,s) and so its error is a function-approximation error,
+      whereas voltage error accumulates over a free rollout.
+    section: methods.metrics
+    kind: methodological
+    evidence:
+      - macro: UdeForecastICaRmse
+      - figure: figures/fig3_ude_calcium_parity.png
+    scope: >-
+      applies to every UDE run. ICa_nn is evaluated at data_clean's (V,s) (src/experiment.jl:363-365);
+      V_rmse comes from the free 100 ms rollout from u0. ICa_rmse / ICa_rmse_norm exist for model=UDE
+      only — the NODE has no calcium closure and emits no such rows.
+    status: supported
+    # Load-bearing for the whole identifiability argument: it is precisely because a good closure error
+    # and a good trajectory error are separable that "great voltage, wrong coefficients" is coherent
+    # rather than a contradiction. Also: ICa_rmse_norm's denominator is std(ICa_true) recomputed
+    # PER WINDOW, so train and forecast values use different normalizers and are not comparable to
+    # each other. Compare across gCa within a window (which is what gca-sweep-shows-nonidentifiability does).
+
+  # =========================================================================
+  # RESULTS — SYMBOLIC RECOVERY
+  # =========================================================================
+
+  - id: symbolic-form-recovered
+    statement: >-
+      The learned neural closure distills back to the correct biophysical functional form: a
+      conductance-form fit s^2(aV+b) reproduces the true calcium current with high R^2 against the
+      analytic ground truth.
+    section: results.symbolic-recovery
+    kind: empirical
+    evidence:
+      - macro: SymbolicRTwoCondTrue
+      - figure: figures/fig9_calcium_symbolic_parity.png
+      - figure: figures/fig10_calcium_symbolic_timeseries.png
+    scope: >-
+      gCa=2.0, OU noise level 0.02, train t<=30 ms, n=5 seeds, per-seed mean +/- std (ddof=1), no
+      statistical test. The fit is a 2-column no-intercept OLS on the 80x80 grid probe masked to the
+      convex hull of the training trajectory's (V,s) cloud (22120 of 32000 pooled points survive);
+      r2_cond_true is then scored on the 512-point trajectory. The gate power s^2 and the linear
+      driving force are HARD-CODED by the estimator — this is a recovery test within the true model
+      class, not a discovery test. See sindy-does-not-sparsify for the open-library result.
+    guard: r2-ens-is-uninformative
+    status: supported
+    # Quote r2_cond_true (per-seed mean +/- std), NEVER R2_ens=0.997. R2_ens is measured on the pooled
+    # hull grid rather than the trajectory, and it is nearly blind: across the aggressive retrain it
+    # moved 0.997333 -> 0.997341 (5th decimal) while per-seed R^2 collapsed 0.984 -> 0.845. A statistic
+    # that cannot detect that collapse must not headline the recovery quality.
+
+  - id: symbolic-coefficients-not-identifiable
+    statement: >-
+      The coefficients of the recovered form are only order-correct: the fitted conductance scatters
+      across seeds by more than half its own magnitude and its mean sits well away from the true value,
+      so the calcium conductance is not identifiable from this trajectory.
+    section: results.symbolic-recovery
+    kind: empirical
+    evidence:
+      - macro: SymbolicAHat
+      - figure: figures/fig11_calcium_coeff_recovery.png
+    scope: >-
+      gCa=2.0, OU noise level 0.02, train t<=30 ms, n=5 seeds, per-seed mean +/- std (ddof=1), no
+      statistical test. a_true=gCa=2.0. Per-seed a_hat spans 0.673 -> 3.095 (4.6x); the std is ~57%
+      of the mean. Erev = -b/a is reported as a pooled point estimate with no error bar.
+    guard: a-hat-not-a-recovery
+    status: supported
+    # "a = 1.60 +/- 0.90 vs true 2.0" is NOT a recovery and the interval containing 2.0 is not a defense —
+    # an interval that wide contains almost anything. State the per-seed span, not just the std.
+    # fig11 caption must say panel 3 (Erev) is a pooled point estimate: the missing whisker will
+    # otherwise read as zero uncertainty on the single most-wrong number in the paper (162.5 vs 120 mV).
+    # The ratio genuinely cannot carry a per-seed error bar — it blows up when a is small — which is
+    # itself a symptom of the non-identifiability, and worth one sentence.
+
+  - id: sindy-does-not-sparsify
+    statement: >-
+      Sparse regression on an open six-term library recovers no sparse equation: every term is retained
+      at every seed, the true V*s^2 term is fitted with the wrong sign, and the physical structure is
+      smeared across correlated low-order terms — yet the resulting fit still predicts the true current
+      well.
+    section: results.symbolic-recovery
+    kind: empirical
+    evidence:
+      - macro: SindyNTermsRetained
+      - figure: figures/fig9_calcium_symbolic_parity.png
+    scope: >-
+      gCa=2.0 (5 seeds) and gCa=0.4 (1 seed) = all 6 configs. STLSQ with tau=0.05, <=20 iterations,
+      selection on the z-standardized library with the constant column exempt from thresholding
+      (so nactive>=1 by construction), then OLS debiasing on the raw columns. Library is
+      {1, V, s, V*s, s^2, V*s^2} — the truth 2*V*s^2 - 240*s^2 is exactly representable in it.
+      Fit on the hull-masked grid probe, scored on the trajectory. Single-seed at gCa=0.4.
+    guard: sindy-r2-is-not-identifiability
+    status: supported
+    # The code's own verdict is the right framing: "the two physical terms dominate, but the fit does not
+    # fully sparsify: the network's small departures from the exact form leak into the correlated
+    # low-order terms (an identifiability limit, not a code issue)." Do not report the SINDy R^2 as a
+    # success — R^2=0.9876 with V*s^2 at coefficient -1.469 against a true +2.0 is the paper's cleanest
+    # single illustration that predictive accuracy and identifiability are different properties.
+
+  - id: regression-machinery-is-sound
+    statement: >-
+      The recovery pipeline is exonerated by a control: regressing the same estimator, on the same
+      hull-restricted domain, against the analytic calcium current returns the true coefficients
+      exactly — so the coefficient gap is a property of the network, not of the fitting procedure.
+    section: results.symbolic-recovery
+    kind: methodological
+    evidence:
+      - figure: figures/fig9_calcium_symbolic_parity.png
+    scope: >-
+      gCa=2.0, the same convex-hull-masked 80x80 grid domain and the same no-intercept 2-column OLS
+      fit_conductance() used for every reported coefficient. Target is the analytic gCa*s^2*(V-ECa)
+      instead of the network output. Returns a=2.0000, b=-240.00 against expected (2.0, -240).
+    status: supported
+    # ===== EVIDENCE GAP — DELIBERATE, AND THE REASON THIS CLAIM IS WORTH READING. =====
+    # This is the claim that rules out the trivial explanation ("your regression is broken"), and it is
+    # the single most load-bearing control in the paper. Its numbers are NOT in any CSV: the sanity fit
+    # is a console print at objective3_symbolic.jl:208-209
+    #   [sanity] fitting the TRUE current on the same domain: a=%.4f b=%.2f (expect 2.0, -240)
+    # and symbolic_recovery_metrics.csv has no column for it. So NO MACRO CAN EXIST YET, and the
+    # evidence line above is a figure that is only indirect support.
+    # The a=2.0000 / b=-240.00 above are [verified] by independent recomputation from the raw grid
+    # probe (results/calcium/grid_ude_full_seed1111.csv): OLS of the ANALYTIC ICa_true on
+    # [V*s^2, s^2] returns a=2.0000, b=-240.00 both on the full 6400-point grid and on the
+    # hull-masked subset (4424 points; 4424 x 5 seeds = 22120, matching the pooled count this
+    # ledger quotes elsewhere). This is exact rather than approximate for a structural reason worth
+    # one sentence in the paper: the truth gCa*s^2*(V-ECa) lies EXACTLY in the estimator's 2-column
+    # span, so OLS recovers it to machine precision on ANY subset of the domain. The control is
+    # therefore about the DOMAIN and the MASK, not about numerical luck.
+    # This is exactly what the Evidence phase is for: the correct output here is a WORK ITEM, not a
+    # shrug. Persist the sanity fit to results/symbolic/sanity_fit.csv (columns: gCa, a_san, b_san),
+    # add macros SymbolicSanityAHat / SymbolicSanityBHat to metrics_map.yaml, and add them here.
+    # Until that lands, the .tex sentence quoting a=2.0000, b=-240.00 must carry:
+    #   % numok: console output of objective3_symbolic.jl:208-209; not yet a table cell — see claims.yaml
+    # `% numok` is an escape hatch with a receipt, not a way to launder a number. Every one of them is
+    # a debt, and this ledger is where the debt is recorded.
+
+  - id: ensemble-fit-corroborates-per-seed
+    statement: >-
+      A pooled fit across all five seeds independently corroborates the per-seed mean coefficients.
+    section: results.symbolic-recovery
+    kind: empirical
+    evidence:
+      - macro: SymbolicAHat
+    scope: >-
+      gCa=2.0, 5 seeds, pooled hull-masked grid (22120 points).
+    guard: ensemble-is-not-independent
+    status: retired
+    # ===== TOMBSTONE. This was believed, drafted, and is algebraically vacuous. =====
+    # It was written because learned_calcium_equation.txt reports "per-seed a = 1.596 +/- 0.905" and
+    # "ensemble a ~ 1.596" on adjacent lines, and two agreeing estimates look like corroboration.
+    # They are ONE estimate printed twice. All 5 seeds share gCa=2.0, hence one clean trajectory, one
+    # convex hull, one grid — hence THE SAME DESIGN MATRIX. Stacking an identical Phi five times and
+    # solving once gives (5 Phi'Phi)^-1 Phi'(sum y_i) = mean(beta_i) exactly. a_ens IS mean(a_hat), to
+    # every printed digit, by construction and not by luck. Presenting them side by side would have
+    # double-counted one number in the paper's most scrutinized table.
+    # What survives: Erev_ens = -mean(b)/mean(a) is genuinely different from mean(-b_i/a_i), because a
+    # ratio of means is not a mean of ratios — and pooling is the right call there precisely because the
+    # per-seed ratio explodes when a is small. That is the code's actual (correct) stated rationale.
+    # Frame it as "reversal potential computed from the mean coefficients rather than as a mean of
+    # per-seed ratios". Never as an ensemble fit, and never as corroboration.
+    # Retired, not deleted: the two adjacent lines in that .txt file will re-tempt the next reader.
+
+  # =========================================================================
+  # RESULTS — IDENTIFIABILITY (the two controls + the headline)
+  # =========================================================================
+
+  - id: gca-sweep-shows-nonidentifiability
+    statement: >-
+      Normalized calcium-current error falls monotonically as the calcium conductance is increased, and
+      at the physiological literature value the closure's error exceeds the true current's own variation
+      — the network has learned essentially nothing about a calcium current that small, while forecasting
+      voltage well throughout.
+    section: results.identifiability
+    kind: empirical
+    evidence:
+      - macro: GcaAblICaNormPointFour
+      - macro: GcaAblICaNormOne
+      - macro: GcaAblICaNormTwo
+      - macro: GcaAblICaNormFour
+      - figure: figures/fig7c_ablation_gca.png
+      - figure: figures/fig12_calcium_identifiability.png
+    scope: >-
+      single trajectory, gCa in {0.4, 1.0, 2.0, 4.0}, OU noise level 0.02, train t<=30 ms,
+      n=1 SEED (1111) — NO ERROR BARS EXIST ON ANY POINT. Forecast window. ICa_rmse_norm =
+      ICa_rmse / std(ICa_true) within the window, so a value >1 means the closure's error is larger
+      than the signal it is supposed to reproduce. Judged against the +/-0.025 seed spread measured at
+      the shared centre point gCa=2.0 (n=5), the 0.4-vs-1.0 gap is real; the 2.0-vs-4.0 gap
+      (0.112 vs 0.068) is near seed noise and must not be narrated as a trend continuing.
+    guard: ablations-are-n1
+    status: supported
+    # The quantitative backbone of the paper and the cleanest result in the set. The reason it is
+    # decisive rather than merely suggestive: the SIGNAL amplitude is the only thing that changed.
+    # Same architecture, same data volume, same optimizer, same iterations — only how much the calcium
+    # current contributes to the voltage the loss can see. That is an identifiability axis, by construction.
+    # At gCa=0.4 the symbolic fit additionally returns the WRONG SIGN (a=-0.372 vs true +0.40) and
+    # Erev=-239.9 mV vs true +120 — a harder failure than R^2=0.78 conveys, and worth stating.
+
+  - id: gca-two-is-a-controlled-choice
+    statement: >-
+      The main setting uses a calcium conductance above the physiological value deliberately, as the
+      regime in which the closure is identifiable at all; the sweep down to the literature value is
+      reported in full and shows recovery failing there.
+    section: methods.experimental-design
+    kind: methodological
+    evidence:
+      - macro: GcaAblICaNormTwo
+      - macro: GcaAblICaNormPointFour
+      - figure: figures/fig7c_ablation_gca.png
+    scope: >-
+      gCa is a builder argument to make_hh_advanced(gCa), never a model constant and never visible to
+      the UDE — it shapes only the TRUE data being fitted. Swept over {0.4, 1.0, 2.0, 4.0} with all
+      other axes pinned to baseline, n=1 seed. gCa=0.4 is the physiological value; gCa=2.0 is the
+      main setting. Everything else in the paper is reported at gCa=2.0.
+    status: supported
+    # ===== THIS IS THE ANSWER TO "you tuned gCa until your method worked." =====
+    # It is a real objection and it will be raised. The answer is not a denial, it is the sweep: the
+    # unfavorable value is measured, reported, plotted, and given its own negative-control panel
+    # (fig12, right). A paper that picks gCa=2.0 and stays silent has tuned a hyperparameter. A paper
+    # that picks gCa=2.0, shows the method FAILS at gCa=0.4, and makes that failure the central finding
+    # has chosen a regime and characterized its boundary.
+    # Write the honest version in Methods, before Results, in the researcher's own voice. Reviewers
+    # forgive a limitation they are told about and punish one they discover.
+
+  - id: retrain-does-not-close-gap
+    statement: >-
+      Quadrupling the optimization budget does not close the coefficient gap: every recovery quantity
+      gets worse and noisier, while the optimizer demonstrably converges — so the gap is a property of
+      the data, not of under-training.
+    section: results.identifiability
+    kind: empirical
+    evidence:
+      - macro: RetrainAHat
+      - macro: RetrainRTwoCondTrue
+      - macro: RetrainForecastVRmse
+      - macro: RetrainFinalLoss
+      - macro: RetrainBfgsOk
+      - figure: results/retrain_gca2_20k/figures/fig11_calcium_coeff_recovery.png
+    scope: >-
+      gCa=2.0, full-state observation only, OU noise level 0.02, train t<=30 ms, n=5 seeds.
+      Adam 20000 + BFGS 1000 vs the baseline's 5000 + 300; identical network, ADJOINT, Tsit5, 1e-8
+      tolerances, loss, and seeds — ONLY the iteration budget and the output directory changed.
+      No statistical test. Voltage-only, the NODE, and the other ablations were not retrained.
+    status: supported
+    # ===== THE SECOND CONTROL, AND THE STRONGEST SINGLE RESULT IN THE PROJECT. =====
+    # The convergence evidence is what makes it a control rather than a failed run: bfgs_ok=true for all
+    # 5 seeds and final_loss=29.66 +/- 2.66 (tight). The optimizer did its job. It converged to DIFFERENT
+    # closures that fit the same training voltage equally well. That is the textbook non-identifiability
+    # signature, and it is why "just train longer" is not an available rebuttal.
+    # Report bfgs_ok explicitly: train_two_stage wraps BFGS in try/catch and degrades silently to the
+    # Adam result with only an @warn, so bfgs_ok=false would make "we ran a two-stage schedule" false.
+    # What got worse: a_hat 1.596->1.495 (further from 2.0) with std inflated 1.6x, b_hat std 2.3x,
+    # per-seed R^2 0.984->0.845, Erev 162.5->171.3 mV, and the physical s^2 term dropped entirely for
+    # 2 of 5 seeds. Do NOT also cite the retrain's gCa=0.4 row — see retrain-negative-control-replicates.
+
+  - id: retrain-seed-decoupling
+    statement: >-
+      On the representative seed the aggressive retrain leaves forecast voltage accuracy essentially
+      unchanged while the recovered closure's agreement with the true calcium current collapses: the
+      same trajectory quality is achieved by a different, and no better, closure.
+    section: results.identifiability
+    kind: empirical
+    evidence:
+      - macro: BaselineRepSeedForecastVRmse
+      - macro: RetrainRepSeedForecastVRmse
+      - macro: BaselineRepSeedRTwoCondTrue
+      - macro: RetrainRepSeedRTwoCondTrue
+      - figure: results/retrain_gca2_20k/figures/fig10_calcium_symbolic_timeseries.png
+    scope: >-
+      gCa=2.0, full-state observation, OU noise level 0.02, train t<=30 ms, SEED 1111 ONLY (n=1;
+      this is a within-seed before/after on the representative seed, not a distributional claim).
+      Baseline Adam 5000 + BFGS 300 vs retrain Adam 20000 + BFGS 1000. Forecast V-RMSE 0.219 -> 0.251
+      (roughly unchanged, and within the +/-0.028 five-seed baseline spread); r2_cond_true 0.988 -> 0.580.
+    status: supported
+    # ===== THE CLINCHER. If the paper has one sentence, it is this one. =====
+    # Aggregate before/after tables invite "everything got worse, so the retrain was just bad."
+    # This decouples the two axes ON THE SAME SEED: the voltage the loss can see is reproduced just as
+    # well as before, and the closure that reproduces it has become dramatically less like the true
+    # calcium current. Trajectory quality and closure identity moved INDEPENDENTLY. That is what
+    # non-identifiability MEANS — a flat direction in the loss along which the closure can wander while
+    # the observable stays put — and here it is, observed directly rather than inferred from a table.
+    # n=1 by construction and the scope says so. Its job is to exhibit the mechanism; retrain-does-not-
+    # close-gap (n=5) carries the distributional weight. Neither claim can do the other's job.
+
+  - id: retrain-negative-control-replicates
+    statement: >-
+      The aggressive retrain reproduces the gCa=0.4 recovery failure, confirming it is not an artifact
+      of the baseline training budget.
+    section: results.identifiability
+    kind: empirical
+    evidence: []
+    scope: >-
+      would require a retrained gCa=0.4 run. NONE EXISTS.
+    guard: retrain-gca-point-four-is-copied
+    status: unsupported
+    # ===== NO EVIDENCE. THE "AFTER" FILE IS A COPY OF THE "BEFORE" FILE. =====
+    # retrain_gca2_20k.jl retrains the 5 headline seeds at gCa=2.0 ONLY. It then cp()s
+    # results/calcium/{probe,grid}_abl_gca_0.4_seed1111.csv into its own tree (lines 136-143) so the
+    # redirected Objective 3 can find its negative control in one place. The consequence: the gCa=0.4
+    # row of results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv is BYTE-IDENTICAL to the
+    # baseline's, and the two learned_calcium_equation.txt files print identical gCa=0.4 lines
+    # (a=-0.372, b=-89.2, R2=0.7806).
+    # This is the most dangerous artifact in the repository, because it looks exactly like a successful
+    # replication: a before/after table with matching numbers in the control row reads as robustness.
+    # It is one number in two directories. Anyone comparing the two output trees will find it and, if
+    # the paper does not say otherwise, will assume the paper is claiming it.
+    # To make it supported: retrain at gCa=0.4 with the 20000/1000 budget. Cheap, and it would make the
+    # identifiability argument airtight at the physiological value. Until then: not in the .tex.
+
+  - id: ude-recovers-trajectory-not-coefficients
+    statement: >-
+      The UDE recovers the trajectory and the functional form of the hidden calcium current, but not
+      its coefficients: voltage is forecast to sub-millivolt accuracy over the whole un-trained
+      remainder while the calcium conductance is only order-correct — the conductance is not
+      identifiable from a single trajectory, and neither a signal-amplitude sweep nor a fourfold
+      optimization budget closes the gap.
+    section: results.identifiability
+    kind: empirical
+    evidence:
+      - macro: UdeForecastVRmse
+      - macro: SymbolicRTwoCondTrue
+      - macro: SymbolicAHat
+      - macro: GcaAblICaNormPointFour
+      - macro: RetrainAHat
+      - figure: figures/fig11_calcium_coeff_recovery.png
+      - figure: figures/fig12_calcium_identifiability.png
+    scope: >-
+      ONE trajectory: one Iapp=10 uA/cm2, one steady-state initial condition, one 100 ms window,
+      512 samples. gCa=2.0 for the headline (the sweep covers {0.4,1.0,2.0,4.0} at n=1); OU noise
+      level 0.02; train t<=30 ms; n=5 seeds for every mean +/- std, where a seed jointly redraws the
+      network initialization and the OU noise realization. No statistical test was run anywhere.
+      The UDE retains all known physics and learns only I_Ca(V,s); gCa, ECa, and the form s^2(V-ECa)
+      are the only unknowns. "Not identifiable" means: not identifiable FROM THIS TRAJECTORY.
+    guard: a-hat-not-a-recovery
+    status: supported
+    # ===== THE PAPER HEADLINE. It is a negative result and it must be framed as a finding. =====
+    # This claim is a conjunction, and every conjunct is load-bearing:
+    #   (a) the trajectory IS recovered            -> ude-forecasts-accurately
+    #   (b) the FORM is recovered                  -> symbolic-form-recovered
+    #   (c) the COEFFICIENTS are not              -> symbolic-coefficients-not-identifiable
+    #   (d) it is not the regression's fault       -> regression-machinery-is-sound
+    #   (e) it is not the signal amplitude's fault -> gca-sweep-shows-nonidentifiability
+    #   (f) it is not the optimizer's fault        -> retrain-does-not-close-gap, retrain-seed-decoupling
+    # (d)-(f) are what turn "our method didn't fully work" into "here is a property of the problem."
+    # Without them this is a failure report. With them it is a characterization, and the honest version
+    # is more useful to the field than the version where the coefficients came out at 2.0.
+    # The "from a single trajectory" qualifier belongs in the ABSTRACT, not only in Limitations.
+
+  # =========================================================================
+  # RESULTS — ABLATIONS
+  # =========================================================================
+
+  - id: window-needs-sufficient-length
+    statement: >-
+      A training window that covers too little of the dynamics degrades forecast accuracy roughly
+      sevenfold on the shared evaluation interval; beyond that threshold, the differences between
+      window lengths do not clear seed noise.
+    section: results.ablations
+    kind: empirical
+    evidence:
+      - macro: WindowAblCommonEvalVRmseFifteen
+      - macro: WindowAblCommonEvalVRmseThirty
+      - figure: figures/fig7b_commoneval_ablation_window.png
+    scope: >-
+      single trajectory, gCa=2.0, OU noise level 0.02, t_train_end in {15,20,30,40,50} ms,
+      n=1 SEED (1111), no error bars, no statistical test. Scored on the common_eval window (t>50 ms),
+      which is unseen for every window length in the sweep — this is the un-confounded comparison.
+      common_eval_V_rmse = 1.559 / 0.225 / 0.236 / 0.367 / 0.418 for t_train_end 15/20/30/40/50
+      [verified by recomputation]. The t_train=15 collapse is 6.6x the t_train=30 value (6.9x vs
+      t_train=20) — "sevenfold", NOT "an order of magnitude": that phrase overstates it by ~50%.
+      Judged against the +/-0.028 five-seed spread at the shared centre point t_train=30, ONLY the
+      t_train=15 collapse is safely outside seed noise. Every other adjacent gap is comparable
+      to the spread.
+    guard: window-nonmonotonicity-is-artifact
+    status: supported
+    # TWO traps, both fatal if missed:
+    # 1. Use fig7b_commoneval_ablation_window.png, NOT fig7b_ablation_window.png. The latter scores each
+    #    window on a DIFFERENT interval (the forecast window shifts with t_train_end) and is confounded
+    #    by construction. The two files differ by one word in the filename and tell different stories.
+    # 2. The 40/50 ms points score WORSE than 20/30 ms. This is a fixed-iteration optimization artifact:
+    #    every window trains for the same Adam 5000 / BFGS 300 regardless of how many points it must fit,
+    #    so longer windows are UNDER-OPTIMIZED, not intrinsically harder. The common_eval variant removes
+    #    the shifting-window confound but NOT this one. The caption must say so, or the figure argues the
+    #    opposite of the truth — that more data hurts. It does not; the budget was held fixed while the
+    #    problem grew. This is a standing project finding, not a hypothesis.
+    # Note also: at t_train_end=50 the common_eval and forecast columns are byte-identical by construction
+    # (both select t>50). That point is not an independent check.
+
+  # =========================================================================
+  # DISCUSSION
+  # =========================================================================
+
+  - id: predictive-accuracy-is-not-identifiability
+    statement: >-
+      Across every experiment, closures that reproduce the observable trajectory to high accuracy differ
+      substantially from one another and from the truth in their coefficients — predictive accuracy on
+      the observed channel is not evidence that a learned physical term has been identified.
+    section: discussion.implications
+    kind: interpretive
+    evidence:
+      - macro: SindyNTermsRetained
+      - macro: SymbolicAHat
+      - macro: RetrainRTwoCondTrue
+      - figure: figures/fig9_calcium_symbolic_parity.png
+    scope: >-
+      an interpretation of this paper's runs, all on one HH-type system, one trajectory, gCa=2.0 for the
+      headline, n=5 seeds. Supported here by three independent instances: (i) SINDy attains high R^2
+      against the true current while fitting V*s^2 with the wrong sign; (ii) five seeds reach
+      indistinguishable forecast accuracy with conductances spanning 4.6x; (iii) the retrain holds
+      forecast accuracy on the representative seed while r2_cond_true collapses. No statistical test.
+    status: supported
+    # The most transferable thing in the paper, and the part a SciML audience will actually act on:
+    # parity plots and rollout RMSE — the two things UDE papers report — are exactly the diagnostics
+    # that cannot see this failure. Do not soften it into "may not always imply". State it, cite the
+    # three instances, and bound it in scope.
+
+  - id: identifiability-is-the-general-lesson
+    statement: >-
+      Where a UDE's learned term is intended to be interpreted rather than merely simulated, its
+      identifiability from the available data should be established before its coefficients are read as
+      physical quantities; a single trajectory can be sufficient to fit and insufficient to identify.
+    section: discussion.implications
+    kind: interpretive
+    evidence:
+      - macro: SymbolicAHat
+      - macro: GcaAblICaNormPointFour
+      - macro: RetrainAHat
+      - figure: figures/fig12_calcium_identifiability.png
+    scope: >-
+      GENERALIZATION FROM ONE SYSTEM. Everything in this paper is one HH-type model, one Iapp, one
+      initial condition, one 100 ms window, one 337-parameter closure over (V,s), one noise process,
+      one optimizer schedule. We did not vary the system, the stimulus protocol, the architecture, or
+      the closure's input set. We show that the non-identifiability HERE is not caused by the
+      regression, the signal amplitude, or the optimization budget — we do NOT show that it is generic,
+      and we have no evidence about which of these axes would fix it. The mechanism (a flat direction in
+      the loss along which the closure varies while the observable does not) is general; its presence in
+      any other system is a hypothesis this paper does not test.
+    guard: single-trajectory-scope
+    status: supported
+    # An interpretive claim earns its place only if its scope is more honest than its statement is
+    # ambitious. The failure mode is the Discussion section that quietly promotes "we found X in one
+    # system" to "X is a general property of UDEs" across three paragraphs.
+    # The concrete, testable recommendation is what makes this worth writing: multiple trajectories from
+    # different initial conditions / stimulus amplitudes, or a seed-spread check on the recovered
+    # coefficients — the latter costs nothing and would have caught this here. Recommend the diagnostic,
+    # not the conclusion.
+
+  - id: single-trajectory-is-the-binding-limitation
+    statement: >-
+      The binding limitation of this work is that all conclusions rest on one trajectory; the natural
+      next experiment is whether multiple trajectories spanning different initial conditions and
+      stimulus amplitudes restore identifiability of the calcium conductance.
+    section: discussion.limitations
+    kind: interpretive
+    evidence:
+      - macro: SymbolicAHat
+      - macro: RetrainAHat
+    scope: >-
+      one Iapp=10 uA/cm2, one steady-state IC at V0=-65 mV, one t in [0,100] ms window, 512 samples.
+      No multi-trajectory run exists in this project; whether it would close the gap is untested and we
+      make no prediction. Separately: seeds jointly redraw network init and OU noise realization, so the
+      reported spread cannot be decomposed into initialization variance and data variance — a
+      fixed-data / varying-init run would separate them and does not exist either.
+    guard: single-trajectory-scope
+    status: supported
+    # Write the limitation that a hostile reviewer would write, in the paper, first. Two rules:
+    # (1) name the experiment that would settle it — a limitation with a concrete next step reads as
+    #     command of the problem; one without reads as an excuse;
+    # (2) do not predict the outcome. "Multiple trajectories would likely resolve this" is an
+    #     unevidenced claim smuggled into Limitations, and it is exactly where reviewers look for them.
