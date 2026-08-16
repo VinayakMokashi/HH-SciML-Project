@@ -22,6 +22,22 @@ using Measures
 import JLD
 gr()
 
+# --- Figure legibility (mentor request, 2026-08) -----------------------------
+# Font sizes in Plots are relative to the CANVAS, so what reaches the page is
+# fontsize/canvas_height x printed_height. These figures render ~820-900 px tall
+# and are included at ~0.85\textwidth (~12 cm), so the old 11 pt defaults arrived
+# at roughly 4.5 pt in print -- legible on screen, not on paper.
+#
+# The bump is deliberately MODEST (~1.3x, not the ~1.8x first tried). These are
+# stacked multi-panel figures whose panels set their own left_margin, and at 1.8x
+# the y-axis labels no longer fit it: "gate RMSE" rendered as "ate RMSE" and the
+# normalised-calcium label collided with the panel above. Font size and margin
+# have to move together, and the margins here are per-panel, so the ceiling is
+# set by the tightest one. 1.3x clears them and still roughly doubles the printed
+# text size relative to the original.
+default(titlefontsize = 14, guidefontsize = 13, tickfontsize = 11,
+        legendfontsize = 10, foreground_color_legend = nothing)
+
 const PROJECT_DIR = dirname(@__DIR__)
 const FIG_DIR     = joinpath(PROJECT_DIR, "figures")
 const RESULTS_DIR = joinpath(PROJECT_DIR, "results")
@@ -178,11 +194,11 @@ function save_trajectory_figs(prefix, model_label, data_clean, pred, t_train_end
     # stacked overview — per-group y-limits from the truth range
     ov_V = plot(TSTEPS, data_clean[1, :], lw = 2, label = "V truth", ylabel = "V (mV)",
                 title = "$model_label : state reconstruction (truth vs $model_label)",
-                legend = :outertopright, ylims = _ylims_data(data_clean[1, :]), left_margin = 5mm)
+                legend = :outertopright, ylims = _ylims_data(data_clean[1, :]), left_margin = 8mm)
     plot!(ov_V, TSTEPS, pred[1, :], lw = 2, ls = :dash, label = "V $model_label")
-    ov_cls = plot(ylabel = "classical gates m,h,n\n(dimensionless)", left_margin = 5mm,
+    ov_cls = plot(ylabel = "classical gates m,h,n\n(dimensionless)", left_margin = 8mm,
                   ylims = _ylims_data(data_clean[2:4, :]), legend = :outertopright)
-    ov_adv = plot(xlabel = "t (ms)", ylabel = "advanced gates p,s\n(dimensionless)", left_margin = 5mm,
+    ov_adv = plot(xlabel = "t (ms)", ylabel = "advanced gates p,s\n(dimensionless)", left_margin = 8mm,
                   ylims = _ylims_data(data_clean[5:6, :]), legend = :outertopright)
     for (i, nm, c) in [(2, "m", "#D85A30"), (3, "h", "#0F6E56"), (4, "n", "#534AB7")]
         plot!(ov_cls, TSTEPS, data_clean[i, :], lw = 2, color = c, label = "$nm truth")
@@ -299,13 +315,13 @@ function save_dynamics_figs(; gCa = 2.0, noise_level = 0.02, seed = 1111)
     end
     # 07 stacked overview
     ov_V = plot(TSTEPS, dc[1, :], lw = 2, color = "#185FA5", label = "V", ylabel = "V (mV)",
-                ylims = _ylims_data(dc[1, :]), legend = :outertopright, left_margin = 5mm)
-    ov_cls = plot(ylabel = "classical gates m,h,n\n(dimensionless)", left_margin = 5mm,
+                ylims = _ylims_data(dc[1, :]), legend = :outertopright, left_margin = 8mm)
+    ov_cls = plot(ylabel = "classical gates m,h,n\n(dimensionless)", left_margin = 8mm,
                   ylims = _ylims_data(dc[2:4, :]), legend = :outertopright)
     for (i, nm, c) in [(2, "m", "#D85A30"), (3, "h", "#0F6E56"), (4, "n", "#534AB7")]
         plot!(ov_cls, TSTEPS, dc[i, :], lw = 2, color = c, label = nm)
     end
-    ov_adv = plot(xlabel = "t (ms)", ylabel = "advanced gates p,s\n(dimensionless)", left_margin = 5mm,
+    ov_adv = plot(xlabel = "t (ms)", ylabel = "advanced gates p,s\n(dimensionless)", left_margin = 8mm,
                   ylims = _ylims_data(dc[5:6, :]), legend = :outertopright)
     for (i, nm, c) in [(5, "p", "#BA7517"), (6, "s", "#993556")]
         plot!(ov_adv, TSTEPS, dc[i, :], lw = 2, color = c, label = nm)

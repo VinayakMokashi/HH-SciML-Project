@@ -870,6 +870,640 @@ macros:
       different one. Same-seed pairing with BaselineRepSeedRTwoCondTrue is what
       makes this a decoupling result rather than a seed-noise result.
 
+
+# ===========================================================================
+# BLOCK 8 - PARAMETRIC IDENTIFIABILITY (added 2026-08 for review point 1).
+# Source: identifiability/parametric_fit.csv, written by
+# identifiability_parametric.jl. WIDE per-config schema, one row per
+# (gCa_true, seed): the DIRECT two-parameter fit of (gCa, ECa) to the same
+# single noisy trajectory, with the true structure known and NO network.
+#
+# *** THIS BLOCK CARRIES THE PAPER'S CENTRAL COMPARISON. ***
+# ParamFitGcaHatTwo (2.09 +/- 0.13) against SymbolicAHat (1.60 +/- 0.90) is
+# the whole result: the data determine the conductance to about +/-6%, and the
+# neural closure loses that by roughly 9x. Never quote one without the other -
+# alone, each is merely a number; together they locate the failure in the
+# REPRESENTATION rather than in the data.
+#
+# Fair-comparison caveat that must travel with these macros: a 2-parameter
+# model with the true functional form is EXPECTED to beat a 337-parameter
+# closure that is given no form at all. The claim is therefore "the data
+# support the parameter, so the UDE's spread is a cost of the closure" - NOT
+# "two equally good fits disagree". The parametric fit also forecasts better
+# (ParamFitForecastVRmseTwo vs UdeForecastVRmse), so they are not equally good.
+# ===========================================================================
+
+  - name: ParamFitGcaHatTwo
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 2.0}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: gCa_hat
+    round: 3
+    # raw mean=2.092366 std=0.130497 n=5 (true 2.0); per-seed 1.877..2.211
+    note: >-
+      The headline positive control. 2.09 +/- 0.13 against a true 2.0, a 6.2%
+      relative spread that brackets the truth. Cross-validated three ways: the
+      profile-likelihood 95% CI and the Gauss-Newton relative standard error
+      (CondRelSeGcaTwo, 6.7%) both agree with this observed seed spread. Quote
+      WITH SymbolicAHat, always.
+
+  - name: ParamFitGcaHatRangeTwo
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 2.0}
+    emit: range
+    column: gCa_hat
+    round: 3
+    # raw min=1.877017 max=2.211192 n=5
+    note: >-
+      The span, for direct comparison with SymbolicAHatRange (0.673--3.095).
+      A factor of 1.18 against the closure's 4.6.
+
+  - name: ParamFitEcaHatTwo
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 2.0}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: ECa_hat
+    round: 1
+    # raw mean=111.911 std=11.976 n=5 (true 120.0)
+    note: >-
+      The reversal potential is the WEAKER of the two parameters (10.7% spread
+      vs 6.2%), consistent with the FIM relative standard errors and with the
+      near -1 correlation between log gCa and log ECa. Do not present ECa as
+      recovered as cleanly as gCa.
+
+  - name: ParamFitGcaHatPointFour
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 0.4}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: gCa_hat
+    round: 3
+    # raw mean=0.437750 std=0.065327 n=5 (true 0.4)
+    note: >-
+      Even at the PHYSIOLOGICAL conductance the parametric fit recovers gCa
+      (0.44 +/- 0.07), where the UDE plus symbolic route returns the WRONG SIGN
+      (SymbolicAHatNegControl = -0.37). The contrast at gCa=0.4 is starker than
+      at 2.0 and is the sharpest single statement of the paper's thesis.
+
+  - name: ParamFitGcaHatOne
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 1.0}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: gCa_hat
+    round: 3
+    # raw mean=1.043098 std=0.084459 n=5 (true 1.0)
+
+  - name: ParamFitGcaHatFour
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 4.0}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: gCa_hat
+    round: 3
+    # raw mean=4.105297 std=0.119830 n=5 (true 4.0)
+    note: >-
+      Completes the monotone tightening across the sweep: relative spread runs
+      14.9% then 8.1% then 6.2% then 2.9% as the calcium signal grows. The
+      parametric fit degrades gracefully where the closure degrades
+      catastrophically.
+
+  - name: ParamFitChiSqPerPointTwo
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 2.0}
+    aggregate: {over: seed, stats: [mean], ddof: 1, dropna: true}
+    emit: value
+    column: chi2_per_point
+    round: 3
+    # raw mean=0.994436 n=5
+    note: >-
+      chi-square per data point at the optimum, with sigma_i the KNOWN
+      per-channel noise SD. A value of 1.0 means the fit sits exactly at the
+      noise floor: the model is correct and the weighting is right. This is what
+      licenses the chi-square threshold used for the profile-likelihood CI.
+      Report it as a goodness-of-fit sanity check, not as a result in itself.
+
+  - name: ParamFitForecastVRmseTwo
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 2.0}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: forecast_V_rmse
+    round: 3
+    # raw mean=0.123 std=0.032 n=5; UDE full-state is 0.245 +/- 0.028
+    note: >-
+      The parametric fit ALSO forecasts about twice as well as the UDE. Quote
+      this whenever the comparison is made: it is the reason the honest claim is
+      "the data determine the parameter" and NOT "two equally good fits
+      disagree". Omitting it would overstate the result.
+
+# ===========================================================================
+# BLOCK 9 - CONDITIONING / FISHER INFORMATION.
+# Source: identifiability/conditioning.csv (identifiability_parametric.jl
+# Part 4). Gauss-Newton FIM from FIRST-order sensitivities, expressed in LOG
+# parameters so the eigen-directions are scale-free.
+#
+# Two methodological choices are load-bearing and must be stated wherever these
+# macros appear:
+#   (1) first-order sensitivities, NOT a finite-difference Hessian of the
+#       chi-square. This is a spiking model; phase shifts make the chi-square
+#       rise by ~1e6 within a fraction of a percent of the optimum, and second
+#       differences return two near-equal ~1e9 eigenvalues and an implied
+#       relative SE of 3e-5, contradicted by both the profile and the seed
+#       spread.
+#   (2) log parameters. In raw units gCa ~ 2 and ECa ~ 120, so the "sloppy"
+#       eigenvector falls on a coordinate axis as a pure units artifact.
+# ===========================================================================
+
+  - name: CondRelSeGcaTwo
+    source: identifiability/conditioning.csv
+    filter: {gCa_true: 2.0}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: rel_se_gCa
+    round: 3
+    # raw mean=0.066675 std=0.003949 n=5
+    note: >-
+      Asymptotic RELATIVE standard error of gCa, 6.7%. Matches the observed seed
+      spread (6.2%, ParamFitGcaHatTwo) almost exactly, an independent
+      confirmation that the seed-to-seed scatter of the parametric fit is
+      ordinary estimation noise and nothing more.
+
+  - name: CondRelSeEcaTwo
+    source: identifiability/conditioning.csv
+    filter: {gCa_true: 2.0}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: rel_se_ECa
+    round: 3
+    # raw mean=0.111041 std=0.002540 n=5
+
+  - name: CondRelSeGcaPointFour
+    source: identifiability/conditioning.csv
+    filter: {gCa_true: 0.4}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: rel_se_gCa
+    round: 3
+    # raw mean=0.269350 std=0.043544 n=5
+    note: >-
+      At the physiological conductance the parametric fit is four times less
+      precise (26.9% vs 6.7%) but still finite and still correctly signed. The
+      information degrades smoothly with signal amplitude; it does not vanish.
+
+  - name: CondNumberTwo
+    source: identifiability/conditioning.csv
+    filter: {gCa_true: 2.0}
+    aggregate: {over: seed, stats: [mean], ddof: 1, dropna: true}
+    emit: value
+    column: cond_number
+    round: 0
+    # raw mean=7088.4 n=5 (log-parameter FIM)
+    note: >-
+      Condition number of the log-parameter Fisher information. Large, so there
+      IS a sloppy direction: gCa and ECa trade off along an identifiable
+      combination (their log-correlation is about -1.00). But sloppy is not the
+      same as non-identifiable, since both parameters still have finite, small
+      relative standard errors. That distinction is the point.
+
+# ===========================================================================
+# BLOCK 10 - TRAINING LOSS, BEFORE vs AFTER THE AGGRESSIVE RETRAIN.
+# Source: identifiability/training_losses_before_after.csv
+# (recover_training_losses.jl). Answers review point 1 final sentence.
+#
+# The BEFORE loss was never recorded at training time; it is recovered by
+# rebuilding the exact objective and evaluating it at the SAVED parameters. The
+# script validates the method by recomputing the AFTER loss and matching the
+# recorded value to a relative difference of 0.
+# ===========================================================================
+
+  - name: TrainLossBefore
+    source: identifiability/training_losses_before_after.csv
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: final_loss_before
+    round: 2
+    # raw mean=35.714740 std=1.813485 n=5
+    note: >-
+      Fills the "not recorded" cell in the retrain table. Directly comparable to
+      TrainLossAfter: identical objective, data, seeds, solver and tolerances,
+      with only the iteration budget differing.
+
+  - name: TrainLossAfter
+    source: identifiability/training_losses_before_after.csv
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: final_loss_after_recomputed
+    round: 2
+    # raw mean=29.659851 std=2.663400 n=5; a 17.0% reduction on the before mean
+    note: >-
+      *** THE RETRAIN GENUINELY OPTIMISED BETTER: 35.71 to 29.66, a 17%
+      reduction. *** This STRENGTHENS the control rather than weakening it. The
+      earlier framing ("the final losses are tight, so the optimiser converged")
+      understated the result: the aggressive run demonstrably fit the training
+      data better while the conductance estimate, the R-squared and the forecast
+      all got worse. That is optimisation along a flat direction, seen directly.
+
+# ===========================================================================
+# BLOCK 11 - SYMBOLIC FIT DOMAIN ROBUSTNESS (review point 3).
+# Source: identifiability/symbolic_domain_comparison.csv
+# (scripts/symbolic_domain_comparison.py). Refits the SAME conductance form on
+# nested domains: the published convex hull, epsilon-tubes around the
+# trajectory, the full trajectory, and the strictly SUPERVISED trajectory.
+#
+# The reviewer objection was that a limit cycle's convex-hull INTERIOR was never
+# visited, so hull values are extrapolation dressed as interpolation. Conceded,
+# and the conclusion is unchanged on every domain, which is the point of the
+# block. The script reproduces the published hull fit to 1e-15.
+# ===========================================================================
+
+  - name: SymbolicAHatTrajTrain
+    source: identifiability/symbolic_domain_comparison.csv
+    filter: {domain: traj-train}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: a_hat
+    round: 3
+    # raw mean=1.645 std=0.672 n=5 (true 2.0)
+    note: >-
+      *** PREFER THIS OVER SymbolicAHat AS THE HEADLINE. *** Same estimator, but
+      fitted only on points the model was actually supervised on (t <= 30 ms,
+      n=154). It concedes the hull objection completely and costs nothing: the
+      estimate is if anything slightly closer to the truth than the hull fit, and
+      the spread is comparable. Keep the hull only for the SINDy comparison,
+      where its conditioning rationale genuinely applies.
+
+  - name: SymbolicAHatRangeTrajTrain
+    source: identifiability/symbolic_domain_comparison.csv
+    filter: {domain: traj-train}
+    emit: range
+    column: a_hat
+    round: 3
+    # raw min=1.244 max=2.816 n=5
+
+  - name: SymbolicRTwoTrajTrain
+    source: identifiability/symbolic_domain_comparison.csv
+    filter: {domain: traj-train}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: r2_vs_true_on_domain
+    round: 3
+    # raw mean=0.991 std about 0.006 n=5
+    note: >-
+      The fitted CURVE matches the true current well on the supervised
+      trajectory (R-squared 0.99) while the COEFFICIENT that curve implies is off
+      by 18% with a 41% spread. Curve-fit quality and coefficient
+      identifiability are different properties; this pair of macros is the
+      cleanest place in the paper to say so.
+
+  - name: SymbolicCondTrajTrain
+    source: identifiability/symbolic_domain_comparison.csv
+    filter: {domain: traj-train}
+    aggregate: {over: seed, stats: [mean], ddof: 1, dropna: true}
+    emit: value
+    column: cond
+    round: 1
+    # raw mean=102.4 n=5 (2-column design matrix)
+    note: >-
+      Corrects a mis-stated justification in the earlier draft. For the TWO-term
+      conductance form the trajectory is perfectly well conditioned (about 102,
+      against 70 on the hull), so the near-collinearity argument does NOT apply
+      here. It applies to the SIX-term SINDy library, which is ill-conditioned on
+      every domain (about 25k on the trajectory, 14k on the hull).
+
+  - name: SymbolicCondHull
+    source: identifiability/symbolic_domain_comparison.csv
+    filter: {domain: hull}
+    aggregate: {over: seed, stats: [mean], ddof: 1, dropna: true}
+    emit: value
+    column: cond
+    round: 1
+    # raw mean=69.9 n=5
+
+# ===========================================================================
+# BLOCK 12 - FIVE-SEED gCa SWEEP (review point 5b).
+# Source: gca_sweep_5seed/gca_sweep_multiseed.csv
+# (scripts/summarize_gca_sweep.py). PRE-AGGREGATED wide schema: one row per
+# (gCa, metric) with mean/sd/n columns, so these use `columns:`, not
+# `aggregate:`.
+#
+# *** THE PUBLISHED SINGLE-SEED SWEEP WAS OPTIMISTIC AT THE LOW END. ***
+# The old gCa=0.4 value of 1.179 was the WORST of the five seeds; the mean is
+# 0.72 and only 1 of 5 seeds exceeds unity. Any sentence claiming the normalised
+# error "exceeds one" at the physiological conductance is NOT supported and must
+# not be restored.
+# ===========================================================================
+
+  - name: GcaSweepICaNormPointFour
+    source: gca_sweep_5seed/gca_sweep_multiseed.csv
+    filter: {gCa: 0.4, metric: ICa_rmse_norm}
+    emit: mean_std
+    columns: {mean: mean, std: sd, n: n}
+    round: 3
+    # raw mean=0.724297 sd=0.318438 n=5; per-seed 1.179/0.926/0.599/0.481/0.437
+    note: >-
+      Replaces the single-seed 1.179. The seed spread here (+/-0.318) is 13x the
+      spread at the gCa=2.0 centre point (+/-0.025), so the earlier practice of
+      judging every sweep point against the centre-point spread understated the
+      uncertainty at the low end badly.
+
+  - name: GcaSweepICaNormOne
+    source: gca_sweep_5seed/gca_sweep_multiseed.csv
+    filter: {gCa: 1.0, metric: ICa_rmse_norm}
+    emit: mean_std
+    columns: {mean: mean, std: sd, n: n}
+    round: 3
+    # raw mean=0.312 sd=0.097 n=5
+
+  - name: GcaSweepICaNormTwo
+    source: gca_sweep_5seed/gca_sweep_multiseed.csv
+    filter: {gCa: 2.0, metric: ICa_rmse_norm}
+    emit: mean_std
+    columns: {mean: mean, std: sd, n: n}
+    round: 3
+    # raw mean=0.140 sd=0.025 n=5
+
+  - name: GcaSweepICaNormFour
+    source: gca_sweep_5seed/gca_sweep_multiseed.csv
+    filter: {gCa: 4.0, metric: ICa_rmse_norm}
+    emit: mean_std
+    columns: {mean: mean, std: sd, n: n}
+    round: 3
+    # raw mean=0.093 sd=0.044 n=5
+
+  - name: GcaSweepICaRawTwo
+    source: gca_sweep_5seed/gca_sweep_multiseed.csv
+    filter: {gCa: 2.0, metric: ICa_rmse}
+    emit: mean_std
+    columns: {mean: mean, std: sd, n: n}
+    round: 3
+    # raw mean=1.189 sd=0.208 n=5
+    note: >-
+      Pair with GcaSweepICaRawPointFour. The RAW calcium error is statistically
+      flat across the whole sweep (1.19 to 1.48, every interval overlapping):
+      the closure's absolute error barely changes and only the signal it must
+      explain grows. That is a cleaner statement of the identifiability axis than
+      the normalised metric alone, and it only became visible with 5 seeds.
+
+  - name: GcaSweepICaRawPointFour
+    source: gca_sweep_5seed/gca_sweep_multiseed.csv
+    filter: {gCa: 0.4, metric: ICa_rmse}
+    emit: mean_std
+    columns: {mean: mean, std: sd, n: n}
+    round: 3
+    # raw mean=1.273 sd=0.560 n=5
+
+  - name: GcaSweepVRmsePointFour
+    source: gca_sweep_5seed/gca_sweep_multiseed.csv
+    filter: {gCa: 0.4, metric: V_rmse}
+    emit: mean_std
+    columns: {mean: mean, std: sd, n: n}
+    round: 3
+    # raw mean=0.215 sd=0.156 n=5
+    note: >-
+      Voltage is forecast equally well at every conductance (0.19 to 0.25 across
+      the sweep) while calcium recovery varies by 8x. Predictive accuracy on the
+      observed channel is independent of whether the hidden term is identified,
+      now backed by 5 seeds at every sweep point rather than one.
+
+# ===========================================================================
+# BLOCK 13 - NEURAL ODE AT A MATCHED BUDGET (review point 5a).
+# Source: node_parity/node_parity_summary.csv
+# (scripts/summarize_node_parity.py). Pre-aggregated; filter on the short `key`
+# column, never on `model` (that column contains parentheses and runs of
+# spaces).
+#
+# Three rows attribute the published baseline's failure:
+#   published_time  Adam 3000, 6 states + raw t
+#   parity_time     Adam 5000, 6 states + raw t   -> the BUDGET effect
+#   parity_auto     Adam 5000, 6 states only      -> the ARCHITECTURE effect
+#
+# *** THE BUDGET EXPLAINS NOTHING; THE ARCHITECTURE EXPLAINS EVERYTHING. ***
+# Any restored claim that the neural ODE "diverges", or that the comparison is
+# "impossible versus routine", is unsupported: with the time input removed, 4 of
+# 5 seeds forecast with finite error and exactly correct spike counts.
+# ===========================================================================
+
+  - name: NodeParityAutoVRmseMedian
+    source: node_parity/node_parity_summary.csv
+    filter: {key: parity_auto, metric: V_rmse}
+    emit: value
+    column: median
+    round: 2
+    # raw median=16.88; mean=73.19 sd=124.0; per-seed 34.5/8.7/11.1/294.8/16.9
+    note: >-
+      *** QUOTE THE MEDIAN, NOT THE MEAN. *** The mean (73.2 +/- 124) is
+      dominated by seed 4444, the single seed that still blows up. Four of five
+      seeds land between 8.7 and 34.5 mV with exactly correct spike counts. The
+      honest summary is "usually finite, occasionally catastrophic", and the
+      median plus the per-seed range says that; the mean hides it.
+
+  - name: NodeParityAutoRollout
+    source: node_parity/node_parity_summary.csv
+    filter: {key: parity_auto, metric: rollout_horizon_ms}
+    emit: mean_std
+    columns: {mean: mean, std: sd, n: n}
+    round: 2
+    # raw mean=19.53 sd=17.83 n=5; per-seed 6.65/44.42/32.29/5.48/8.81
+    note: >-
+      Against the published 0.55 +/- 0.65 and the parity-with-time 0.43 +/- 0.45.
+      The UDE saturates the 70 ms cap on every seed with zero variance, so the
+      remaining contrast is as much about RELIABILITY as about magnitude.
+
+  - name: NodeParityTimeRollout
+    source: node_parity/node_parity_summary.csv
+    filter: {key: parity_time, metric: rollout_horizon_ms}
+    emit: mean_std
+    columns: {mean: mean, std: sd, n: n}
+    round: 3
+    # raw mean=0.4305 sd=0.4462 n=5
+    note: >-
+      The budget control. Same architecture as published, the UDE's own budget,
+      and the horizon does not improve: it drops slightly (0.548 to 0.431). This
+      is what rules out "the baseline was under-trained".
+
+  - name: NodeParityTimeVRmse
+    source: node_parity/node_parity_summary.csv
+    filter: {key: parity_time, metric: V_rmse}
+    emit: mean_std
+    columns: {mean: mean, std: sd, n: n}
+    round: 0
+    # raw mean=7119 sd=4210 n=5 (published: 3951 +/- 3561)
+    note: >-
+      *** GUARDED - DO NOT PRINT THIS MACRO. *** Guard G2 (node-no-meanstd)
+      forbids a mean +/- SD summary of a BLOWN-UP integration, and this is one:
+      per-seed values run 275 to 11762 mV (42.8x), the sd is 59% of the mean, and
+      rmse_safe() computed each one over an unreported finite subset of
+      timesteps. A dispersion statistic on a diverged solve is not an error bar.
+      Print NodeParityTimeVRmseMin/Max instead. The entry is kept rather than
+      deleted so this reasoning stays attached to the quantity.
+      The DIRECTION is still the finding: more optimisation of the time-indexed
+      architecture made the forecast worse, not better.
+
+  - name: NodeParityTimeVRmseMin
+    source: node_parity/node_parity_summary.csv
+    filter: {key: parity_time, metric: V_rmse}
+    emit: value
+    column: min
+    round: 0
+    # raw min=274.517647 (seed 2222); per-seed 7193/275/7972/8392/11762
+
+  - name: NodeParityTimeVRmseMax
+    source: node_parity/node_parity_summary.csv
+    filter: {key: parity_time, metric: V_rmse}
+    emit: value
+    column: max
+    round: 0
+    # raw max=11761.564423 (seed 5555)
+    note: >-
+      Pair with NodeParityTimeVRmseMin. This is the admissible way to report the
+      quantity: a span, which tells the reader the integration failed
+      differently on every seed rather than by a characteristic amount.
+
+# ===========================================================================
+# BLOCK 15 - AGGRESSIVE-RETRAIN NEGATIVE CONTROL AT THE PHYSIOLOGICAL gCa.
+# Source: identifiability/gca04_retrain_control.csv
+# (scripts/gca04_retrain_control.py, on results/retrain_gca04_20k/).
+#
+# This control did not exist. retrain_gca2_20k.jl retrained gCa=2.0 only and then
+# COPIED the baseline gCa=0.4 probe into its output tree, making the "after"
+# negative-control row byte-identical to the "before" one -- which reads like a
+# replication while being one number in two directories. The script is now
+# parameterised (defaults unchanged) and skips that copy when gCa != 2.0, and a
+# genuine gCa=0.4 run at Adam 20000 / BFGS 1000 exists.
+#
+# READ THE DOMAINS TOGETHER OR THE RESULT IS MISSTATED:
+#   hull:       a_hat -0.372 -> -1.341, R^2 0.688 -> -0.331. Wrong-signed before
+#               AND after, and markedly worse after.
+#   traj-train: a_hat -0.061 -> +0.021. Nominally a sign change, but BOTH are
+#               indistinguishable from zero against a true +0.4. Do NOT report
+#               this as the closure recovering the sign; report it as the
+#               closure learning essentially nothing about the current at the
+#               physiological conductance, under either budget.
+# ===========================================================================
+
+  - name: GcaFourRetrainAHatBefore
+    source: identifiability/gca04_retrain_control.csv
+    filter: {case: before, domain: hull}
+    emit: value
+    column: a_hat
+    round: 3
+    # raw=-0.372012 (true +0.4). Matches the published SymbolicAHatNegControl.
+
+  - name: GcaFourRetrainAHatAfter
+    source: identifiability/gca04_retrain_control.csv
+    filter: {case: after, domain: hull}
+    emit: value
+    column: a_hat
+    round: 3
+    # raw=-1.341357 (true +0.4)
+    note: >-
+      The physiological failure does not improve under a fourfold budget; the
+      conductance moves further from the truth and stays wrong-signed. Pair with
+      GcaFourRetrainRTwoAfter, which collapses below zero.
+
+  - name: GcaFourRetrainRTwoBefore
+    source: identifiability/gca04_retrain_control.csv
+    filter: {case: before, domain: hull}
+    emit: value
+    column: r2_vs_true_on_domain
+    round: 3
+    # raw=0.688187
+
+  - name: GcaFourRetrainRTwoAfter
+    source: identifiability/gca04_retrain_control.csv
+    filter: {case: after, domain: hull}
+    emit: value
+    column: r2_vs_true_on_domain
+    round: 3
+    # raw=-0.331446
+    note: >-
+      NEGATIVE R^2: after the aggressive retrain the distilled conductance form
+      is a worse predictor of the true calcium current than that current's own
+      mean. State it plainly; it is the sharpest single number in the negative
+      control.
+
+# ===========================================================================
+# BLOCK 14 - VOLTAGE-ONLY ON THE SHARED COMMON-EVALUATION WINDOW.
+# Source: identifiability/voltage_only_commoneval.csv
+# (recover_voltage_only_commoneval.jl). TIDY schema, same nine columns as
+# metrics_all.csv.
+#
+# These rows did not exist: experiments_runner.jl calls run_experiment for the
+# voltage-only family WITHOUT common_eval_start, so metrics_all.csv has no
+# window=common_eval row for observed=voltage. The ledger carried
+# `voltage-only-common-eval-matches-full` as an UNSUPPORTED tombstone because of
+# it. No retrain was needed: the trained weights were saved, so the script
+# reloads each network, re-solves, and scores on the common-eval indices.
+# It self-tests by recomputing the FORECAST window too and matching
+# metrics_all.csv to a relative difference of 0 - so the reload path is exact,
+# and the common-eval numbers inherit that validation.
+# ===========================================================================
+
+  - name: CommonEvalVRmseFull
+    source: identifiability/voltage_only_commoneval.csv
+    filter: {model: UDE, observed: full, window: common_eval, metric: V_rmse}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: value
+    round: 3
+    # raw mean=0.266 std=0.037 n=5
+
+  - name: CommonEvalVRmseVoltage
+    source: identifiability/voltage_only_commoneval.csv
+    filter: {model: UDE, observed: voltage, window: common_eval, metric: V_rmse}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: value
+    round: 3
+    # raw mean=0.289 std=0.137 n=5
+    note: >-
+      Pair with CommonEvalVRmseFull. The two overlap comfortably, so the
+      voltage-only equivalence holds on an interval that is UNSEEN for both
+      conditions, not merely on each model's own forecast window. This is what
+      the tombstone asked for. Same caveat as everywhere else in this paper: n=5,
+      no statistical test, an equivalence-within-noise statement and not an
+      ordering - and note the voltage-only SD is the larger of the two.
+
+  - name: CommonEvalICaRmseFull
+    source: identifiability/voltage_only_commoneval.csv
+    filter: {model: UDE, observed: full, window: common_eval, metric: ICa_rmse}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: value
+    round: 3
+    # raw mean=1.251 std=0.212 n=5
+
+  - name: CommonEvalICaRmseVoltage
+    source: identifiability/voltage_only_commoneval.csv
+    filter: {model: UDE, observed: voltage, window: common_eval, metric: ICa_rmse}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: value
+    round: 3
+    # raw mean=1.382 std=0.478 n=5
+
+  - name: NodePublishedVRmseMin
+    source: node_parity/node_parity_summary.csv
+    filter: {key: published_time, metric: V_rmse}
+    emit: value
+    column: min
+    round: 0
+    # raw min=229.122220 (seed 2222); per-seed 4123/229/1134/5057/9213
+
+  - name: NodePublishedVRmseMax
+    source: node_parity/node_parity_summary.csv
+    filter: {key: published_time, metric: V_rmse}
+    emit: value
+    column: max
+    round: 0
+    # raw max=9213.415362 (seed 5555); span 40.2x, sd 90% of the mean
+    note: >-
+      Same guard as NodeParityTimeVRmseMax. Supersedes NodeForecastVRmse's
+      mean +/- SD wherever a magnitude is actually printed.
+
 # =============================================================================
 # DO NOT MACRO THESE — guarded or uninformative
 # -----------------------------------------------------------------------------

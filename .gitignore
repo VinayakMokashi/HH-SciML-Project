@@ -14,6 +14,10 @@ Thumbs.db
 *.jl.mem
 /docs/build/
 
+# Python bytecode from the scripts/ helpers (verify_references, summarize_*, etc.)
+__pycache__/
+*.pyc
+
 # Local-only working files (kept off GitHub on purpose):
 #   HANDOFF.md      — internal session-to-session reference
 #   Main_Clean.jl   — full narrative incl. the Objective-3 (SINDy) attempt

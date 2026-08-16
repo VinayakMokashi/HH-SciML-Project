@@ -50,15 +50,20 @@
   doi     = {10.1016/j.jcp.2018.10.045}
 }
 
-% Stripped form: LNCS volume/pages and Springer DOI did not verify; arXiv/venue did.
+% Springer chapter DOI, pages and ISBNs confirmed via Crossref (2026-08-06);
+% see paper/citations-audit.md.  Crossref carries no LNCS volume number for this
+% chapter, so none is asserted here.
 @inproceedings{silvestri2023analysis,
   author    = {Silvestri, Mattia and Baldo, Federico and Misino, Eleonora and Lombardi, Michele},
   title     = {An Analysis of Universal Differential Equations for Data-Driven Discovery of
                Ordinary Differential Equations},
   booktitle = {Computational Science -- ICCS 2023},
   series    = {Lecture Notes in Computer Science},
-  publisher = {Springer},
+  publisher = {Springer Nature Switzerland},
+  pages     = {353--366},
   year      = {2023},
+  doi       = {10.1007/978-3-031-36027-5_27},
+  isbn      = {978-3-031-36027-5},
   eprint    = {2306.10335},
   archivePrefix = {arXiv}
 }
@@ -336,6 +341,20 @@
   archivePrefix = {arXiv}
 }
 
+% The theory paper for the parametric-vs-functional identifiability distinction
+% this study measures empirically.  Distinct from loman2025ude (Loman & Baker,
+% arXiv:2510.14140): different author list, different arXiv id, later work.
+@article{loman2026structural,
+  author  = {Loman, Torkel E. and Browning, Alexander P. and Baker, Ruth E.},
+  title   = {Structural functional identifiability and model discovery in differential
+             equation models},
+  journal = {arXiv preprint arXiv:2606.30289},
+  year    = {2026},
+  eprint  = {2606.30289},
+  archivePrefix = {arXiv},
+  doi     = {10.48550/arXiv.2606.30289}
+}
+
 @article{loman2025ude,
   author  = {Loman, Torkel E. and Baker, Ruth E.},
   title   = {Functional and parametric identifiability for universal differential equations
@@ -375,6 +394,25 @@
   note    = {Submitted 15 June 2026}
 }
 
+% Prior work by four of this paper's five authors, on the SAME Hodgkin-Huxley
+% system. Verified against the arXiv record 2026-08-10 (see citations-audit.md).
+% NOTE: arXiv lists the fifth author as "Sreedat Panat"; this manuscript's byline
+% uses "Sreedath Panat" per the author's own correction. The bib entry reproduces
+% the published record as-is, which is correct for a citation.
+@article{kainth2025pinodesr,
+  author  = {Kainth, Kamalpreet Singh and Joshi, Prathamesh Dinesh and
+             Dandekar, Raj Abhijit and Dandekar, Rajat and Panat, Sreedat},
+  title   = {Physics-Informed Neural {ODEs} with Scale-Aware Residuals for Learning
+             Stiff Biophysical Dynamics},
+  journal = {arXiv preprint arXiv:2511.11734},
+  year    = {2025},
+  eprint  = {2511.11734},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  doi     = {10.48550/arXiv.2511.11734},
+  note    = {Accepted at the Mathematics and Scientific Machine Learning (MSML) Conference 2025}
+}
+
 @article{elgazzar2025ude,
   author  = {El-Gazzar, Ahmed and van Gerven, Marcel},
   title   = {Universal differential equations as a unifying modeling language for neuroscience},
@@ -385,7 +423,8 @@
   doi     = {10.3389/fncom.2025.1677930}
 }
 
-% doi omitted: inferred from PII, never resolved. Reachable via eprint.
+% DOI confirmed via Crossref (2026-08-06): note the Elsevier DOI carries the
+% 2020 online-first year while the issue is volume 123 (2021).  Both are correct.
 @article{burghi2021feedback,
   author  = {Burghi, Thiago B. and Schoukens, Maarten and Sepulchre, Rodolphe},
   title   = {Feedback identification of conductance-based models},
@@ -393,6 +432,7 @@
   volume  = {123},
   pages   = {109297},
   year    = {2021},
+  doi     = {10.1016/j.automatica.2020.109297},
   eprint  = {2002.09626},
   archivePrefix = {arXiv}
 }
@@ -437,34 +477,50 @@
   doi     = {10.5334/jors.151}
 }
 
-% Safe-fallback form: arXiv only. HPEC 2021 proceedings DOI/pages did not verify.
-@article{ma2021comparison,
-  author  = {Ma, Yingbo and Dixit, Vaibhav and Innes, Michael J. and Guo, Xingjian and
-             Rackauckas, Chris},
-  title   = {A Comparison of Automatic Differentiation and Continuous Sensitivity Analysis
-             for Derivatives of Differential Equation Solutions},
-  journal = {arXiv preprint arXiv:1812.01892},
-  year    = {2021},
-  eprint  = {1812.01892},
-  archivePrefix = {arXiv},
-  note    = {arXiv v1 5 Dec 2018; latest revision 20 Jul 2021}
+% Published version located: IEEE HPEC 2021.  DOI and pages confirmed via
+% Crossref (2026-08-06).  The arXiv eprint (v1 2018) is retained because it is
+% the openly readable copy; the year here is the proceedings year.
+@inproceedings{ma2021comparison,
+  author    = {Ma, Yingbo and Dixit, Vaibhav and Innes, Michael J. and Guo, Xingjian and
+               Rackauckas, Chris},
+  title     = {A Comparison of Automatic Differentiation and Continuous Sensitivity Analysis
+               for Derivatives of Differential Equation Solutions},
+  booktitle = {2021 IEEE High Performance Extreme Computing Conference (HPEC)},
+  pages     = {1--9},
+  year      = {2021},
+  publisher = {IEEE},
+  doi       = {10.1109/HPEC49654.2021.9622796},
+  eprint    = {1812.01892},
+  archivePrefix = {arXiv}
 }
 
+% Software entries carry the CONCEPT (all-versions) Zenodo DOI plus the version
+% this project actually ran, read from Manifest.toml.  A concept DOI resolves to
+% the newest release, so the `version` field -- not the DOI -- is what pins
+% reproducibility.  Both records checked against DataCite (2026-08-06).
 @software{pal2023lux,
   author    = {Pal, Avik},
   title     = {{Lux: Explicit Parameterization of Deep Neural Networks in Julia}},
+  version   = {0.5.14},
   month     = apr,
   year      = {2023},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.7808903}
+  doi       = {10.5281/zenodo.7808903},
+  url       = {https://doi.org/10.5281/zenodo.7808903},
+  note      = {Concept DOI (all versions); version 0.5.14 used here}
 }
 
+% NOTE: the previously cited 10.5281/zenodo.7738525 is the VERSION DOI for
+% v3.12.1, which is not the version this project ran.  Replaced with the concept
+% DOI 10.5281/zenodo.7738524 and the version actually used (Manifest.toml).
 @software{dixit2023optimization,
   author    = {Dixit, Vaibhav Kumar and Rackauckas, Christopher},
   title     = {{Optimization.jl}: A Unified Optimization Package},
-  version   = {v3.12.1},
+  version   = {3.19.3},
   month     = mar,
   year      = {2023},
   publisher = {Zenodo},
-  doi       = {10.5281/zenodo.7738525}
+  doi       = {10.5281/zenodo.7738524},
+  url       = {https://doi.org/10.5281/zenodo.7738524},
+  note      = {Concept DOI (all versions); version 3.19.3 used here}
 }

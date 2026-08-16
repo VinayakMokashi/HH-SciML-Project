@@ -1,0 +1,2 @@
+seed,final_loss,bfgs_ok,train_V_rmse,forecast_V_rmse,train_ICa_rmse,forecast_ICa_rmse
+1111,35.32018219838993,true,0.24007895279492608,1.0501749670269807,4.242917646317587,4.064504098217604

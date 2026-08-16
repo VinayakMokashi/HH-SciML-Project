@@ -64,16 +64,61 @@
 \newcommand{\mgNaP}{0.5}\newcommand{\mECa}{120}\newcommand{\mIapp}{10}
 \newcommand{\mtaup}{1}\newcommand{\mtaus}{5}
 \newcommand{\mOUth}{5}\newcommand{\mOUsig}{0.5}
+% -- gate steady-state activations (src/hh_core.jl:61,66) --
+\newcommand{\pHalf}{-50}       % p_inf half-activation, mV           src/hh_core.jl:61
+\newcommand{\pSlope}{6}        % p_inf slope factor, mV              src/hh_core.jl:61
+\newcommand{\sHalf}{-25}       % s_inf half-activation, mV           src/hh_core.jl:66
+\newcommand{\sSlope}{9}        % s_inf slope factor, mV              src/hh_core.jl:66
+% -- noise level (the ablation centre point; the axis itself is swept) --
+\newcommand{\NoisePct}{2}      % noise_level=0.02 as a percentage    experiments_runner.jl:37
+% -- literature calcium density used to justify the physiological gCa --
+%    Pospischil et al. (2008) intrinsically-bursting pyramidal cell, ModelDB
+%    accession 123623, demo_PY_IB.hoc lines 133,137:
+%      gcabar_ical = 1.7e-4 mho/cm^2 = 0.17 mS/cm^2   at   gnabar_hh2 = 0.05 = 50 mS/cm^2.
+%    Ratio 0.17/50 = 0.0034; rescaled to this model's squid-axon gNa = 120 mS/cm^2
+%    that is 0.0034*120 = 0.408, i.e. our \gcaPhys.  (Their bursting-repetitive
+%    variant, demo_PY_IBR.hoc, gives 2.2e-4 -> 0.53 on the same rescaling.)
+\newcommand{\gcaLit}{0.17}     % Pospischil IB L-current density, mS/cm^2
+\newcommand{\gNaLit}{50}       % Pospischil sodium density, mS/cm^2
+\newcommand{\gcaRescaled}{0.408}  % (0.17/50)*120, the unrounded rescaled value
+\newcommand{\gcaRescaledIBR}{0.53} % same rescaling of demo_PY_IBR.hoc's 2.2e-4
 % -- derived / typeset-only constants (inputs, not results) --
 \newcommand{\gcaMid}{1.0}      % gCa sweep midpoint                     experiments_runner.jl:34
 \newcommand{\gcaHi}{4.0}       % gCa sweep top                          experiments_runner.jl:34
 \newcommand{\bTrue}{-240}      % b=-gCa*ECa at gCa=2.0 (true offset)     src/hh_core.jl:39
 \newcommand{\NNinputs}{[\,V/100,\ s\,]}              % closure inputs    src/experiment.jl:117
-\newcommand{\NodeVspan}{10^{2}\text{--}10^{4}}       % diverged NODE V RMSE order of magnitude, results/metrics_all.csv
+% \NodeVspan removed 2026-08-08: it existed to say the original neural ODE's
+% forecast spanned 10^2-10^4 mV. That framing is retired — the failure was an
+% architecture artifact, not a property of black-box models (see Table 1, rows
+% 1-3). Do not reintroduce it.
 \newcommand{\ArchUde}{2\!\to\!16\!\to\!16\!\to\!1}   % UDE closure MLP   src/experiment.jl:103
 \newcommand{\ArchNode}{7\!\to\!64\!\to\!64\!\to\!6}  % NODE MLP          src/experiment.jl:404
 \newcommand{\Tol}{10^{-8}}     % solver abstol=reltol                    src/experiment.jl:53
 \newcommand{\Lr}{10^{-2}}      % Adam LR / BFGS initial step-norm         src/experiment.jl:356,89
+% Share of the expected full-state training loss carried by the voltage channel.
+% The loss is an UNWEIGHTED sum of squares in native units, and each channel's
+% residual scales with its own noise magnitude (noise_level x that channel's SD),
+% so the shares are (0.02*sd_i)^2 normalised.  Computed from the clean gCa=2.0
+% trajectory (src/hh_core.jl gen_clean_data): sd = [25.60, 0.329, 0.119, 0.118,
+% 0.292, 0.0776] for [V,m,h,n,p,s] -> voltage share 99.97 %.
+% Training-loss reduction from the aggressive retrain: (35.71-29.66)/35.71.
+% Derived from \valTrainLossBefore and \valTrainLossAfter; the underlying file is
+% results/identifiability/training_losses_before_after.csv.
+\newcommand{\LossDropPct}{17}
+\newcommand{\LossShareV}{99.97}
+\newcommand{\LossShareGates}{0.03}   % the complement: all five gates together
+\newcommand{\GateSdRatio}{100}  % order of magnitude of sd(V) / mean sd(gates) = 137
+% Absolute noise magnitudes at the baseline level, sigma_i = 0.02 x channel SD of
+% the clean gCa=2.0 trajectory (src/hh_core.jl:165).  Voltage 0.5121 mV; gates
+% 0.001553 (s) to 0.006576 (m).
+\newcommand{\sigmaV}{0.51}          % mV
+\newcommand{\sigmaGateLo}{0.0016}   % dimensionless (gate s)
+\newcommand{\sigmaGateHi}{0.0066}   % dimensionless (gate m)
+% Sampling interval and the resulting OU relaxation factor per sample.
+% dt = 100/511 ms = 0.19569; 1 - theta*dt = 1 - 5*0.19569 = 0.0215.
+\newcommand{\dtSample}{0.196}       % ms                    src/hh_core.jl:76
+\newcommand{\ouAR}{0.02}            % 1 - theta*dt          src/hh_core.jl:88
+\newcommand{\NodeScaleV}{100}       % NODE voltage normaliser  src/hh_core.jl:77
 
 \title{When Can Scientific Machine Learning Recover a Hidden Ionic Current?
 Identifiability Limits of Universal Differential Equations in a
@@ -98,7 +143,7 @@ Hodgkin--Huxley Neuron}
   Vizuara AI Labs \\
   \texttt{rajat@vizuara.com} \\
   \And
-  Sreedat Panat \\
+  Sreedath Panat \\
   Vizuara AI Labs \\
   \texttt{sreedat@vizuara.com} \\
 }
@@ -106,9 +151,11 @@ Hodgkin--Huxley Neuron}
 \renewcommand{\shorttitle}{Identifiability Limits of UDEs in a Hodgkin--Huxley Neuron}
 
 \hypersetup{
+  hidelinks,                 % no coloured text and no visible link boxes in print
+  pdfborder={0 0 0},         % belt and braces: some viewers ignore `hidelinks`
   pdftitle={When Can Scientific Machine Learning Recover a Hidden Ionic Current? Identifiability Limits of Universal Differential Equations in a Hodgkin-Huxley Neuron},
   pdfsubject={q-bio.NC, q-bio.QM, cs.LG},
-  pdfauthor={Vinayak Mokashi, Prathamesh Dinesh Joshi, Raj Abhijit Dandekar, Rajat Dandekar, Sreedat Panat},
+  pdfauthor={Vinayak Mokashi, Prathamesh Dinesh Joshi, Raj Abhijit Dandekar, Rajat Dandekar, Sreedath Panat},
   pdfkeywords={scientific machine learning, universal differential equations, neural ODE, Hodgkin-Huxley, symbolic regression, SINDy, identifiability, computational neuroscience},
 }
 
@@ -122,30 +169,35 @@ conductance-based neuron models the natural application is to learn an unknown
 ionic current from an observed voltage trace and then read the recovered
 current's coefficients as biophysical estimates. We test whether that reading is
 earned.
-% claim: single-trajectory-is-the-binding-limitation
 We replace the calcium current in a six-state Hodgkin--Huxley model with a
 neural closure $U(V,s)$, train on a single \Tfull\,ms noisy trajectory, and
-distil the closure back into a conductance form $s^2(aV+b)$.
+distil the closure back into the conductance form $s^2(aV+b)$.
 % claim: ude-forecasts-accurately
-% claim: node-diverges
 % claim: voltage-only-equivalent
 The UDE forecasts held-out voltage to $\valUdeForecastVRmseMeanStd$\,mV
-(mean\,$\pm$\,SD over $\valUdeForecastVRmseN$ seeds) where a black-box neural ODE
-leaves a \Ttube\,mV error tube after $\valNodeForecastRolloutMeanStd$\,ms;
-restricting the loss to voltage alone matches full-state observation to within
-seed noise.
-% claim: symbolic-form-recovered
+(mean\,$\pm$\,SD over $\valUdeForecastVRmseN$ seeds) and holds the trajectory for
+the entire remaining window; restricting the loss to voltage alone matches
+full-state observation to within seed noise.
 % claim: symbolic-coefficients-not-identifiable
-The closure recovers the current's functional form
-($R^2 = \valSymbolicRTwoCondTrueMeanStd$ against the true current) but not its
-scale: $\hat{a} = \valSymbolicAHatMeanStd$ against a true $\gcaMain$, with a
-per-seed span of \valSymbolicAHatRange{} that brackets the truth on both sides.
-% claim: retrain-does-not-close-gap
-This is not under-training. Quadrupling the optimisation budget leaves every run
-converged yet makes the estimate worse and noisier: different closures fit the
-same voltage equally well. From one trajectory, the calcium current's shape is
-identifiable and its conductance is not. Code, trained parameters, and all
-results tables are released.
+The conductance read off the closure, however, is only order-correct:
+$\hat{a} = \valSymbolicAHatTrajTrainMeanStd$ against a true $\gcaMain$, with a
+per-seed span of \valSymbolicAHatRangeTrajTrain{} that brackets the truth on both
+sides.
+% claim: parametric-fit-identifies-conductance
+The usual explanation, that one trajectory cannot determine the conductance, is
+wrong. Fitting the two calcium parameters directly to the \emph{same} trajectory,
+with no network, returns $g_{Ca} = \valParamFitGcaHatTwoMeanStd$ with a
+profile-likelihood 95\% interval of $[1.63, 2.13]$ % numok: profile CI, results/identifiability/profile_gca_gca2.0.csv
+and an asymptotic relative standard error of
+$\valCondRelSeGcaTwoMean$. % claim: closure-induced-nonidentifiability
+The data determine the conductance to about six per cent; the closure loses that
+by roughly a factor of six.
+% claim: retrain-improves-loss-worsens-recovery
+Nor is it under-training: quadrupling the budget lowers the training loss by
+\LossDropPct\,\% while making every recovery quantity worse. What fails here is not parametric
+identifiability but functional identifiability, and the flexible closure is what
+introduces the failure. Code, trained parameters, and all results tables are
+released.
 \end{abstract}
 
 \keywords{Scientific machine learning \and Universal differential equations \and
@@ -199,54 +251,79 @@ we control. The failure mode we find is the \emph{default practice}: fitting a
 UDE to a single trajectory and reading off the learned current's coefficients is
 exactly what a practitioner would reasonably do, and on this system it recovers
 the current's shape while getting its scale wrong by a factor that varies across
-random seeds. The contribution is not that this can happen; it is a
-characterisation of \emph{when} it happens, and a demonstration, with two
-controls, that the failure is a property of the data rather than of the fit or
-the optimiser.
+random seeds.
+% claim: closure-induced-nonidentifiability
+The contribution is not that this can happen; it is a characterisation of
+\emph{when} it happens, and a demonstration, through a chain of controls, that
+the failure is a property of the flexible representation rather than of the data,
+the fit, or the optimiser.
 
 \subsection{Contributions}
 
 \begin{itemize}
   \item % claim: ude-forecasts-accurately
-  \textbf{A reproducible advanced-HH SciML benchmark.} Embedding the known
-  physics and learning only the calcium current turns a \Rcap\,ms voltage
-  extrapolation from impossible into routine: a black-box neural ODE leaves a
-  \Ttube\,mV error tube $\valNodeForecastRolloutMeanStd$\,ms past the training
-  boundary, while the UDE never breaches it
-  (Sec.~\ref{sec:results-forecasting}, Fig.~\ref{fig:node-vs-ude}).
+  % claim: node-failure-is-architecture-not-budget
+  \textbf{A reproducible advanced-HH SciML benchmark, with a baseline that is
+  actually defensible.} Embedding the known physics and learning only the calcium
+  current buys both accuracy and reliability: the UDE holds the \Ttube\,mV error
+  tube for the entire \Rcap\,ms remainder on every seed, where a black-box neural
+  ODE given the same budget and an autonomous architecture manages
+  $\valNodeParityAutoRolloutMeanStd$\,ms. We reach that comparison by first
+  repairing the baseline. Matching its optimisation budget to the UDE's changes
+  nothing ($\valNodeParityTimeRolloutMeanStd$\,ms), while removing a raw time
+  input from the right-hand side of an autonomous system improves it by more than
+  an order of magnitude, so the failure is architectural
+  (Sec.~\ref{sec:results-forecasting}, Table~\ref{tab:forecast}).
 
   \item % claim: voltage-only-equivalent
   % claim: physics-prior-reconstructs-unobserved-gates
-  \textbf{A physics prior that reconstructs the unobserved state.} Observing
+  \textbf{A physics prior that propagates the unobserved state.} Observing
   \emph{only} voltage in the loss matches full-state observation to within seed
   noise, and the five gate trajectories, which never enter the objective, are
-  reconstructed anyway by the retained kinetics
+  carried along accurately by the retained kinetics. This is propagation of
+  unobserved states from a known initial condition, not reconstruction of them
+  from voltage alone: the solver is started from the true full state and the
+  exact gate kinetics are kept
   (Sec.~\ref{sec:results-partial}, Fig.~\ref{fig:voltage-only}).
 
   \item % claim: symbolic-form-recovered
   % claim: symbolic-coefficients-not-identifiable
-  \textbf{Shape recovered, scale not.} The learned closure recovers the
-  \emph{functional form} of the calcium current
-  ($R^2 = \valSymbolicRTwoCondTrueMeanStd$ against the true current) but not its
-  \emph{scale}: $\hat{a} = \valSymbolicAHatMeanStd$ against a true value of
-  $\gcaMain$, with a per-seed span of \valSymbolicAHatRange{} that brackets the
-  truth on both sides (Sec.~\ref{sec:results-symbolic}, Fig.~\ref{fig:symbolic}).
+  \textbf{Shape agrees, scale does not.} Given the conductance form, the distilled
+  closure matches the true calcium current closely
+  ($R^2 = \valSymbolicRTwoTrajTrainMeanStd$ on the supervised trajectory) while
+  the conductance that same fit implies is only order-correct:
+  $\hat{a} = \valSymbolicAHatTrajTrainMeanStd$ against a true value of $\gcaMain$,
+  spanning \valSymbolicAHatRangeTrajTrain{} across seeds. Curve-fit quality and
+  coefficient identifiability are different properties
+  (Sec.~\ref{sec:results-symbolic}, Fig.~\ref{fig:symbolic}).
 
-  \item % claim: retrain-does-not-close-gap
-  \textbf{The gap is structural, not optimisational.} An aggressive-retrain
-  control establishes that the coefficient gap is a property of the problem and
-  not of our training: quadrupling the budget leaves every run converged and
-  makes the estimate \emph{worse and noisier}
-  ($\hat{a} = \valRetrainAHatMeanStd$), while the identical pipeline recovers the
-  true coefficients when fit against ground truth on the same domain
+  \item % claim: parametric-fit-identifies-conductance
+  % claim: closure-induced-nonidentifiability
+  \textbf{The data are not the problem; the closure is.} Fitting the two calcium
+  parameters directly to the \emph{same} trajectory, with no network, recovers
+  $g_{Ca} = \valParamFitGcaHatTwoMeanStd$ against a true $\gcaMain$ (relative
+  standard error $\valCondRelSeGcaTwoMean$, $\chi^2$ per point
+  $\valParamFitChiSqPerPointTwo$). One trajectory identifies the conductance to
+  about six per cent; routing the same current through a $\NparamUde$-parameter
+  closure inflates that spread more than sixfold. This is parametric
+  identifiability holding while functional identifiability fails
+  (Sec.~\ref{sec:results-parametric}, Table~\ref{tab:parametric}).
+
+  \item % claim: retrain-improves-loss-worsens-recovery
+  \textbf{Not under-training, and we can now show the loss.} Quadrupling the
+  optimisation budget \emph{lowers} the training objective, from
+  $\valTrainLossBeforeMeanStd$ to $\valTrainLossAfterMeanStd$, while making every
+  recovery quantity worse ($\hat{a} = \valRetrainAHatMeanStd$). More optimisation
+  buys a better fit and a worse closure, which is what a flat direction in the
+  loss looks like from inside an optimiser
   (Sec.~\ref{sec:results-retrain}, Table~\ref{tab:retrain}).
 
   \item % claim: gca-sweep-shows-nonidentifiability
-  \textbf{Locating the boundary.} A conductance sweep locates where recovery
-  becomes possible: normalised calcium error falls from
-  $\valGcaAblICaNormPointFour$ at the physiological value $g_{Ca}=\gcaPhys$ (where
-  the closure's error exceeds the calcium signal's own variation) to
-  $\valGcaAblICaNormFour$ at $g_{Ca}=\gcaHi$
+  \textbf{Recovery tracks signal amplitude, not fit quality.} Across a
+  five-seed conductance sweep, normalised calcium error falls from
+  $\valGcaSweepICaNormPointFourMeanStd$ at the physiological $g_{Ca}=\gcaPhys$ to
+  $\valGcaSweepICaNormFourMeanStd$ at $g_{Ca}=\gcaHi$, while forecast voltage
+  error is unchanged throughout
   (Sec.~\ref{sec:results-ablations}, Fig.~\ref{fig:gca}).
 \end{itemize}
 
@@ -310,21 +387,52 @@ Neural and universal differential equations have been applied to
 conductance-based neurons for parameter and state estimation
 \citep{meliza2014, burghi2021feedback, iravanian2020}, and UDEs have been
 proposed as a unifying modelling language for the field \citep{elgazzar2025ude}.
+On the Hodgkin--Huxley system specifically, \citet{kainth2025pinodesr} report
+that standard neural ODEs and physics-informed variants forecast stiff
+oscillatory dynamics unreliably under realistic iteration budgets, and stabilise
+them by normalising physics residuals across state variables that evolve on
+disparate timescales. That diagnosis is directly relevant to us twice over: it
+independently corroborates the weakness of the black-box baseline we report in
+Sec.~\ref{sec:results-forecasting}, and the imbalance it corrects is the same one
+that makes our full-state and voltage-only conditions nearly identical
+(Sec.~\ref{sec:results-partial}). Where they rebalance the residual to make the
+learned vector field trainable, we hold the objective fixed and ask what the
+resulting closure can be trusted to tell us about the physics.
 Closest to our setting, \citet{beck2026hybrid} embed neural ODEs in
-conductance-based models to learn unknown currents and misspecified kinetics,
-validating across a large channel database. They own the claim that one can put a
-network inside a Hodgkin--Huxley model and learn a hidden current, and we do not
-contest it. What remains open is what they do not do: they do not test calcium,
-do not run symbolic regression (they name it as future work), and treat
-underdetermination as a one-sentence aside. \citet{loman2025ude} supply the
-vocabulary we use, parametric versus functional identifiability, and a tension
-we address directly: their headline is that inserting a network into a
-mechanistic ODE has minimal impact on the identifiability of the traditional
-parameters, whereas here it is the crux. Prior work establishes that neural
-components can be embedded in conductance-based models and that such models are
-degenerate; no one has asked \emph{which} hidden current is recoverable, from
-\emph{how much} of a single trajectory, and whether failures are optimisational
-or structural.
+conductance-based models to learn unknown currents and misspecified kinetics.
+By parameterising the network in terms of voltage-dependent steady-state and
+time-constant functions they recover interpretable gating dynamics from voltage
+recordings without assuming a functional form, validating across a channel
+database of several thousand models that includes several hundred
+calcium-channel models, and reducing a multicompartment cortical model to a
+single compartment with a learned axial current. They own the claim that one can
+put a network inside a Hodgkin--Huxley model and learn a hidden current, and we
+do not contest it. They are also clear-eyed about the difficulty we study:
+recovering gating dynamics from voltage alone is, in their words, inherently
+underconstrained, because for a multi-gate channel different combinations of
+steady-state and time-constant functions produce similar currents. Our
+contribution is not to point that out but to \emph{measure} it in a case where
+ground truth is controlled: which hidden current is recoverable, from how much of
+a single trajectory, and whether an observed failure is optimisational or
+structural. Two differences of scope are worth naming plainly, since they mark
+where our experiments begin rather than any shortcoming of theirs: their
+dedicated recovery demonstrations use sodium and potassium currents rather than
+calcium, and they do not run symbolic regression, naming it instead as a
+post-hoc step that could distil the learned curves into closed form. Distilling
+the learned closure and asking what its coefficients are worth is exactly the
+step we take.
+
+The identifiability vocabulary we use comes from a parallel line of work.
+\citet{loman2025ude} split UDE identifiability into a parametric and a functional
+part, and report that inserting a network into a mechanistic ODE has limited
+impact on the identifiability of the traditional parameters;
+\citet{loman2026structural} generalise structural parameter identifiability to
+\emph{functional} identifiability and characterise model classes in which unique
+recovery of an unknown function is impossible in principle, and
+\citet{norden2025structural} argue that structural identifiability should be
+checked before machine-learning models of partially observed dynamical systems
+are interpreted at all. That distinction, between whether a parameter is
+determined and whether a learned function is, organises what we report.
 
 % =========================================================================
 \section{Background and Problem Setup}
@@ -376,7 +484,16 @@ choice below and in Sec.~\ref{sec:setup-hidden}.
   Appendix~\ref{app:eqns}. Values marked ``choice'' are modelling decisions
   stated for reproducibility, not measurements attributed to a source. The
   calcium conductance $g_{Ca}$ is not listed here: it is a swept builder argument
-  (Sec.~\ref{sec:results-ablations}), not a fixed constant.}
+  (Sec.~\ref{sec:results-ablations}), not a fixed constant. Two entries need a
+  word of care. The OU volatility $\sigma$ sets only the shape of the noise
+  process, not its size: each channel's noise path is renormalised to unit
+  variance before being scaled to the stated percentage of that channel's own
+  standard deviation, so $\sigma$ cancels and the noise level is the only
+  amplitude knob. And the calcium current here is activation-only, $s^2$; the
+  source model of \citet{reuveni1993} carries a further inactivation gate
+  ($m^2h$), which we omit. That omission is a declared simplification of the
+  target dynamics, not a claim about the biology, and it is what makes the
+  recovery target exactly two scalars.}
   \label{tab:params}
   \begin{tabular}{llll}
     \toprule
@@ -386,12 +503,16 @@ choice below and in Sec.~\ref{sec:setup-hidden}.
     $g_{Na},\ g_K,\ g_L$ & \mgNa,\ \mgK,\ \mgL & \nicefrac{mS}{cm$^2$} & \citep{hodgkin1952} \\ % numok: conductances, src/hh_core.jl:31-33
     $E_{Na},\ E_K,\ E_L$ & \mENa,\ \mEK,\ \mEL & mV & \citep{hodgkin1952} \\ % numok: reversal potentials, src/hh_core.jl:34-36
     $g_{NaP}$ & \mgNaP & \nicefrac{mS}{cm$^2$} & \citep{golomb1997} \\ % numok: persistent-Na conductance, src/hh_core.jl:38
-    $p_\infty$ half-activation & near \Vrest{} & mV & \citep{magistretti1999} \\ % numok: p_inf V-half, src/hh_core.jl:61
-    $s_\infty$ half-activation & --- & mV & \citep{reuveni1993} \\ % numok: s_inf V-half, src/hh_core.jl:66
+    $p_\infty$ half-activation $V_{1/2}$ & \pHalf & mV & \citep{magistretti1999} \\ % numok: p_inf V-half, src/hh_core.jl:61
+    $p_\infty$ slope factor & \pSlope & mV & \citep{magistretti1999} \\ % numok: p_inf slope, src/hh_core.jl:61
+    $s_\infty$ half-activation $V_{1/2}$ & \sHalf & mV & \citep{reuveni1993} \\ % numok: s_inf V-half, src/hh_core.jl:66
+    $s_\infty$ slope factor & \sSlope & mV & \citep{reuveni1993} \\ % numok: s_inf slope, src/hh_core.jl:66
     $E_{Ca}$ & \mECa & mV & \citep{reuveni1993} \\ % numok: calcium reversal, src/hh_core.jl:39
     $I_{\mathrm{app}}$ & \mIapp & \nicefrac{$\mu$A}{cm$^2$} & choice (drives spiking) \\ % numok: applied drive, src/hh_core.jl:40
     $\tau_p,\ \tau_s$ & \mtaup,\ \mtaus & ms & choice \\ % numok: gate time constants, src/hh_core.jl:62,67
-    OU $\theta,\ \sigma$ & \mOUth,\ \mOUsig & --- & choice \\ % numok: noise process, src/hh_core.jl:88-89
+    OU relaxation rate $\theta$ & \mOUth & ms$^{-1}$ & choice \\ % numok: noise process, src/hh_core.jl:88
+    OU volatility $\sigma$ & \mOUsig & ms$^{-1/2}$ & choice \\ % numok: noise process, src/hh_core.jl:89
+    Noise level & \NoisePct & \% of channel SD & choice \\ % numok: baseline noise level, experiments_runner.jl:37
     \bottomrule
   \end{tabular}
 \end{table}
@@ -408,9 +529,25 @@ kinetics are known physics}, not because calcium is observed. The two unknowns
 are the conductance $g_{Ca}$ and the reversal potential $E_{Ca}$; the functional
 form $s^2(V-E_{Ca})$ is what the symbolic stage is asked to rediscover.
 
+The physiological reference value deserves its own sentence, because everything
+below is calibrated against it. \citet{pospischil2008} model the same
+\citet{reuveni1993} high-threshold calcium current in an intrinsically-bursting
+cortical pyramidal cell at a density of \gcaLit\,\nicefrac{mS}{cm$^2$} alongside a
+sodium density of \gNaLit\,\nicefrac{mS}{cm$^2$} (their published implementation,
+ModelDB accession 123623). % numok: literature densities, demo_PY_IB.hoc:133,137
+Our model inherits the classical squid-axon $g_{Na}=\mgNa$\,\nicefrac{mS}{cm$^2$}
+rather than their cortical value, so the quantity to carry across is the
+\emph{ratio} of calcium to sodium conductance, not the absolute density. Holding
+that ratio fixed gives
+$(\gcaLit/\gNaLit)\times\mgNa = \gcaRescaled$\,\nicefrac{mS}{cm$^2$}, which we
+round to $\gcaPhys$ and call physiological throughout; their
+bursting-repetitive variant maps to $\gcaRescaledIBR$ on the same rescaling.
+So $\gcaPhys$ is a literature-derived quantity with a stated derivation, not a
+round number chosen to make a negative result come out.
+
 % claim: gca-two-is-a-controlled-choice
-The main experiments use $g_{Ca}=\gcaMain$, above the physiological value of
-about $\gcaPhys$. This is a deliberate choice, not a convenience, and we defend
+The main experiments use $g_{Ca}=\gcaMain$, five times that physiological value.
+This is a deliberate choice, not a convenience, and we defend
 it as an experiment rather than a setting: $g_{Ca}$ controls how much the calcium
 current contributes to the voltage the loss can see, so it \emph{is} an
 identifiability axis. We sweep it in full (Sec.~\ref{sec:results-ablations}),
@@ -424,9 +561,19 @@ residual coefficient gap there is a finding rather than a shrug.
 \label{sec:setup-data}
 
 For each run we solve the true model over $[0,\Tfull]$\,ms, sample $\Ndata$
-points, and add temporally-correlated Ornstein--Uhlenbeck noise to every channel,
-each channel's noise renormalised to unit variance and then scaled to a fixed
-fraction of that channel's standard deviation. Models are trained on the noisy
+points, and add Ornstein--Uhlenbeck noise to every channel, each channel's noise
+path renormalised to unit variance and then scaled to \NoisePct\,\% of that
+channel's own standard deviation. That percentage is the noise magnitude
+throughout, and because the scaling is per channel it is the same \emph{relative}
+perturbation everywhere: in absolute terms the baseline corresponds to about
+$\sigmaV$\,mV on voltage and $\sigmaGateLo$--$\sigmaGateHi$ on the dimensionless
+gates.
+The process is nominally temporally correlated, but at this sampling interval it
+is not: with $\theta=\mOUth$\,ms$^{-1}$ and $\Delta t \approx \dtSample$\,ms the
+discrete relaxation factor $1-\theta\Delta t$ is about $\ouAR$, so successive
+samples are effectively independent.
+We state it because ``temporally correlated noise'' would
+otherwise overstate what the data actually contain. Models are trained on the noisy
 data over $t\le\Ttrain$\,ms and evaluated against the \emph{clean} trajectory, so
 error measures recovery of the underlying dynamics rather than memorisation of
 noise; a secondary error against the noisy target records the noise floor. The
@@ -491,13 +638,43 @@ else (the four known currents, all six gate ODEs, $I_{\mathrm{app}}$, $C_m$, the
 reversal potentials) is the exact physics. The network never sees $g_{Ca}$; that
 constant shapes only the true data being fitted.
 
-The observation condition is a one-line change to the loss. In the full-state
-condition the squared error is summed over all six states; in the
-\emph{voltage-only} condition it is summed over the voltage row alone, so
-$m,h,n,p,s$ never enter the objective. In both conditions the solver still
-integrates all six states from the full true initial condition, so ``voltage
-only'' refers to observation in the loss, not to what is known about the initial
-state or evolved by the physics.
+The observation condition is a one-line change to the loss. Writing
+$u(t)=(V,m,h,n,p,s)$ for the noisy data and $\hat u(t;\theta)$ for the solver's
+output, the two objectives are
+\begin{equation}
+  \mathcal{L}_{\mathrm{full}}(\theta)
+    = \sum_{t\in\mathcal{T}_{\mathrm{train}}}\ \sum_{i=1}^{6}
+      \bigl(u_i(t)-\hat u_i(t;\theta)\bigr)^2,
+  \qquad
+  \mathcal{L}_{V}(\theta)
+    = \sum_{t\in\mathcal{T}_{\mathrm{train}}}
+      \bigl(V(t)-\hat V(t;\theta)\bigr)^2 .
+  \label{eq:loss}
+\end{equation}
+
+There is no normalisation and there are no channel weights: the sum is taken in
+the states' native units, with $V$ in millivolts and the five gates
+dimensionless on $[0,1]$. That is worth being explicit about, because it means
+the six channels are nowhere near equally weighted in practice. Each channel's
+residual scales with its own noise magnitude, which is \NoisePct\,\% of its own
+standard deviation, and the voltage trace's standard deviation exceeds the mean
+gate standard deviation by more than $\GateSdRatio\times$; at the noise floor the
+voltage term therefore carries \LossShareV\,\% of the expected value of
+$\mathcal{L}_{\mathrm{full}}$. In other words $\mathcal{L}_{\mathrm{full}}$ is
+already almost $\mathcal{L}_{V}$, and the full-state and voltage-only conditions
+are far closer to each other than the phrase ``six observed channels versus one''
+suggests. We return to this when interpreting their measured equivalence
+(Sec.~\ref{sec:results-partial}); it is the explanation, not a caveat discovered
+afterwards.
+
+The black-box neural ODE is the one model that does not use \eqref{eq:loss}
+verbatim: it trains in normalised coordinates, with the voltage row divided by
+$\NodeScaleV$, so its loss values are not numerically comparable to the UDE's.
+Within each model family the losses are directly comparable.
+
+In both conditions the solver still integrates all six states from the full true
+initial condition, so ``voltage only'' refers to observation in the loss, not to
+what is known about the initial state or evolved by the physics.
 
 \subsection{Symbolic recovery of the learned current}
 \label{sec:methods-symbolic}
@@ -519,6 +696,65 @@ reversal potential is $-b/a$. As an exoneration control we apply the identical
 estimator, on the identical hull-restricted domain, to the \emph{analytic} true
 current; this checks the regression rather than the network. Recovered forms are
 scored against the true current on the trajectory.
+
+\subsection{A parametric reference: what the data alone determine}
+\label{sec:methods-parametric}
+
+The symbolic stage asks what a \emph{closure} says the conductance is. To know
+what that answer is worth we need the other one: what the \emph{data} say the
+conductance is. So we also solve the ordinary parameter-estimation problem on
+exactly the same trajectory, with the true structure known and no network
+anywhere. Only $g_{Ca}$ and $E_{Ca}$ are free; every other constant, the initial
+condition, the training window, the solver and the tolerances are those of the
+UDE runs.
+
+Two of the three quantities we report need a weighted objective rather than the
+raw sum of squares of \eqref{eq:loss}, because only a weighted one is a
+likelihood. We use
+\begin{equation}
+  \chi^2(g_{Ca}, E_{Ca})
+    = \sum_{t\in\mathcal{T}_{\mathrm{train}}}\ \sum_{i=1}^{6}
+      \frac{\bigl(u_i(t)-\hat u_i(t)\bigr)^2}{\sigma_i^2},
+  \qquad
+  \sigma_i = \NoisePct\,\%\times \mathrm{SD}(u_i),
+  \label{eq:chisq}
+\end{equation}
+with $\sigma_i$ the \emph{known} noise magnitude of each channel, since we
+generated it. Minimisation is by multi-start Nelder--Mead from starting points
+that deliberately exclude the truth. Three diagnostics follow:
+
+\begin{itemize}
+  \item \textbf{The estimate and its seed spread.} The fit is repeated on all
+  $\valUdeForecastVRmseN$ seeds, giving a spread directly comparable to the one
+  the symbolic stage produces.
+  \item \textbf{Profile likelihood.} Fixing $g_{Ca}$ on a grid and re-optimising
+  $E_{Ca}$ at each point (and the mirror image for $E_{Ca}$) traces the
+  likelihood along each axis. The 95\% interval is where the profile stays % numok: 95% confidence level, a convention
+  within $\chi^2_{\min}+3.84$, the standard diagnostic of % numok: chi-square 95% quantile, 1 dof
+  \citet{raue2009}. An interval that runs to the edge of the grid is the
+  signature of a parameter the data do not bound.
+  \item \textbf{Conditioning.} We form the Fisher information from first-order
+  sensitivities, $F_{ij} = \sum_{k,t}\sigma_k^{-2}\,\partial_i \hat u_{kt}\,
+  \partial_j \hat u_{kt}$, and read relative standard errors and eigen-directions
+  off it.
+\end{itemize}
+
+Two choices there are load-bearing enough to state in the main text. The
+information matrix is built from \emph{first-order} sensitivities rather than
+from a finite-difference Hessian of $\chi^2$: this is a spiking model, a small
+parameter change shifts spike phase, and $\chi^2$ consequently rises by orders of
+magnitude within a fraction of a per cent of the optimum, so its second
+differences are dominated by that hyper-curvature at any usable step size. And
+the information is expressed in \emph{log} parameters, because $g_{Ca}\approx 2$
+and $E_{Ca}\approx\mECa$ carry incommensurate units and magnitudes; in raw units
+the least-informative eigenvector falls on a coordinate axis as an artifact of
+units rather than a finding about data.
+
+We stress what this comparison can and cannot license. A two-parameter model
+handed the true functional form should beat a $\NparamUde$-parameter closure
+handed no form at all, and it does, including on forecast error. The inference we
+draw is one-directional and does not need more: if the data pin the conductance,
+then the closure's failure to pin it cannot be attributed to the data.
 
 \subsection{Training, metrics, and reproducibility}
 \label{sec:methods-train}
@@ -560,45 +796,72 @@ coherent rather than contradictory.
 \section{Experiments and Results}
 \label{sec:results}
 
-\subsection{Forecasting: the neural ODE diverges, the UDE extrapolates}
+\subsection{Forecasting: the physics prior buys accuracy and reliability}
 \label{sec:results-forecasting}
 
 Both models are trained on $t\le\Ttrain$\,ms of one noisy trajectory and then
 integrated freely to \Tfull\,ms from the true initial condition; the forecast
 window is the tail of one uninterrupted rollout.
-% claim: node-diverges
-The black-box neural ODE leaves the \Ttube\,mV error tube
-$\valNodeForecastRolloutMeanStd$\,ms after the training boundary (mean $\pm$ SD,
-$n=\valNodeForecastRolloutN$ seeds), with two of the five seeds breaching at the
-first forecast sample. Its forecast voltage error is not a quantity we can
-summarise: the integration diverges rather than degrades, spanning
-$\NodeVspan$\,mV across seeds on a variable whose physiological range is roughly
-one hundred millivolts, and even those values are computed over the finite part of
-a blown-up solve.
-We therefore report the divergence categorically and quote the rollout horizon,
-which stays well defined in the failure regime.
 
 % claim: ude-forecasts-accurately
-The UDE, which differs from the neural ODE only in what it is asked to
-learn, one scalar current rather than six derivatives, never breaches the tube.
-Its rollout horizon saturates the metric's cap for every seed
-($\valUdeForecastRollout$\,ms; the cap is \Rcap\,ms, the entire remaining
-trajectory, so the horizon is right-censored and its true value is unknown), and
-its forecast voltage RMSE is $\valUdeForecastVRmseMeanStd$\,mV.
+The UDE never breaches the \Ttube\,mV tube (Fig.~\ref{fig:node-vs-ude}). Its
+rollout horizon saturates the
+metric's cap for every seed ($\valUdeForecastRollout$\,ms; the cap is \Rcap\,ms,
+the entire remaining trajectory, so the horizon is right-censored and its true
+value is unknown), and its forecast voltage RMSE is
+$\valUdeForecastVRmseMeanStd$\,mV.
 % claim: ude-learns-true-dynamics-not-noise
 The fit is not memorisation of the training window: the UDE's training-window
 error against the clean trajectory, $\valUdeTrainVRmseMeanStd$\,mV, is well below
 its error against the noisy signal it was actually fit to,
-$\valUdeTrainVRmseVsNoisyMeanStd$\,mV. It therefore recovered the underlying dynamics
-rather than the noise. The two models' budgets are not equal (the neural ODE
-trains for fewer Adam iterations, Table~\ref{tab:forecast}), and we do not think
-the asymmetry is load-bearing: a modest increase in iterations does not plausibly
-bridge the gap between breaching at $\valNodeForecastRolloutMean$\,ms and not
-breaching in \Rcap\,ms. What this establishes is narrow and worth stating
-narrowly. Retaining the known currents and learning only the calcium term
-converts a \Rcap\,ms extrapolation from impossible to routine. It does not
-establish that the learned term \emph{is} the calcium current, which is the
-subject of Sec.~\ref{sec:results-symbolic}.
+$\valUdeTrainVRmseVsNoisyMeanStd$\,mV. It therefore recovered the underlying
+dynamics rather than the noise.
+
+\paragraph{Repairing the baseline before using it.}
+% claim: node-failure-is-architecture-not-budget
+A black-box neural ODE is only worth comparing against if it has been given a
+fair chance, and our first one had not. As initially configured it trained for
+fewer Adam iterations than the UDE, and it took \emph{raw time} as an input
+alongside the six states. The second of those is the more serious: the true
+system is autonomous, driven by a constant $I_{\mathrm{app}}$, so a right-hand
+side that reads the clock is strictly more expressive than the physics requires,
+and it can fit the training window by time index instead of learning a vector
+field. We therefore ran two controls, each over $\valUdeForecastVRmseN$ seeds,
+and they separate cleanly (Table~\ref{tab:forecast}).
+
+Raising the budget to the UDE's own \AdamUde/\BfgsUde{} while keeping the
+architecture does not help. The rollout horizon does not improve, it drifts down
+($\valNodeForecastRolloutMeanStd \to \valNodeParityTimeRolloutMeanStd$\,ms), and
+the forecast error does not fall. We give that error as a span rather than a
+mean, because both time-indexed configurations blow up rather than degrade and a
+standard deviation over blown-up solves is not an error bar: the published
+configuration lands between $\valNodePublishedVRmseMin$ and
+$\valNodePublishedVRmseMax$\,mV across seeds, the parity-budget one between
+$\valNodeParityTimeVRmseMin$ and $\valNodeParityTimeVRmseMax$\,mV. Whatever is
+wrong is not a shortage of optimisation, and more of it does not rescue the
+forecast, consistent with buying a tighter fit of the training window by clock
+index.
+
+Removing the time input at that same budget changes the picture entirely. The
+horizon goes to $\valNodeParityAutoRolloutMeanStd$\,ms, roughly forty-five times
+the time-indexed variant, and the median forecast error falls to
+$\valNodeParityAutoVRmseMedian$\,mV. Four of the five seeds reproduce the spike
+count \emph{exactly}. So the catastrophic failure of the original baseline was an
+artifact of an architecture nobody should have used on an autonomous system, and
+we report the repaired one instead.
+
+The honest comparison that survives has two parts, and neither is the categorical
+claim we could have made from the broken baseline. The first is magnitude: the
+UDE's $\valUdeForecastVRmseMeanStd$\,mV against a median
+$\valNodeParityAutoVRmseMedian$\,mV, about seventy-fold. The second, and we think
+the more telling, is reliability. The UDE saturates the \Rcap\,ms cap on every
+seed with a standard deviation of $\valUdeForecastVRmseStd$\,mV; the autonomous
+neural ODE's horizon ranges from $5.5$ to $44.4$\,ms % numok: per-seed rollouts, results/node_parity/node_parity_summary.csv
+and one seed in five still fails outright. A physics prior does not merely make
+the average forecast better here, it makes the forecast dependable, and that
+difference is invisible in any single run. What this establishes remains narrow:
+it does not establish that the learned term \emph{is} the calcium current, which
+is the subject of Sec.~\ref{sec:results-symbolic}.
 
 \begin{figure}[t]
   \centering
@@ -610,15 +873,22 @@ subject of Sec.~\ref{sec:results-symbolic}.
     \includegraphics[width=\linewidth]{fig3_ude_overview.png}
     \caption{Full-state UDE}
   \end{subfigure}
-  \caption{\textbf{The neural ODE leaves the trajectory within one sample; the
-  UDE tracks it for the entire remaining window.} Ground truth (solid) versus
-  model (dashed) for the representative seed at the baseline condition, trained on
-  $t\le\Ttrain$\,ms; the dotted divider marks the train/forecast boundary. Panel
-  (a) diverges; its prediction runs off-panel because the axes are framed to the
-  ground truth, a deliberate framing, not clipping. Panel (b) never leaves the
-  \Ttube\,mV tube. One seed shown; dispersion is in Table~\ref{tab:forecast} and
-  Fig.~\ref{fig:bars} ($n=\valUdeForecastVRmseN$, $\pm$ SD, each seed redrawing
-  both initialisation and noise).}
+  \caption{\textbf{The time-indexed neural ODE leaves the \Ttube\,mV tube within
+  a few samples; the UDE tracks the trajectory for the entire remaining
+  window.} Ground truth
+  (solid) versus model (dashed) for the representative seed at the baseline
+  condition, trained on $t\le\Ttrain$\,ms; the dotted divider marks the
+  train/forecast boundary. Panel (a) is the neural ODE \emph{as originally
+  configured}, with a raw time input and \AdamNode{} Adam iterations; its
+  prediction runs off-panel because the axes are framed to the ground truth, a
+  deliberate framing, not clipping. That configuration is not the baseline we
+  rest any comparison on: removing the time input keeps the forecast finite
+  (Table~\ref{tab:forecast}, row 3), and the panel is shown because the failure
+  mode of a clock-reading right-hand side is worth seeing once. Panel (b) never
+  leaves the \Ttube\,mV tube. One seed shown; dispersion is in
+  Table~\ref{tab:forecast} and Fig.~\ref{fig:bars}
+  ($n=\valUdeForecastVRmseN$, $\pm$ SD, each seed redrawing both initialisation
+  and noise).}
   \label{fig:node-vs-ude}
 \end{figure}
 
@@ -627,18 +897,29 @@ subject of Sec.~\ref{sec:results-symbolic}.
   \caption{Forecast performance at the baseline condition
   ($g_{Ca}=\gcaMain$, trained on $t\le\Ttrain$\,ms). Mean $\pm$ 1 SD over
   $\valUdeForecastVRmseN$ seeds; each seed redraws both the network
-  initialisation and the noise realisation. The rollout horizon is
-  right-censored at the \Rcap\,ms cap (the whole forecast interval), so both UDE
-  rows saturate it. The neural ODE has no calcium closure and hence no $I_{Ca}$
-  entry; its forecast voltage error is a divergence, not a measurement, and is
-  reported categorically. No statistical test was run; the two UDE rows are not
-  ranked.}
+  initialisation and the noise realisation. The three neural-ODE rows are the
+  same model under two controls: row 1 as originally configured, row 2 with the
+  UDE's budget, row 3 with the budget \emph{and} the raw time input removed.
+  Reading them in order attributes the failure to the architecture rather than
+  the budget. The two time-indexed rows give a \emph{span} across seeds rather
+  than a mean $\pm$ SD: both blow up rather than degrade, each seed blows up by a
+  different amount (spans of roughly forty-fold), % numok: 40.2x and 42.8x, results/node_parity/node_parity_summary.csv
+  and a dispersion statistic over diverged solves is not an error bar. Row 3's
+  $V$ RMSE is a \emph{median} for a milder version of the same reason: its mean
+  ($73.2$) is dominated by one seed of five that still fails outright, % numok: the discarded mean, results/node_parity/node_parity_summary.csv
+  and a mean larger than every other seed is not a summary.
+  The rollout horizon is right-censored at the \Rcap\,ms cap, so both UDE rows
+  saturate it. Neural ODEs have no calcium closure and hence no $I_{Ca}$ entry.
+  No statistical test was run; the two UDE rows are not ranked.}
   \label{tab:forecast}
   \begin{tabular}{lccccc}
     \toprule
     Model & Adam/BFGS & $V$ RMSE (mV) & gate RMSE & $I_{Ca}$ RMSE & rollout (ms) \\
     \midrule
-    Neural ODE & \AdamNode/\BfgsNode & diverges ($\NodeVspan$) & --- & --- & $\valNodeForecastRolloutMeanStd$ \\
+    Neural ODE, $+t$ & \AdamNode/\BfgsNode & $\valNodePublishedVRmseMin$--$\valNodePublishedVRmseMax$ (span) & --- & --- & $\valNodeForecastRolloutMeanStd$ \\
+    Neural ODE, $+t$ & \AdamUde/\BfgsUde & $\valNodeParityTimeVRmseMin$--$\valNodeParityTimeVRmseMax$ (span) & --- & --- & $\valNodeParityTimeRolloutMeanStd$ \\
+    Neural ODE, autonomous & \AdamUde/\BfgsUde & $\valNodeParityAutoVRmseMedian$ (median) & --- & --- & $\valNodeParityAutoRolloutMeanStd$ \\
+    \midrule
     UDE, full & \AdamUde/\BfgsUde & $\valUdeForecastVRmseMeanStd$ & $\valUdeForecastGateRmseMeanStd$ & $\valUdeForecastICaRmseMeanStd$ & $\valUdeForecastRollout$ \\
     UDE, $V$ only & \AdamUde/\BfgsUde & $\valUdeVoltageForecastVRmseMeanStd$ & $\valUdeVoltageForecastGateRmseMeanStd$ & $\valUdeVoltageForecastICaRmseMeanStd$ & $\valUdeForecastRollout$ \\
     \bottomrule
@@ -649,13 +930,14 @@ subject of Sec.~\ref{sec:results-symbolic}.
   \centering
   \includegraphics[width=0.85\textwidth]{fig5_metrics_bar_train_vs_forecast.png}
   \caption{\textbf{The UDE's forecast error is within a factor of two of its
-  training error; the neural ODE's is orders of magnitude worse.} Bars are the
-  mean over $\valUdeForecastVRmseN$ seeds at the baseline condition; error bars
-  are $\pm$ 1 SD over those seeds, each redrawing both initialisation and noise;
-  the $y$-axis is log-scaled. The neural ODE forecast bar summarises a diverged
-  integration and its error bar is not a dispersion estimate; read it as
-  ``diverges,'' and see Table~\ref{tab:forecast} for the interpretable rollout
-  horizon.}
+  training error.} Bars are the mean over $\valUdeForecastVRmseN$ seeds at the
+  baseline condition; error bars are $\pm$ 1 SD over those seeds, each redrawing
+  both initialisation and noise; the $y$-axis is log-scaled. The neural ODE bars
+  are the model \emph{as originally configured} (raw time input, \AdamNode{}
+  Adam iterations), whose forecast integration does not stay finite; that bar
+  therefore summarises a blown-up solve and its error bar is not a dispersion
+  estimate. The repaired autonomous baseline, which is the one we compare
+  against, is in Table~\ref{tab:forecast} and is not plotted here.}
   \label{fig:bars}
 \end{figure}
 
@@ -665,13 +947,24 @@ subject of Sec.~\ref{sec:results-symbolic}.
 % claim: physics-prior-reconstructs-unobserved-gates
 Restricting the loss to the voltage trace alone removes the five gate variables
 from the objective entirely; they are never observed, never scored, and never
-supervised. They are nonetheless reconstructed to a mean gate RMSE of
+supervised. They are nonetheless tracked to a mean gate RMSE of
 $\valUdeVoltageForecastGateRmseMeanStd$ over the forecast window. Nothing in the
 network learned them; the retained gate kinetics did, once the learned
 $I_{Ca}(V,s)$ was constrained enough by the voltage fit to keep the vector field
-on the manifold. This is the mechanistic prior's contribution made visible
-(Fig.~\ref{fig:voltage-only}), and it is a positive result inside a paper whose
-headline is a limit.
+on the manifold.
+
+We are deliberate about what this does and does not show, because the natural
+reading overstates it. The gates are \emph{propagated}, not \emph{inferred}. The
+solver is initialised from the true six-dimensional state, and the exact gate
+kinetics $\dot x = \alpha_x(V)(1-x)-\beta_x(V)x$ are retained as known physics,
+so once $V(t)$ is right the gates are determined by integrating known equations
+from a known start. Nothing here recovers the gates from voltage alone, and
+nothing here would survive an unknown initial condition. What the result does
+establish is narrower and still worth having: the voltage residual alone
+constrains the learned closure tightly enough that the whole six-dimensional
+vector field stays on the correct manifold for the entire un-trained remainder,
+without the gates ever appearing in the objective
+(Fig.~\ref{fig:voltage-only}).
 
 % claim: voltage-only-equivalent
 Restricting the loss to voltage also matches full-state observation to within
@@ -681,20 +974,38 @@ forecast $I_{Ca}$ RMSE $\valUdeVoltageForecastICaRmseMeanStd$ versus
 $\valUdeForecastICaRmseMeanStd$\,\nicefrac{$\mu$A}{cm$^2$}
 ($n=\valUdeForecastVRmseN$; no significance test is possible at this sample size
 and none is claimed). We do not rank the two conditions: the differences are well
-inside the seed spread, and the finding of interest is the equivalence
-itself: one can drop five of six observed channels from the loss for free,
-because the physics prior, not the additional supervision, supplies the hidden
-states.
+inside the seed spread, and the finding of interest is the equivalence itself.
+
+The equivalence is also less mysterious than it first appears, and the loss
+normalisation of \eqref{eq:loss} says why. Because the objective is an unweighted
+sum in native units, the five gate terms together contribute only about
+$\LossShareGates$\,\% of $\mathcal{L}_{\mathrm{full}}$ at the noise floor.
+Dropping them is therefore a small perturbation of the objective, not the removal
+of five sixths of the supervision, and the two conditions are close to each other
+by construction before any physics is invoked.
+% claim: voltage-only-common-eval-matches-full
+The equivalence also survives on an interval that is unseen for \emph{both}
+conditions rather than each model's own forecast window: on the shared window
+$t>\Tcommon$\,ms the two agree to
+$\valCommonEvalVRmseFull$ against $\valCommonEvalVRmseVoltage$\,mV on voltage and
+$\valCommonEvalICaRmseFull$ against $\valCommonEvalICaRmseVoltage$ on the
+calcium current. What the physics prior supplies is
+the part that follows: the gates are then propagated correctly from the true
+initial condition by the retained kinetics. Reporting the equivalence without
+reporting the weighting would invite the stronger and unsupported reading that
+five observed channels were worth nothing.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=0.72\textwidth]{fig6_voltage_only_overview.png}
-  \caption{\textbf{Trained on the voltage trace alone, the UDE reconstructs five
-  gating variables that never entered the loss.} Ground truth (solid) versus
+  \caption{\textbf{Trained on the voltage trace alone, the UDE keeps five gating
+  variables on track that never entered the loss.} Ground truth (solid) versus
   voltage-only UDE (dashed), representative seed at the baseline condition,
   trained on the noisy voltage for $t\le\Ttrain$\,ms. The loss is computed on $V$
-  only; $m,h,n,p,s$ are unobserved and unscored at every training step, and their
-  recovery is the retained kinetics' doing, not the network's. Forecast $V$ RMSE
+  only; $m,h,n,p,s$ are unobserved and unscored at every training step. Their
+  agreement is the retained kinetics' doing, not the network's, and it is
+  \emph{propagation} from the true initial state under known gate equations
+  rather than reconstruction of the gates from voltage. Forecast $V$ RMSE
   is $\valUdeVoltageForecastVRmseMeanStd$\,mV against
   $\valUdeForecastVRmseMeanStd$\,mV for full-state observation
   ($n=\valUdeForecastVRmseN$, $\pm$ SD), equivalent within seed noise; one seed
@@ -706,39 +1017,72 @@ states.
 \label{sec:results-ablations}
 
 % claim: gca-sweep-shows-nonidentifiability
-The conductance sweep is the quantitative backbone of the identifiability claim
-(Fig.~\ref{fig:gca}). Sweeping $g_{Ca}\in\{\gcaPhys,\gcaMid,\gcaMain,\gcaHi\}$ with every
-other axis pinned, the normalised calcium error falls monotonically:
-$\valGcaAblICaNormPointFour$, $\valGcaAblICaNormOne$, $\valGcaAblICaNormTwo$,
-$\valGcaAblICaNormFour$. % numok: gCa sweep axis values, experiments_runner.jl:34
+The conductance sweep asks what governs recovery through the closure, and it is
+now run over all $\valUdeForecastVRmseN$ seeds at every point rather than one
+(Fig.~\ref{fig:gca}). Sweeping
+$g_{Ca}\in\{\gcaPhys,\gcaMid,\gcaMain,\gcaHi\}$ with every other axis pinned, the
+normalised calcium error falls from $\valGcaSweepICaNormPointFourMeanStd$ through
+$\valGcaSweepICaNormOneMeanStd$ and $\valGcaSweepICaNormTwoMeanStd$ to
+$\valGcaSweepICaNormFourMeanStd$. % numok: gCa sweep axis values, experiments_runner.jl:34
 Signal amplitude is the only thing that changes across this axis (same
 architecture, same data volume, same optimiser, same iterations), so it is an
-identifiability axis by construction. At the physiological $g_{Ca}=\gcaPhys$ the
-normalised error exceeds one: the closure's error is larger than the calcium
-current's own variation, i.e.\ the network has learned essentially nothing about
-a current that small, while still forecasting voltage well. Judged against the
-five-seed spread at the shared centre point ($\pm\valUdeForecastICaRmseNormStd$),
-the collapse from $\gcaPhys$ to $\gcaMid$ is far outside seed noise; the difference
-between $\gcaMain$ and $\gcaHi$ is comparable to it, and we draw no conclusion from
-that step. At $g_{Ca}=\gcaPhys$ the symbolic fit additionally returns the
-\emph{wrong sign} for the conductance ($\hat a = \valSymbolicAHatNegControl$
-against a true $+\gcaPhys$), a harder failure than its $R^2$ conveys.
+identifiability axis by construction, and forecast voltage error is flat along it
+($\valGcaSweepVRmsePointFourMeanStd$\,mV at $\gcaPhys$ against
+$\valUdeForecastVRmseMeanStd$\,mV at $\gcaMain$). How well the hidden term is
+recovered is governed by how much it moves the observed channel, not by how well
+the observed channel is fitted.
+
+We claim the end-to-end trend and not the individual steps, because with error
+bars only one step survives. The overall eightfold fall from $\gcaPhys$ to
+$\gcaHi$ is far outside seed noise, but of the three adjacent comparisons only
+$\gcaMid \to \gcaMain$ clears two pooled standard deviations; $\gcaPhys \to
+\gcaMid$ and $\gcaMain \to \gcaHi$ do not. % numok: 2.4, 1.8 and 1.3 pooled SD, scripts/summarize_gca_sweep.py
+The seed spread is itself strongly conductance-dependent,
+$\pm\valGcaSweepICaNormPointFourStd$ at $\gcaPhys$ against
+$\pm\valGcaSweepICaNormTwoStd$ at $\gcaMain$, a factor of thirteen, so each point
+must be judged against its own spread rather than the centre point's.
+
+A single-seed version of this sweep would have told a tidier and less accurate
+story. At $g_{Ca}=\gcaPhys$ our representative seed gives
+$\valGcaAblICaNormPointFour$, above the
+threshold at which the closure's error would exceed the calcium current's own
+variation; the five-seed mean is $\valGcaSweepICaNormPointFourMean$ and only one
+seed in five exceeds that threshold. % numok: per-seed values, results/gca_sweep_5seed/gca_sweep_multiseed.csv
+So the honest statement is that recovery at the physiological conductance
+approaches the point of uselessness rather than passing it.
+
+The five seeds also expose a mechanism the normalised metric hides. The
+\emph{raw} calcium error is statistically flat across the whole sweep
+($\valGcaSweepICaRawPointFourMeanStd$ at $\gcaPhys$ against
+$\valGcaSweepICaRawTwoMeanStd$ at $\gcaMain$, intervals overlapping): the
+closure's absolute error barely moves, and what changes is the size of the signal
+it is being asked to explain. Finally, at $g_{Ca}=\gcaPhys$ the symbolic fit
+returns the \emph{wrong sign} for the conductance
+($\hat a = \valSymbolicAHatNegControl$ against a true $+\gcaPhys$), where the
+parametric fit on the same data returns
+$\valParamFitGcaHatPointFourMeanStd$ (Sec.~\ref{sec:results-parametric}).
 
 % claim: window-needs-sufficient-length
 The training-window sweep, scored on the shared unseen window
 $t>\Tcommon$\,ms, shows that too little data fails: a fifteen-millisecond window
 gives $\valWindowAblCommonEvalVRmseFifteen$\,mV, roughly seven times the value at
-any longer window, because that window ends inside the initial transient and never
-observes a full limit cycle. Beyond twenty milliseconds the axis is flat to within
-seed noise ($\valWindowAblCommonEvalVRmseTwenty$,
-$\valWindowAblCommonEvalVRmseThirty$, $\valWindowAblCommonEvalVRmseForty$,
-$\valWindowAblCommonEvalVRmseFifty$\,mV against a seed spread of
-$\pm\valUdeForecastVRmseStd$ at the centre point, single seed per point). The mild
-upward drift at the two longest windows is \emph{not} evidence that longer windows
-are harder: every window trains for the same fixed budget regardless of how many
-points it must fit, so the longer windows are under-optimised. We read this axis
-as ``a sufficiently long window is required, and twenty milliseconds suffices,''
-and draw no conclusion from its non-monotonicity.
+the twenty- and thirty-millisecond windows and at least three and a half times
+the value at every longer one, because that window ends inside the initial
+transient and never observes a full limit cycle. Beyond twenty milliseconds the
+axis carries no evidence that more data helps. The twenty- and thirty-millisecond
+windows are indistinguishable ($\valWindowAblCommonEvalVRmseTwenty$ and
+$\valWindowAblCommonEvalVRmseThirty$\,mV, a gap well inside the
+$\pm\valUdeForecastVRmseStd$\,mV five-seed spread at the centre point), while the
+forty- and fifty-millisecond windows are measurably \emph{worse}
+($\valWindowAblCommonEvalVRmseForty$ and $\valWindowAblCommonEvalVRmseFifty$\,mV,
+several times that spread; single seed per point). That rise is \emph{not}
+evidence that longer windows are intrinsically harder: every window trains for
+the same fixed budget regardless of how many points it must fit, so the longer
+windows are under-optimised, and the axis confounds window length with
+optimisation adequacy. We read it only as ``a sufficiently long window is
+required, and twenty milliseconds suffices,'' and draw no conclusion from the
+non-monotonicity beyond naming its likely cause
+(Appendix~\ref{app:extra}, Fig.~\ref{fig:appendix}a).
 
 \begin{figure}[t]
   \centering
@@ -748,13 +1092,16 @@ and draw no conclusion from its non-monotonicity.
   $g_{Ca}\in\{\gcaPhys,\gcaMid,\gcaMain,\gcaHi\}$ with every other axis at baseline; all
   metrics on the forecast window. The bottom panel is the result: normalised
   calcium error $\valGcaAblICaNormPointFour\!\to\!\valGcaAblICaNormFour$. A value
-  of one marks the level at which the closure's error equals the true current's
-  own variation; at $g_{Ca}=\gcaPhys$ the closure is above that line while $V$ is
-  still fit well. Each point is a single seed with no error bar; the
-  seed spread at the centre point ($\pm\valUdeForecastICaRmseNormStd$,
-  $n=\valUdeForecastVRmseN$) is the yardstick, by which the $\gcaPhys\!\to\!\gcaMid$
-  gap is real and the $\gcaMain\!\to\!\gcaHi$ gap is within seed noise. The rollout
-  panel is censored at \Rcap\,ms.
+  of one marks the level at which the closure's error would equal the true
+  current's own variation. Each point here is a \emph{single} seed with no error
+  bar, and the $\valUdeForecastVRmseN$-seed version in the text supersedes this
+  panel for any inference: judged against each point's own spread, only the
+  $\gcaMid\!\to\!\gcaMain$ step clears two pooled standard
+  deviations. % numok: 2.4, 1.8 and 1.3 pooled SD, scripts/summarize_gca_sweep.py
+  In particular the single-seed value plotted at $g_{Ca}=\gcaPhys$ sits above the
+  unit line, but it is the worst of the five seeds and the five-seed mean
+  ($\valGcaSweepICaNormPointFourMeanStd$) does not. The rollout panel is censored
+  at \Rcap\,ms.
   }
   \label{fig:gca}
 \end{figure}
@@ -765,21 +1112,57 @@ and draw no conclusion from its non-monotonicity.
 % claim: symbolic-form-recovered
 Constrained to the biophysical conductance form $s^2(aV+b)$, the distilled
 closure reproduces the true calcium current with
-$R^2 = \valSymbolicRTwoCondTrueMeanStd$ against the analytic ground truth
-($n=\valUdeForecastVRmseN$, per-seed mean $\pm$ SD). The \emph{functional form} is
-recovered: the current is a squared-gate term with a linear driving force, and
-the fit says so (Fig.~\ref{fig:symbolic}a).
+$R^2 = \valSymbolicRTwoTrajTrainMeanStd$ against the analytic ground truth on the
+supervised trajectory ($n=\valUdeForecastVRmseN$, per-seed mean $\pm$ SD;
+Fig.~\ref{fig:symbolic}a). We are deliberate about what that does and does not
+say. The form $s^2(aV+b)$ was \emph{supplied} to the estimator, not found by it,
+so this is agreement with an assumed form rather than discovery of one: the
+learned closure is well approximated by the expected conductance form. The
+discovery question is answered separately, and negatively, below.
 
 % claim: symbolic-coefficients-not-identifiable
-The \emph{coefficients} are not. The fitted conductance is
-$\hat a = \valSymbolicAHatMeanStd$ against a true value of $\gcaMain$, with a standard
-deviation more than half the mean, and the per-seed estimates span
-\valSymbolicAHatRange, a factor of more than four, bracketing the truth on both
-sides (Fig.~\ref{fig:symbolic}b). The offset $\hat b = \valSymbolicBHatMeanStd$
-is closer in relative terms but carries a comparable spread. These are five
-different closures that happen to fit the same voltage, not five measurements of
-one conductance; the interval that contains the truth is wide enough to contain
-almost anything, and we call the conductance order-correct, not recovered.
+The \emph{coefficients} that same fit implies are another matter. The fitted
+conductance is $\hat a = \valSymbolicAHatTrajTrainMeanStd$ against a true value of
+$\gcaMain$, with a standard deviation about two-fifths of the mean, and the
+per-seed estimates span \valSymbolicAHatRangeTrajTrain{} (Fig.~\ref{fig:symbolic}b).
+On the wider convex-hull domain used below for the unconstrained comparison the
+picture is the same or slightly worse ($\valSymbolicAHatMeanStd$, spanning
+\valSymbolicAHatRange), while the offset $\hat b = \valSymbolicBHatMeanStd$ is the
+better determined of the two, scattering by about a quarter of its own magnitude
+against the conductance's half. % numok: b 22.9% vs a 56.7% on the hull, results/identifiability/symbolic_domain_comparison.csv These are five different closures that happen to fit
+the same voltage, not five measurements of one conductance. A curve can match the
+truth at $R^2$ near unity while the coefficient it implies is off by a fifth with
+a two-fifths spread; curve-fit quality and coefficient identifiability are
+different properties, and this is the cleanest place in the study to see it.
+
+% claim: symbolic-domain-robustness
+The domain the fit is evaluated on does not drive this. Our original choice, a
+grid masked to the convex hull of the trajectory's $(V,s)$ cloud, is open to a
+fair objection: a spiking limit cycle is a closed loop, the interior of a loop is
+never visited, and network values there are extrapolation presented as
+interpolation. We therefore refit the same conductance form on six domains that
+overlap rather than nest: the hull, three $\epsilon$-tubes of increasing radius
+around the trajectory in the network's own input coordinates, the full
+trajectory, and the strictly supervised trajectory $t\le\Ttrain$\,ms. The tubes
+nest within one another but not within the hull, and the two trajectory domains
+are the probe points themselves rather than grid subsets, so this is a family of
+genuinely different views of the closure rather than a sequence of
+restrictions. The estimate is stable across all of them, $\hat a$ ranging only
+over $1.36$ to $1.65$ with standard % numok: six-domain refit range, results/identifiability/symbolic_domain_comparison.csv
+deviations of $0.50$ to $0.90$. % numok: six-domain refit spread, results/identifiability/symbolic_domain_comparison.csv
+We quote the supervised trajectory for every conductance estimate in the text,
+since it is the one domain no reader can object to; the two symbolic figure
+panels show the original hull fit, which agrees with it within seed noise and is
+labelled as such.
+
+That exercise also corrects something we had believed. We had attributed the need
+for an off-trajectory domain to near-collinearity of the limit cycle, but that
+diagnosis applies only to the open polynomial library, whose design matrix is
+ill-conditioned on every domain we tried. For the two-term conductance form the
+trajectory is perfectly well conditioned
+($\valSymbolicCondTrajTrain$ against $\valSymbolicCondHull$ on the hull), and it
+recovers marginally \emph{better} there. The hull was never needed for the
+constrained fit.
 
 % claim: regression-machinery-is-sound
 The gap is the network's, not the regression's. Applying the identical estimator,
@@ -812,13 +1195,15 @@ terms; this is an identifiability limit, not a defect of the sparse solver.
     \caption{Recovered coefficients vs.\ truth}
   \end{subfigure}
   \caption{\textbf{The learned closure has the right shape and the wrong scale.}
-  Full-state UDE at $g_{Ca}=\gcaMain$. (a) On the hull-restricted $(V,s)$ grid,
-  both the neural closure and its symbolic distillation $s^2(aV+b)$ lie on
-  $y=x$; across seeds the distillation attains
-  $R^2=\valSymbolicRTwoCondTrueMeanStd$ against the true current
-  ($n=\valUdeForecastVRmseN$, $\pm$ SD). (b) Recovered conductance-form
-  coefficients. Bars $a$ and $b$ are per-seed mean $\pm$ SD:
-  $a=\valSymbolicAHatMeanStd$ against a true $\gcaMain$, spanning
+  Full-state UDE at $g_{Ca}=\gcaMain$. (a) Coefficients are fit on the
+  hull-restricted $(V,s)$ grid and then scored \emph{along the trajectory}, which
+  is what the panel plots, for the representative seed. Both the neural closure
+  and its symbolic distillation $s^2(aV+b)$ lie on $y=x$; across seeds the
+  distillation attains $R^2=\valSymbolicRTwoCondTrueMeanStd$ against the true
+  current on that trajectory ($n=\valUdeForecastVRmseN$, $\pm$ SD). (b) Recovered conductance-form
+  coefficients, on the hull domain (the text quotes the supervised-trajectory
+  refit, which agrees within seed noise). Bars $a$ and $b$ are per-seed
+  mean $\pm$ SD: $a=\valSymbolicAHatMeanStd$ against a true $\gcaMain$, spanning
   \valSymbolicAHatRange{} across seeds. The reversal-potential bar is a
   \emph{single pooled point estimate} with \emph{no} error bar, because $-b/a$ is
   unstable when $a$ is small; its absent whisker must not be read as zero
@@ -829,27 +1214,180 @@ terms; this is an identifiability limit, not a defect of the sparse solver.
   \label{fig:symbolic}
 \end{figure}
 
+\subsection{What the data alone determine: a parametric reference}
+\label{sec:results-parametric}
+
+Everything so far says the conductance read off the closure is unreliable.
+Nothing so far says \emph{why}, and the natural explanation is that one noisy
+trajectory simply does not contain the information. That explanation is testable,
+and it is wrong.
+
+% claim: parametric-fit-identifies-conductance
+Fitting $g_{Ca}$ and $E_{Ca}$ directly to the same trajectory, with the true
+structure known and no network, recovers the conductance at every setting we
+tested (Table~\ref{tab:parametric}). At the headline condition
+$\hat g_{Ca} = \valParamFitGcaHatTwoMeanStd$ against a true $\gcaMain$, a
+relative spread of about six per cent, with per-seed estimates confined to
+\valParamFitGcaHatRangeTwo. The fit is statistically clean:
+$\chi^2$ per data point is $\valParamFitChiSqPerPointTwo$, so the residuals sit
+exactly at the known noise floor, which is what licenses the interval below.
+
+Three independent diagnostics agree on the precision, which is why we believe it.
+The observed seed-to-seed spread is $\valParamFitGcaHatTwoStd$. The
+profile likelihood puts the 95\% interval at $[1.63, 2.13]$. % numok: profile CI at Delta-chi2 = 3.84, results/identifiability/profile_gca_gca2.0.csv
+The Fisher information gives an asymptotic relative standard error of
+$\valCondRelSeGcaTwoMeanStd$. Three routes to the same number, from the data, the
+likelihood geometry and the sensitivity structure respectively
+(Fig.~\ref{fig:parametric}a,b). Every one of the five conductances distilled from
+the closure lies outside that interval. % numok: 5 of 5, figure_identifiability.jl console output
+
+% claim: closure-induced-nonidentifiability
+Set that beside the closure. On identical data, the conductance estimated
+parametrically is $\valParamFitGcaHatTwoMeanStd$ and the conductance distilled
+from the neural closure is $\valSymbolicAHatTrajTrainMeanStd$: the relative
+spread grows from roughly six per cent to roughly forty, more than sixfold, and
+the per-seed span widens from \valParamFitGcaHatRangeTwo{} to
+\valSymbolicAHatRangeTrajTrain. On the wider hull domain the closure is worse
+still ($\valSymbolicAHatMeanStd$, spanning \valSymbolicAHatRange), so the choice
+of domain does not flatter the comparison. The contrast is
+starker at the physiological conductance, where the parametric fit still returns
+$\valParamFitGcaHatPointFourMeanStd$ against a true $\gcaPhys$ while the symbolic
+route returns the wrong sign entirely
+($\hat a = \valSymbolicAHatNegControl$). The data were the same in every one of
+these comparisons. What differed was how the calcium current was represented.
+
+We are careful about the inference this licenses, because the comparison is not
+between equals and we do not want it read as one. A two-parameter model given the
+true functional form should beat a $\NparamUde$-parameter closure given no form
+at all, and it does, on forecast error too: the parametric fit reaches
+$\valParamFitForecastVRmseTwoMeanStd$\,mV against the UDE's
+$\valUdeForecastVRmseMeanStd$\,mV. The claim is therefore not that two
+equally good fits disagree. It is one-directional and it does not need to be
+more: because the data pin the conductance to about six per cent, the closure's
+sixty per cent cannot be blamed on the data.
+
+Two further readings of Table~\ref{tab:parametric} are worth stating. The
+parametric fit degrades \emph{gracefully} as the calcium signal shrinks, its
+relative spread widening from $2.9$ to $14.9$ per cent across the sweep % numok: relative spreads, results/identifiability/parametric_fit.csv
+while never losing the sign or the order of magnitude, where the closure fails
+discontinuously. And the two calcium parameters are not equally well determined:
+$\hat E_{Ca} = \valParamFitEcaHatTwoMeanStd$\,mV carries a wider relative
+interval than the conductance, the log-parameter information matrix is
+ill-conditioned ($\valCondNumberTwo$), and the two parameters are almost perfectly
+anti-correlated. There \emph{is} a sloppy direction here, along an identifiable
+combination of conductance and reversal potential, exactly as the
+identifiable-combinations analysis of \citet{walch2016} would predict. At the
+physiological $g_{Ca}=\gcaPhys$ the reversal potential's 95\% profile interval % numok: 95% confidence level, a convention
+runs from $60$ to $300$\,mV: bounded below, but still open at the top of the % numok: profile CI bounds over an 81-point grid on [0,300] mV, results/identifiability/profile_eca_gca0.4.csv
+range we scanned, so $E_{Ca}$ alone is practically non-identifiable there. Sloppy is not the same as
+non-identifiable, and the distinction is the whole point: both parameters retain
+finite, small standard errors at the headline condition, and the conductance
+retains a usable one even at the physiological value.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\textwidth]{fig13_parametric_identifiability.png}
+  \caption{\textbf{The data determine the calcium conductance; the closure does
+  not.} All three panels use the same single noisy trajectory at
+  $g_{Ca}=\gcaMain$. (a) The valley floor of the $\chi^2$ surface: for each
+  $g_{Ca}$, the reversal potential that best compensates it. The two parameters
+  do trade off along this curve, an identifiable combination in the sense of
+  \citet{walch2016}, but the trade-off is \emph{bounded} — the shaded stretch is
+  where the data still tolerate the pairing, and it is short. Parametric fits
+  from all $\valUdeForecastVRmseN$ seeds land on it near the truth; the tick
+  marks along the bottom are the conductances obtained instead by distilling the
+  neural closure. (b) The profile likelihood for $g_{Ca}$, that valley read along
+  its floor with $E_{Ca}$ re-optimised at every point. Below the dashed
+  $\chi^2$ threshold is the 95\% interval. % numok: 95% confidence level, a convention
+  \emph{Every one} of the five closure
+  estimates falls outside it. % numok: 5 of 5, figure_identifiability.jl console output
+  (c) The same fact per seed: parametric estimates cluster on the truth
+  (spread $\valParamFitGcaHatTwoStd$, span \valParamFitGcaHatRangeTwo) while
+  closure estimates scatter over \valSymbolicAHatRangeTrajTrain, and the pairs
+  are joined so the two representations of the identical run can be read against
+  each other. Closure values throughout this figure are the
+  supervised-trajectory refit, the same domain the text quotes; on the wider
+  convex hull they scatter further still.}
+  \label{fig:parametric}
+\end{figure}
+
+\begin{table}[t]
+  \centering
+  \caption{Direct parametric estimation of the two calcium parameters from the
+  same single noisy trajectory, no network involved
+  ($n=\valUdeForecastVRmseN$ seeds, mean $\pm$ 1 SD). The last column is the
+  conductance obtained instead by distilling the trained neural closure, on the
+  identical data. Parametric estimation recovers $g_{Ca}$ at every setting,
+  including the physiological one where the closure returns the wrong sign.
+  Relative standard errors come from the Fisher information in log parameters;
+  $\chi^2$ per point near unity confirms each fit sits at the known noise floor.
+  The comparison is deliberately unequal (two parameters and the true form,
+  versus $\NparamUde$ parameters and no form) and licenses only the
+  one-directional reading given in the text.}
+  \label{tab:parametric}
+  \begin{tabular}{lcccc}
+    \toprule
+    True $g_{Ca}$ & $\hat g_{Ca}$ (parametric) & rel.\ SE & $\chi^2$/point
+      & $\hat a$ (via closure) \\
+    \midrule
+    \gcaPhys & $\valParamFitGcaHatPointFourMeanStd$ & $\valCondRelSeGcaPointFourMean$ & --- & $\valSymbolicAHatNegControl$ \\
+    \gcaMid  & $\valParamFitGcaHatOneMeanStd$ & --- & --- & --- \\
+    \gcaMain & $\valParamFitGcaHatTwoMeanStd$ & $\valCondRelSeGcaTwoMean$ & $\valParamFitChiSqPerPointTwo$ & $\valSymbolicAHatMeanStd$ \\
+    \gcaHi   & $\valParamFitGcaHatFourMeanStd$ & --- & --- & --- \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
 \subsection{Is the residual gap trainable? An aggressive-retrain control}
 \label{sec:results-retrain}
 
 % claim: retrain-does-not-close-gap
-The obvious objection is that the coefficient gap is under-training. It is not,
-and the control that shows so is the strongest single result in the study
+% claim: retrain-improves-loss-worsens-recovery
+The remaining objection is that the coefficient gap is under-training. It is not,
+and the control that shows so is sharper than we first realised
 (Table~\ref{tab:retrain}). We quadrupled the optimisation budget, to \AdamRe{}
-Adam and \BfgsRe{} L-BFGS iterations with everything else identical, and re-ran the
-same symbolic pipeline. The optimiser converged: L-BFGS succeeded on all five
-seeds and the final losses are tight ($\valRetrainFinalLossMeanStd$). And yet
-every recovery quantity got \emph{worse and noisier}: the conductance moved
-farther from the truth and its standard deviation inflated
+Adam and \BfgsRe{} L-BFGS iterations with everything else identical, and re-ran
+the same symbolic pipeline.
+
+The training objective genuinely improved. Comparable losses were not recorded at
+the time, but the trained weights were saved, so the before-loss can be recovered
+without retraining anything: rebuild the exact objective and evaluate it at the
+saved parameters. Doing so gives $\valTrainLossBeforeMeanStd$ before against
+$\valTrainLossAfterMeanStd$ after, a reduction of about \LossDropPct\,per cent.
+(The recovery is trustworthy because the same procedure reproduces the
+\emph{recorded} after-loss to a relative difference of zero.) L-BFGS also reported
+success on all five seeds ($\valRetrainBfgsOk$).
+
+And yet every recovery quantity got \emph{worse and noisier}: the conductance
+moved farther from the truth and its standard deviation inflated
 ($\hat a$: $\valSymbolicAHatMeanStd \to \valRetrainAHatMeanStd$), agreement with
 the true current fell
 ($R^2$: $\valSymbolicRTwoCondTrueMeanStd \to \valRetrainRTwoCondTrueMeanStd$), and
-even the trajectory forecast the loss actually optimises degraded
-($\valUdeForecastVRmseMeanStd \to \valRetrainForecastVRmseMeanStd$\,mV). More
-optimisation did not find a better closure; it found more different closures that
-fit the same voltage equally well, which is what non-identifiability looks like
-from inside an optimiser: the objective is flat in the direction we are trying to
-read.
+even the trajectory forecast degraded
+($\valUdeForecastVRmseMeanStd \to \valRetrainForecastVRmseMeanStd$\,mV).
+
+% claim: retrain-negative-control-replicates
+The same holds at the physiological conductance, which is worth checking
+separately because that is where the method fails hardest. Retraining the
+$g_{Ca}=\gcaPhys$ case at the same aggressive budget leaves the conductance
+wrong-signed and moves it further from the truth
+($\valGcaFourRetrainAHatBefore \to \valGcaFourRetrainAHatAfter$ against a true
+$+\gcaPhys$), and agreement with the true current falls below zero
+($R^2$: $\valGcaFourRetrainRTwoBefore \to \valGcaFourRetrainRTwoAfter$), meaning
+the distilled form becomes a worse predictor of the calcium current than that
+current's own mean. On the supervised trajectory both budgets instead return an
+estimate indistinguishable from zero, which is the same failure seen from the
+other side: at this conductance there is almost nothing of the calcium current
+in the voltage for the estimator to find.
+
+That combination is the result. It is not that more optimisation achieved
+nothing, which would only show the optimiser had already converged. It is that
+more optimisation demonstrably \emph{succeeded} at what it was asked to do, fit
+the training data better, and the science got worse as it did. Descending further
+into a valley that is flat in the direction of the conductance moves the closure
+along that valley without improving what we want to read from it. This is what
+non-identifiability looks like from inside an optimiser, observed rather than
+inferred.
 
 % claim: retrain-seed-decoupling
 The representative seed makes the mechanism concrete. Under the aggressive
@@ -868,11 +1406,14 @@ what a flat direction in the loss means, observed directly rather than inferred.
   $n=\valUdeForecastVRmseN$ seeds). ``Before'' is Adam \AdamUde/BFGS \BfgsUde;
   ``after'' is Adam \AdamRe/BFGS \BfgsRe, identical in model, data, seeds,
   solver, tolerances, and loss; only the iteration budget changed. Every entry is
-  mean $\pm$ 1 SD. The optimiser did not fail: L-BFGS reported success on all
-  five after-runs ($\valRetrainBfgsOk$) and the final loss is tight
-  ($\valRetrainFinalLossMeanStd$), so the divergent coefficients are not
-  optimisation failure. The physiological $g_{Ca}=\gcaPhys$ negative control was
-  \emph{not} retrained and is excluded here.}
+  mean $\pm$ 1 SD. Read the last row first: the optimiser did its job, lowering
+  the training objective by about \LossDropPct\,per cent, and every row above it got
+  worse. L-BFGS also reported success on all five after-runs
+  ($\valRetrainBfgsOk$). The before-loss was not recorded during training and is
+  recovered by evaluating the exact training objective at the saved parameters,
+  a procedure validated by its reproducing the recorded after-loss exactly. The
+  physiological $g_{Ca}=\gcaPhys$ negative control was \emph{not} retrained and
+  is excluded here.}
   \label{tab:retrain}
   \begin{tabular}{lcc}
     \toprule
@@ -882,7 +1423,8 @@ what a flat direction in the loss means, observed directly rather than inferred.
     $R^2$ vs.\ true current & $\valSymbolicRTwoCondTrueMeanStd$ & $\valRetrainRTwoCondTrueMeanStd$ \\
     Forecast $V$ RMSE (mV) & $\valUdeForecastVRmseMeanStd$ & $\valRetrainForecastVRmseMeanStd$ \\
     Forecast $I_{Ca}$ RMSE & $\valUdeForecastICaRmseMeanStd$ & $\valRetrainForecastICaRmseMeanStd$ \\
-    Final training loss & not recorded & $\valRetrainFinalLossMeanStd$ \\
+    \midrule
+    Final training loss & $\valTrainLossBeforeMeanStd$ & $\valTrainLossAfterMeanStd$ \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -892,18 +1434,37 @@ what a flat direction in the loss means, observed directly rather than inferred.
 \label{sec:discussion}
 
 % claim: ude-recovers-trajectory-not-coefficients
+% claim: closure-induced-nonidentifiability
 The picture assembled across these experiments is a single, scoped finding: the
-UDE recovers the trajectory and the functional form of the hidden calcium current
-but not its coefficients, and the residual gap is a property of the data. Voltage
-is forecast to sub-millivolt accuracy over the whole un-trained remainder; the
-closure distils to the correct conductance form; and the conductance itself is
-only order-correct, with neither a signal-amplitude sweep nor a fourfold
-optimisation budget closing the gap. What turns this from a failure report into a
-characterisation is the set of controls: the estimator recovers the truth from
-the analytic current, so the fault is not the regression; the gap widens toward
-low conductance in a controlled sweep, so it is not an accident of the headline
-setting; and it survives, indeed grows, under quadrupled optimisation with a
-converged optimiser, so it is not under-training.
+UDE recovers the trajectory but not the hidden current's coefficients, and the
+residual gap is a property of the \emph{representation}, not of the data.
+Voltage is forecast to sub-millivolt accuracy over the whole un-trained
+remainder; the closure agrees closely with the true current's shape; and the
+conductance read off it is only order-correct, with neither a signal-amplitude
+sweep nor a fourfold optimisation budget closing the gap.
+
+What turns this from a failure report into a characterisation is a chain of
+controls that removes the alternative explanations one at a time. The same
+estimator recovers the true coefficients when fitted to the analytic current, so
+the fault is not the regression. The result is unchanged across six fitting
+domains including the strictly supervised trajectory, so it is not an artifact of
+where we evaluated the closure. The gap widens toward low conductance in a
+controlled sweep, so it is not an accident of the headline setting. It survives,
+indeed grows, under quadrupled optimisation that measurably improved the training
+loss, so it is not under-training. And the residual explanation, that one noisy
+trajectory cannot determine the conductance, is ruled out by direct measurement:
+the same trajectory determines it to about six per cent. What is left is the
+closure itself.
+
+That conclusion has a name in the identifiability literature. Following
+\citet{loman2026structural}, a parameter can be structurally identifiable while
+an unknown \emph{function} standing in for the same physics is not, and
+\citet{loman2025ude} separate exactly these two notions for universal
+differential equations. Our experiments are an empirical instance: parametric
+identifiability holds and functional identifiability fails, on identical data,
+with the representation the only difference. A flexible closure has directions of
+variation that the two-parameter model does not, and the observed voltage does not
+constrain them.
 
 % claim: predictive-accuracy-is-not-identifiability
 The transferable lesson is that predictive accuracy on the observed channel is
@@ -923,57 +1484,93 @@ absorbs that ambiguity rather than resolving it.
 % claim: identifiability-is-the-general-lesson
 We state the general form of this as a recommendation rather than a theorem,
 because our evidence is one system. Where a UDE's learned term is meant to be
-interpreted rather than merely simulated, its identifiability from the available
-data should be established before its coefficients are read as physical
-quantities; a single trajectory can be sufficient to fit and insufficient to
-identify. The cheapest diagnostic is the one that would have caught the failure
-here: a seed-spread check on the recovered coefficients. The mechanism we
-observe, a flat direction in the loss along which the closure varies while the
-observable does not, is general, but its presence in any particular system is a
-hypothesis to be tested, not assumed. The choice of $g_{Ca}=\gcaMain$ was made in
-that spirit: not to make the method succeed, but to place the system in the regime
-where recovery is possible enough that its residual failure is informative.
+interpreted rather than merely simulated, its identifiability should be
+established before its coefficients are read as physical quantities, and the
+question to ask is not only whether the data determine the parameter but whether
+they still determine it once the term is represented by a flexible closure. Those
+are different questions, and here they had different answers.
+
+Two diagnostics follow, both cheap. The first is a seed-spread check on the
+recovered coefficients, which would have caught the failure in this study
+immediately and costs only a re-run. The second applies whenever the functional
+form is even approximately known: fit it parametrically and compare. That
+reference point converts a bare spread into an attribution, because it separates
+what the data cannot supply from what the closure discards. The mechanism we
+observe, a flat direction along which the closure varies while the observable does
+not, is general; its presence in any particular system is a hypothesis to be
+tested, not assumed. The choice of $g_{Ca}=\gcaMain$ was made in that spirit: not
+to make the method succeed, but to place the system in the regime where recovery
+is possible enough that its residual failure is informative.
 
 % =========================================================================
 \section{Limitations}
 \label{sec:limitations}
 
-% claim: single-trajectory-is-the-binding-limitation
-The binding limitation is that every conclusion rests on one trajectory: one
-applied drive, one initial condition, one \Tfull\,ms window. Every
-identifiability statement is therefore ``not identifiable \emph{from this
-trajectory}.'' The natural next experiment is whether multiple trajectories
-spanning different initial conditions and stimulus amplitudes restore
-identifiability of the calcium conductance; the identifiable-combinations analysis
-of \citet{walch2016} predicts which additional measurement would break the
-degeneracy, which turns this negative result into an experimental-design
-recommendation. We do not run that experiment and make no prediction about its
-outcome. Three further limitations bound the claims. All ablations are single-seed
-and carry no error bars; we calibrate them against the five-seed spread at the
-shared centre point and claim only the gaps that clear it. No statistical test is
-run anywhere, and $n=\valUdeForecastVRmseN$ would support almost none; every
-comparative statement is an equivalence-within-noise statement, not an ordering.
-And we provide no positive control showing that \emph{adding} information closes
-the gap (the experiment a reader would most want) because the evidence base for
-this study is closed; it is named here rather than wished away. Separately, the
-seeds redraw the network initialisation and the noise realisation jointly, so the
-reported spread cannot be decomposed into the two.
+% claim: closure-induced-nonidentifiability
+The binding limitation is that we have varied the representation on exactly one
+axis. We compare a two-parameter model against one $\NparamUde$-parameter
+closure of one architecture, so we can say that flexibility cost identifiability
+here, but not how much flexibility is too much, nor where between those two
+extremes identifiability is lost. The obvious next experiment is a ladder of
+intermediate closures, from a single learned scalar through low-order bases to
+the full network, measuring where the conductance stops being recoverable. We do
+not run it and make no prediction about its outcome. A second axis we did not
+vary is the closure's input set, which fixes what degeneracies are even
+expressible.
+
+The comparison at the heart of the paper is also not a comparison of equals, and
+we would rather state that than let a reader discover it. The parametric fit
+knows the true functional form and estimates two numbers; the closure knows
+nothing and estimates $\NparamUde$. It also forecasts better. The inference we
+draw is correspondingly one-directional: because the data pin the conductance,
+the closure's failure to pin it is not the data's fault. We do not claim the two
+methods are otherwise comparable, and a reader who wants the converse claim,
+that a closure could match parametric precision given the right constraints, will
+not find it supported here.
+
+Three further limitations bound the claims. The window and noise ablations remain
+single-seed and carry no error bars; only the conductance sweep has been repeated
+across seeds, and we claim from it only the end-to-end trend, since two of its
+three adjacent steps fall within seed noise. No statistical test is run anywhere,
+and $n=\valUdeForecastVRmseN$ would support almost none; every comparative
+statement is an equivalence-within-noise statement, not an ordering. And every
+conclusion still rests on one trajectory: one applied drive, one initial
+condition, one \Tfull\,ms window. That is no longer the explanation of our
+negative result, but it does bound its reach, and whether multiple trajectories
+would restore identifiability \emph{through the closure} is untested. The
+identifiable-combinations analysis of \citet{walch2016} predicts which additional
+measurement would break the parametric degeneracy between $g_{Ca}$ and $E_{Ca}$,
+which we observe directly in Sec.~\ref{sec:results-parametric}.
+
+% claim: seeds-confound-init-and-noise
+Finally, the seeds redraw the network initialisation and the noise realisation
+jointly, so every spread we report is a joint init-and-data spread and the two
+cannot be separated from these runs.
 
 % =========================================================================
 \section{Conclusion}
 \label{sec:conclusion}
 
-Embedding known physics and learning one hidden ionic current turns an impossible
-extrapolation into a routine one and recovers the functional form of the calcium
-current, even when only voltage is observed. It does not recover the current's
-conductance from a single trajectory, and the failure is structural: the
-regression is exonerated by a control, the signal-amplitude sweep locates the
-boundary, and quadrupled optimisation makes the estimate worse rather than better.
+Embedding known physics and learning one hidden ionic current makes a \Rcap\,ms
+extrapolation both accurate and dependable, even when only voltage is observed,
+and yields a closure that agrees closely with the true calcium current's shape.
+It does not yield the current's conductance. The reason is not the one that would
+be assumed: the single noisy trajectory determines that conductance to about six
+per cent, as a direct parametric fit on the very same data shows. It is the
+flexible closure that loses it, and a chain of controls leaves nothing else
+standing, since the regression is exonerated, the fitting domain is immaterial,
+the signal-amplitude sweep is monotone, and quadrupled optimisation lowers the
+training loss while worsening every recovered quantity.
+
 The practical consequence for scientific machine learning is a caution with a
-concrete remedy: a UDE coefficient is a physical estimate only when the data
-identify it, an inexpensive seed-spread check will flag when they do not, and the
-identifiable-combinations literature says which additional measurement to collect
-when they do.
+concrete remedy. A UDE coefficient is a physical estimate only when the data
+identify it \emph{through the representation actually used}, which is a stricter
+condition than the data identifying it at all. An inexpensive seed-spread check
+flags when that condition fails, and where the functional form is even
+approximately known, a parametric fit on the same data says whether to blame the
+data or the closure. Predictive accuracy on the observed channel answers neither
+question, which is precisely why it is the wrong diagnostic to have been relying
+on.
 
 % =========================================================================
 \section*{Acknowledgements}

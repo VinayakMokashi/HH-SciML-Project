@@ -1631,5 +1631,1772 @@
       "seed": 1111
     },
     "n": 1
+  },
+  "ParamFitGcaHatTwo": {
+    "macro": "valParamFitGcaHatTwo",
+    "value": "2.092 \\pm 0.130",
+    "raw": {
+      "mean": 2.092384218959993,
+      "std": 0.13001189990915696
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatTwoMeanStd": {
+    "macro": "valParamFitGcaHatTwoMeanStd",
+    "value": "2.092 \\pm 0.130",
+    "raw": {
+      "mean": 2.092384218959993,
+      "std": 0.13001189990915696
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatTwoMean": {
+    "macro": "valParamFitGcaHatTwoMean",
+    "value": "2.092",
+    "raw": 2.092384218959993,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatTwoStd": {
+    "macro": "valParamFitGcaHatTwoStd",
+    "value": "0.130",
+    "raw": 0.13001189990915696,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatTwoN": {
+    "macro": "valParamFitGcaHatTwoN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatRangeTwo": {
+    "macro": "valParamFitGcaHatRangeTwo",
+    "value": "1.877--2.211",
+    "raw": {
+      "min": 1.8770173788332696,
+      "max": 2.211209810718123
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitEcaHatTwo": {
+    "macro": "valParamFitEcaHatTwo",
+    "value": "111.9 \\pm 12.0",
+    "raw": {
+      "mean": 111.91100463023713,
+      "std": 12.039062096659686
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitEcaHatTwoMeanStd": {
+    "macro": "valParamFitEcaHatTwoMeanStd",
+    "value": "111.9 \\pm 12.0",
+    "raw": {
+      "mean": 111.91100463023713,
+      "std": 12.039062096659686
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitEcaHatTwoMean": {
+    "macro": "valParamFitEcaHatTwoMean",
+    "value": "111.9",
+    "raw": 111.91100463023713,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitEcaHatTwoStd": {
+    "macro": "valParamFitEcaHatTwoStd",
+    "value": "12.0",
+    "raw": 12.039062096659686,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitEcaHatTwoN": {
+    "macro": "valParamFitEcaHatTwoN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatPointFour": {
+    "macro": "valParamFitGcaHatPointFour",
+    "value": "0.438 \\pm 0.065",
+    "raw": {
+      "mean": 0.43775053086048327,
+      "std": 0.06510726518191451
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 0.4
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatPointFourMeanStd": {
+    "macro": "valParamFitGcaHatPointFourMeanStd",
+    "value": "0.438 \\pm 0.065",
+    "raw": {
+      "mean": 0.43775053086048327,
+      "std": 0.06510726518191451
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 0.4
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatPointFourMean": {
+    "macro": "valParamFitGcaHatPointFourMean",
+    "value": "0.438",
+    "raw": 0.43775053086048327,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 0.4
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatPointFourStd": {
+    "macro": "valParamFitGcaHatPointFourStd",
+    "value": "0.065",
+    "raw": 0.06510726518191451,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 0.4
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatPointFourN": {
+    "macro": "valParamFitGcaHatPointFourN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 0.4
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatOne": {
+    "macro": "valParamFitGcaHatOne",
+    "value": "1.043 \\pm 0.084",
+    "raw": {
+      "mean": 1.0430471597691386,
+      "std": 0.0840708259850014
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 1.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatOneMeanStd": {
+    "macro": "valParamFitGcaHatOneMeanStd",
+    "value": "1.043 \\pm 0.084",
+    "raw": {
+      "mean": 1.0430471597691386,
+      "std": 0.0840708259850014
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 1.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatOneMean": {
+    "macro": "valParamFitGcaHatOneMean",
+    "value": "1.043",
+    "raw": 1.0430471597691386,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 1.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatOneStd": {
+    "macro": "valParamFitGcaHatOneStd",
+    "value": "0.084",
+    "raw": 0.0840708259850014,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 1.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatOneN": {
+    "macro": "valParamFitGcaHatOneN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 1.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatFour": {
+    "macro": "valParamFitGcaHatFour",
+    "value": "4.105 \\pm 0.120",
+    "raw": {
+      "mean": 4.10529980106318,
+      "std": 0.11984914182199823
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 4.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatFourMeanStd": {
+    "macro": "valParamFitGcaHatFourMeanStd",
+    "value": "4.105 \\pm 0.120",
+    "raw": {
+      "mean": 4.10529980106318,
+      "std": 0.11984914182199823
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 4.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatFourMean": {
+    "macro": "valParamFitGcaHatFourMean",
+    "value": "4.105",
+    "raw": 4.10529980106318,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 4.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatFourStd": {
+    "macro": "valParamFitGcaHatFourStd",
+    "value": "0.120",
+    "raw": 0.11984914182199823,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 4.0
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatFourN": {
+    "macro": "valParamFitGcaHatFourN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 4.0
+    },
+    "n": 5
+  },
+  "ParamFitChiSqPerPointTwo": {
+    "macro": "valParamFitChiSqPerPointTwo",
+    "value": "0.994",
+    "raw": 0.9944792850770685,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitForecastVRmseTwo": {
+    "macro": "valParamFitForecastVRmseTwo",
+    "value": "0.123 \\pm 0.032",
+    "raw": {
+      "mean": 0.12296809823224704,
+      "std": 0.031883617114038566
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitForecastVRmseTwoMeanStd": {
+    "macro": "valParamFitForecastVRmseTwoMeanStd",
+    "value": "0.123 \\pm 0.032",
+    "raw": {
+      "mean": 0.12296809823224704,
+      "std": 0.031883617114038566
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitForecastVRmseTwoMean": {
+    "macro": "valParamFitForecastVRmseTwoMean",
+    "value": "0.123",
+    "raw": 0.12296809823224704,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitForecastVRmseTwoStd": {
+    "macro": "valParamFitForecastVRmseTwoStd",
+    "value": "0.032",
+    "raw": 0.031883617114038566,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitForecastVRmseTwoN": {
+    "macro": "valParamFitForecastVRmseTwoN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "CondRelSeGcaTwo": {
+    "macro": "valCondRelSeGcaTwo",
+    "value": "0.067 \\pm 0.004",
+    "raw": {
+      "mean": 0.06667186168953679,
+      "std": 0.004331278030106411
+    },
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "CondRelSeGcaTwoMeanStd": {
+    "macro": "valCondRelSeGcaTwoMeanStd",
+    "value": "0.067 \\pm 0.004",
+    "raw": {
+      "mean": 0.06667186168953679,
+      "std": 0.004331278030106411
+    },
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "CondRelSeGcaTwoMean": {
+    "macro": "valCondRelSeGcaTwoMean",
+    "value": "0.067",
+    "raw": 0.06667186168953679,
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "CondRelSeGcaTwoStd": {
+    "macro": "valCondRelSeGcaTwoStd",
+    "value": "0.004",
+    "raw": 0.004331278030106411,
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "CondRelSeGcaTwoN": {
+    "macro": "valCondRelSeGcaTwoN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "CondRelSeEcaTwo": {
+    "macro": "valCondRelSeEcaTwo",
+    "value": "0.111 \\pm 0.003",
+    "raw": {
+      "mean": 0.11104759082026801,
+      "std": 0.002608339618740706
+    },
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "CondRelSeEcaTwoMeanStd": {
+    "macro": "valCondRelSeEcaTwoMeanStd",
+    "value": "0.111 \\pm 0.003",
+    "raw": {
+      "mean": 0.11104759082026801,
+      "std": 0.002608339618740706
+    },
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "CondRelSeEcaTwoMean": {
+    "macro": "valCondRelSeEcaTwoMean",
+    "value": "0.111",
+    "raw": 0.11104759082026801,
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "CondRelSeEcaTwoStd": {
+    "macro": "valCondRelSeEcaTwoStd",
+    "value": "0.003",
+    "raw": 0.002608339618740706,
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "CondRelSeEcaTwoN": {
+    "macro": "valCondRelSeEcaTwoN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "CondRelSeGcaPointFour": {
+    "macro": "valCondRelSeGcaPointFour",
+    "value": "0.269 \\pm 0.042",
+    "raw": {
+      "mean": 0.2694265739421785,
+      "std": 0.042432531341401535
+    },
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 0.4
+    },
+    "n": 5
+  },
+  "CondRelSeGcaPointFourMeanStd": {
+    "macro": "valCondRelSeGcaPointFourMeanStd",
+    "value": "0.269 \\pm 0.042",
+    "raw": {
+      "mean": 0.2694265739421785,
+      "std": 0.042432531341401535
+    },
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 0.4
+    },
+    "n": 5
+  },
+  "CondRelSeGcaPointFourMean": {
+    "macro": "valCondRelSeGcaPointFourMean",
+    "value": "0.269",
+    "raw": 0.2694265739421785,
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 0.4
+    },
+    "n": 5
+  },
+  "CondRelSeGcaPointFourStd": {
+    "macro": "valCondRelSeGcaPointFourStd",
+    "value": "0.042",
+    "raw": 0.042432531341401535,
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 0.4
+    },
+    "n": 5
+  },
+  "CondRelSeGcaPointFourN": {
+    "macro": "valCondRelSeGcaPointFourN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 0.4
+    },
+    "n": 5
+  },
+  "CondNumberTwo": {
+    "macro": "valCondNumberTwo",
+    "value": "7088",
+    "raw": 7087.976234532391,
+    "source": "results/identifiability/conditioning.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "TrainLossBefore": {
+    "macro": "valTrainLossBefore",
+    "value": "35.71 \\pm 1.81",
+    "raw": {
+      "mean": 35.71475238532089,
+      "std": 1.8135366063932328
+    },
+    "source": "results/identifiability/training_losses_before_after.csv",
+    "filter": {},
+    "n": 5
+  },
+  "TrainLossBeforeMeanStd": {
+    "macro": "valTrainLossBeforeMeanStd",
+    "value": "35.71 \\pm 1.81",
+    "raw": {
+      "mean": 35.71475238532089,
+      "std": 1.8135366063932328
+    },
+    "source": "results/identifiability/training_losses_before_after.csv",
+    "filter": {},
+    "n": 5
+  },
+  "TrainLossBeforeMean": {
+    "macro": "valTrainLossBeforeMean",
+    "value": "35.71",
+    "raw": 35.71475238532089,
+    "source": "results/identifiability/training_losses_before_after.csv",
+    "filter": {},
+    "n": 5
+  },
+  "TrainLossBeforeStd": {
+    "macro": "valTrainLossBeforeStd",
+    "value": "1.81",
+    "raw": 1.8135366063932328,
+    "source": "results/identifiability/training_losses_before_after.csv",
+    "filter": {},
+    "n": 5
+  },
+  "TrainLossBeforeN": {
+    "macro": "valTrainLossBeforeN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/training_losses_before_after.csv",
+    "filter": {},
+    "n": 5
+  },
+  "TrainLossAfter": {
+    "macro": "valTrainLossAfter",
+    "value": "29.66 \\pm 2.66",
+    "raw": {
+      "mean": 29.65990124147882,
+      "std": 2.663394792238203
+    },
+    "source": "results/identifiability/training_losses_before_after.csv",
+    "filter": {},
+    "n": 5
+  },
+  "TrainLossAfterMeanStd": {
+    "macro": "valTrainLossAfterMeanStd",
+    "value": "29.66 \\pm 2.66",
+    "raw": {
+      "mean": 29.65990124147882,
+      "std": 2.663394792238203
+    },
+    "source": "results/identifiability/training_losses_before_after.csv",
+    "filter": {},
+    "n": 5
+  },
+  "TrainLossAfterMean": {
+    "macro": "valTrainLossAfterMean",
+    "value": "29.66",
+    "raw": 29.65990124147882,
+    "source": "results/identifiability/training_losses_before_after.csv",
+    "filter": {},
+    "n": 5
+  },
+  "TrainLossAfterStd": {
+    "macro": "valTrainLossAfterStd",
+    "value": "2.66",
+    "raw": 2.663394792238203,
+    "source": "results/identifiability/training_losses_before_after.csv",
+    "filter": {},
+    "n": 5
+  },
+  "TrainLossAfterN": {
+    "macro": "valTrainLossAfterN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/training_losses_before_after.csv",
+    "filter": {},
+    "n": 5
+  },
+  "SymbolicAHatTrajTrain": {
+    "macro": "valSymbolicAHatTrajTrain",
+    "value": "1.645 \\pm 0.672",
+    "raw": {
+      "mean": 1.6445778751619045,
+      "std": 0.6717585819876875
+    },
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicAHatTrajTrainMeanStd": {
+    "macro": "valSymbolicAHatTrajTrainMeanStd",
+    "value": "1.645 \\pm 0.672",
+    "raw": {
+      "mean": 1.6445778751619045,
+      "std": 0.6717585819876875
+    },
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicAHatTrajTrainMean": {
+    "macro": "valSymbolicAHatTrajTrainMean",
+    "value": "1.645",
+    "raw": 1.6445778751619045,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicAHatTrajTrainStd": {
+    "macro": "valSymbolicAHatTrajTrainStd",
+    "value": "0.672",
+    "raw": 0.6717585819876875,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicAHatTrajTrainN": {
+    "macro": "valSymbolicAHatTrajTrainN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicAHatRangeTrajTrain": {
+    "macro": "valSymbolicAHatRangeTrajTrain",
+    "value": "1.241--2.816",
+    "raw": {
+      "min": 1.2408727938278845,
+      "max": 2.8156936899025493
+    },
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoTrajTrain": {
+    "macro": "valSymbolicRTwoTrajTrain",
+    "value": "0.991 \\pm 0.005",
+    "raw": {
+      "mean": 0.9905859909037261,
+      "std": 0.0045213035318677555
+    },
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoTrajTrainMeanStd": {
+    "macro": "valSymbolicRTwoTrajTrainMeanStd",
+    "value": "0.991 \\pm 0.005",
+    "raw": {
+      "mean": 0.9905859909037261,
+      "std": 0.0045213035318677555
+    },
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoTrajTrainMean": {
+    "macro": "valSymbolicRTwoTrajTrainMean",
+    "value": "0.991",
+    "raw": 0.9905859909037261,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoTrajTrainStd": {
+    "macro": "valSymbolicRTwoTrajTrainStd",
+    "value": "0.005",
+    "raw": 0.0045213035318677555,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoTrajTrainN": {
+    "macro": "valSymbolicRTwoTrajTrainN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicCondTrajTrain": {
+    "macro": "valSymbolicCondTrajTrain",
+    "value": "102.4",
+    "raw": 102.43602726682067,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicCondHull": {
+    "macro": "valSymbolicCondHull",
+    "value": "69.9",
+    "raw": 69.86974830325174,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "hull"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormPointFour": {
+    "macro": "valGcaSweepICaNormPointFour",
+    "value": "0.724 \\pm 0.318",
+    "raw": {
+      "mean": 0.7242919047642109,
+      "std": 0.3184350839738513
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormPointFourMeanStd": {
+    "macro": "valGcaSweepICaNormPointFourMeanStd",
+    "value": "0.724 \\pm 0.318",
+    "raw": {
+      "mean": 0.7242919047642109,
+      "std": 0.3184350839738513
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormPointFourMean": {
+    "macro": "valGcaSweepICaNormPointFourMean",
+    "value": "0.724",
+    "raw": 0.7242919047642109,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormPointFourStd": {
+    "macro": "valGcaSweepICaNormPointFourStd",
+    "value": "0.318",
+    "raw": 0.3184350839738513,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormPointFourN": {
+    "macro": "valGcaSweepICaNormPointFourN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormOne": {
+    "macro": "valGcaSweepICaNormOne",
+    "value": "0.312 \\pm 0.097",
+    "raw": {
+      "mean": 0.31196923397866433,
+      "std": 0.09658260510624679
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 1.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormOneMeanStd": {
+    "macro": "valGcaSweepICaNormOneMeanStd",
+    "value": "0.312 \\pm 0.097",
+    "raw": {
+      "mean": 0.31196923397866433,
+      "std": 0.09658260510624679
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 1.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormOneMean": {
+    "macro": "valGcaSweepICaNormOneMean",
+    "value": "0.312",
+    "raw": 0.31196923397866433,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 1.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormOneStd": {
+    "macro": "valGcaSweepICaNormOneStd",
+    "value": "0.097",
+    "raw": 0.09658260510624679,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 1.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormOneN": {
+    "macro": "valGcaSweepICaNormOneN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 1.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormTwo": {
+    "macro": "valGcaSweepICaNormTwo",
+    "value": "0.140 \\pm 0.025",
+    "raw": {
+      "mean": 0.14034112152546374,
+      "std": 0.024583934920143758
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 2.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormTwoMeanStd": {
+    "macro": "valGcaSweepICaNormTwoMeanStd",
+    "value": "0.140 \\pm 0.025",
+    "raw": {
+      "mean": 0.14034112152546374,
+      "std": 0.024583934920143758
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 2.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormTwoMean": {
+    "macro": "valGcaSweepICaNormTwoMean",
+    "value": "0.140",
+    "raw": 0.14034112152546374,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 2.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormTwoStd": {
+    "macro": "valGcaSweepICaNormTwoStd",
+    "value": "0.025",
+    "raw": 0.024583934920143758,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 2.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormTwoN": {
+    "macro": "valGcaSweepICaNormTwoN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 2.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormFour": {
+    "macro": "valGcaSweepICaNormFour",
+    "value": "0.093 \\pm 0.044",
+    "raw": {
+      "mean": 0.09324722768825978,
+      "std": 0.0441092449693115
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 4.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormFourMeanStd": {
+    "macro": "valGcaSweepICaNormFourMeanStd",
+    "value": "0.093 \\pm 0.044",
+    "raw": {
+      "mean": 0.09324722768825978,
+      "std": 0.0441092449693115
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 4.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormFourMean": {
+    "macro": "valGcaSweepICaNormFourMean",
+    "value": "0.093",
+    "raw": 0.09324722768825978,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 4.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormFourStd": {
+    "macro": "valGcaSweepICaNormFourStd",
+    "value": "0.044",
+    "raw": 0.0441092449693115,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 4.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaNormFourN": {
+    "macro": "valGcaSweepICaNormFourN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 4.0,
+      "metric": "ICa_rmse_norm"
+    },
+    "n": 5
+  },
+  "GcaSweepICaRawTwo": {
+    "macro": "valGcaSweepICaRawTwo",
+    "value": "1.189 \\pm 0.208",
+    "raw": {
+      "mean": 1.1890720989803751,
+      "std": 0.2082929848283161
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 2.0,
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepICaRawTwoMeanStd": {
+    "macro": "valGcaSweepICaRawTwoMeanStd",
+    "value": "1.189 \\pm 0.208",
+    "raw": {
+      "mean": 1.1890720989803751,
+      "std": 0.2082929848283161
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 2.0,
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepICaRawTwoMean": {
+    "macro": "valGcaSweepICaRawTwoMean",
+    "value": "1.189",
+    "raw": 1.1890720989803751,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 2.0,
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepICaRawTwoStd": {
+    "macro": "valGcaSweepICaRawTwoStd",
+    "value": "0.208",
+    "raw": 0.2082929848283161,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 2.0,
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepICaRawTwoN": {
+    "macro": "valGcaSweepICaRawTwoN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 2.0,
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepICaRawPointFour": {
+    "macro": "valGcaSweepICaRawPointFour",
+    "value": "1.273 \\pm 0.560",
+    "raw": {
+      "mean": 1.2730634674060668,
+      "std": 0.5597026136574934
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepICaRawPointFourMeanStd": {
+    "macro": "valGcaSweepICaRawPointFourMeanStd",
+    "value": "1.273 \\pm 0.560",
+    "raw": {
+      "mean": 1.2730634674060668,
+      "std": 0.5597026136574934
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepICaRawPointFourMean": {
+    "macro": "valGcaSweepICaRawPointFourMean",
+    "value": "1.273",
+    "raw": 1.2730634674060668,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepICaRawPointFourStd": {
+    "macro": "valGcaSweepICaRawPointFourStd",
+    "value": "0.560",
+    "raw": 0.5597026136574934,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepICaRawPointFourN": {
+    "macro": "valGcaSweepICaRawPointFourN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepVRmsePointFour": {
+    "macro": "valGcaSweepVRmsePointFour",
+    "value": "0.215 \\pm 0.156",
+    "raw": {
+      "mean": 0.21536875059604435,
+      "std": 0.15566334732544684
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepVRmsePointFourMeanStd": {
+    "macro": "valGcaSweepVRmsePointFourMeanStd",
+    "value": "0.215 \\pm 0.156",
+    "raw": {
+      "mean": 0.21536875059604435,
+      "std": 0.15566334732544684
+    },
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepVRmsePointFourMean": {
+    "macro": "valGcaSweepVRmsePointFourMean",
+    "value": "0.215",
+    "raw": 0.21536875059604435,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepVRmsePointFourStd": {
+    "macro": "valGcaSweepVRmsePointFourStd",
+    "value": "0.156",
+    "raw": 0.15566334732544684,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "GcaSweepVRmsePointFourN": {
+    "macro": "valGcaSweepVRmsePointFourN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/gca_sweep_5seed/gca_sweep_multiseed.csv",
+    "filter": {
+      "gCa": 0.4,
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "NodeParityAutoVRmseMedian": {
+    "macro": "valNodeParityAutoVRmseMedian",
+    "value": "16.88",
+    "raw": 16.875472200783065,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_auto",
+      "metric": "V_rmse"
+    },
+    "n": 1
+  },
+  "NodeParityAutoRollout": {
+    "macro": "valNodeParityAutoRollout",
+    "value": "19.53 \\pm 17.75",
+    "raw": {
+      "mean": 19.530332681017615,
+      "std": 17.752973380473332
+    },
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_auto",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeParityAutoRolloutMeanStd": {
+    "macro": "valNodeParityAutoRolloutMeanStd",
+    "value": "19.53 \\pm 17.75",
+    "raw": {
+      "mean": 19.530332681017615,
+      "std": 17.752973380473332
+    },
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_auto",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeParityAutoRolloutMean": {
+    "macro": "valNodeParityAutoRolloutMean",
+    "value": "19.53",
+    "raw": 19.530332681017615,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_auto",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeParityAutoRolloutStd": {
+    "macro": "valNodeParityAutoRolloutStd",
+    "value": "17.75",
+    "raw": 17.752973380473332,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_auto",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeParityAutoRolloutN": {
+    "macro": "valNodeParityAutoRolloutN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_auto",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeParityTimeRollout": {
+    "macro": "valNodeParityTimeRollout",
+    "value": "0.431 \\pm 0.446",
+    "raw": {
+      "mean": 0.43052837573385505,
+      "std": 0.44625261256326343
+    },
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeParityTimeRolloutMeanStd": {
+    "macro": "valNodeParityTimeRolloutMeanStd",
+    "value": "0.431 \\pm 0.446",
+    "raw": {
+      "mean": 0.43052837573385505,
+      "std": 0.44625261256326343
+    },
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeParityTimeRolloutMean": {
+    "macro": "valNodeParityTimeRolloutMean",
+    "value": "0.431",
+    "raw": 0.43052837573385505,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeParityTimeRolloutStd": {
+    "macro": "valNodeParityTimeRolloutStd",
+    "value": "0.446",
+    "raw": 0.44625261256326343,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeParityTimeRolloutN": {
+    "macro": "valNodeParityTimeRolloutN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 5
+  },
+  "NodeParityTimeVRmse": {
+    "macro": "valNodeParityTimeVRmse",
+    "value": "7119 \\pm 4206",
+    "raw": {
+      "mean": 7118.513854016398,
+      "std": 4205.73115496801
+    },
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "NodeParityTimeVRmseMeanStd": {
+    "macro": "valNodeParityTimeVRmseMeanStd",
+    "value": "7119 \\pm 4206",
+    "raw": {
+      "mean": 7118.513854016398,
+      "std": 4205.73115496801
+    },
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "NodeParityTimeVRmseMean": {
+    "macro": "valNodeParityTimeVRmseMean",
+    "value": "7119",
+    "raw": 7118.513854016398,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "NodeParityTimeVRmseStd": {
+    "macro": "valNodeParityTimeVRmseStd",
+    "value": "4206",
+    "raw": 4205.73115496801,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "NodeParityTimeVRmseN": {
+    "macro": "valNodeParityTimeVRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "NodeParityTimeVRmseMin": {
+    "macro": "valNodeParityTimeVRmseMin",
+    "value": "275",
+    "raw": 274.5176471916351,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "V_rmse"
+    },
+    "n": 1
+  },
+  "NodeParityTimeVRmseMax": {
+    "macro": "valNodeParityTimeVRmseMax",
+    "value": "11762",
+    "raw": 11761.564423376221,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_time",
+      "metric": "V_rmse"
+    },
+    "n": 1
+  },
+  "GcaFourRetrainAHatBefore": {
+    "macro": "valGcaFourRetrainAHatBefore",
+    "value": "-0.372",
+    "raw": -0.37197985748605883,
+    "source": "results/identifiability/gca04_retrain_control.csv",
+    "filter": {
+      "case": "before",
+      "domain": "hull"
+    },
+    "n": 1
+  },
+  "GcaFourRetrainAHatAfter": {
+    "macro": "valGcaFourRetrainAHatAfter",
+    "value": "-1.341",
+    "raw": -1.341351055239545,
+    "source": "results/identifiability/gca04_retrain_control.csv",
+    "filter": {
+      "case": "after",
+      "domain": "hull"
+    },
+    "n": 1
+  },
+  "GcaFourRetrainRTwoBefore": {
+    "macro": "valGcaFourRetrainRTwoBefore",
+    "value": "0.688",
+    "raw": 0.6881648342515774,
+    "source": "results/identifiability/gca04_retrain_control.csv",
+    "filter": {
+      "case": "before",
+      "domain": "hull"
+    },
+    "n": 1
+  },
+  "GcaFourRetrainRTwoAfter": {
+    "macro": "valGcaFourRetrainRTwoAfter",
+    "value": "-0.331",
+    "raw": -0.33137544146641895,
+    "source": "results/identifiability/gca04_retrain_control.csv",
+    "filter": {
+      "case": "after",
+      "domain": "hull"
+    },
+    "n": 1
+  },
+  "CommonEvalVRmseFull": {
+    "macro": "valCommonEvalVRmseFull",
+    "value": "0.266 \\pm 0.037",
+    "raw": {
+      "mean": 0.2663377958273806,
+      "std": 0.0369932726112455
+    },
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "common_eval",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalVRmseFullMeanStd": {
+    "macro": "valCommonEvalVRmseFullMeanStd",
+    "value": "0.266 \\pm 0.037",
+    "raw": {
+      "mean": 0.2663377958273806,
+      "std": 0.0369932726112455
+    },
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "common_eval",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalVRmseFullMean": {
+    "macro": "valCommonEvalVRmseFullMean",
+    "value": "0.266",
+    "raw": 0.2663377958273806,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "common_eval",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalVRmseFullStd": {
+    "macro": "valCommonEvalVRmseFullStd",
+    "value": "0.037",
+    "raw": 0.0369932726112455,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "common_eval",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalVRmseFullN": {
+    "macro": "valCommonEvalVRmseFullN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "common_eval",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalVRmseVoltage": {
+    "macro": "valCommonEvalVRmseVoltage",
+    "value": "0.289 \\pm 0.137",
+    "raw": {
+      "mean": 0.2893368057271903,
+      "std": 0.13672054332978156
+    },
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "common_eval",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalVRmseVoltageMeanStd": {
+    "macro": "valCommonEvalVRmseVoltageMeanStd",
+    "value": "0.289 \\pm 0.137",
+    "raw": {
+      "mean": 0.2893368057271903,
+      "std": 0.13672054332978156
+    },
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "common_eval",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalVRmseVoltageMean": {
+    "macro": "valCommonEvalVRmseVoltageMean",
+    "value": "0.289",
+    "raw": 0.2893368057271903,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "common_eval",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalVRmseVoltageStd": {
+    "macro": "valCommonEvalVRmseVoltageStd",
+    "value": "0.137",
+    "raw": 0.13672054332978156,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "common_eval",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalVRmseVoltageN": {
+    "macro": "valCommonEvalVRmseVoltageN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "common_eval",
+      "metric": "V_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalICaRmseFull": {
+    "macro": "valCommonEvalICaRmseFull",
+    "value": "1.251 \\pm 0.212",
+    "raw": {
+      "mean": 1.250596957705621,
+      "std": 0.21188066901404193
+    },
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "common_eval",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalICaRmseFullMeanStd": {
+    "macro": "valCommonEvalICaRmseFullMeanStd",
+    "value": "1.251 \\pm 0.212",
+    "raw": {
+      "mean": 1.250596957705621,
+      "std": 0.21188066901404193
+    },
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "common_eval",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalICaRmseFullMean": {
+    "macro": "valCommonEvalICaRmseFullMean",
+    "value": "1.251",
+    "raw": 1.250596957705621,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "common_eval",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalICaRmseFullStd": {
+    "macro": "valCommonEvalICaRmseFullStd",
+    "value": "0.212",
+    "raw": 0.21188066901404193,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "common_eval",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalICaRmseFullN": {
+    "macro": "valCommonEvalICaRmseFullN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "full",
+      "window": "common_eval",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalICaRmseVoltage": {
+    "macro": "valCommonEvalICaRmseVoltage",
+    "value": "1.382 \\pm 0.478",
+    "raw": {
+      "mean": 1.3823637647825644,
+      "std": 0.4777675534319743
+    },
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "common_eval",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalICaRmseVoltageMeanStd": {
+    "macro": "valCommonEvalICaRmseVoltageMeanStd",
+    "value": "1.382 \\pm 0.478",
+    "raw": {
+      "mean": 1.3823637647825644,
+      "std": 0.4777675534319743
+    },
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "common_eval",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalICaRmseVoltageMean": {
+    "macro": "valCommonEvalICaRmseVoltageMean",
+    "value": "1.382",
+    "raw": 1.3823637647825644,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "common_eval",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalICaRmseVoltageStd": {
+    "macro": "valCommonEvalICaRmseVoltageStd",
+    "value": "0.478",
+    "raw": 0.4777675534319743,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "common_eval",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "CommonEvalICaRmseVoltageN": {
+    "macro": "valCommonEvalICaRmseVoltageN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/voltage_only_commoneval.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "common_eval",
+      "metric": "ICa_rmse"
+    },
+    "n": 5
+  },
+  "NodePublishedVRmseMin": {
+    "macro": "valNodePublishedVRmseMin",
+    "value": "229",
+    "raw": 229.12221959973417,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "published_time",
+      "metric": "V_rmse"
+    },
+    "n": 1
+  },
+  "NodePublishedVRmseMax": {
+    "macro": "valNodePublishedVRmseMax",
+    "value": "9213",
+    "raw": 9213.415361612118,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "published_time",
+      "metric": "V_rmse"
+    },
+    "n": 1
   }
 }

@@ -142,16 +142,23 @@ claims:
       - macro: NodeForecastRollout
       - figure: figures/fig2_neural_ode_overview.png
     scope: >-
-      single trajectory (Iapp=10 uA/cm2, steady-state IC at V0=-65 mV, t in [0,100] ms, 512 samples),
-      gCa=2.0, OU noise level 0.02, train t<=30 ms, Adam 3000 + BFGS 300, n=5 seeds {1111,2222,3333,4444,5555},
-      no statistical test. Forecast is the tail of one uninterrupted rollout from t=0; the model is never
-      re-initialized at t=30.
+      As published: Adam 3000 + BFGS 300, inputs = six normalised states AND raw time t.
     guard: node-no-meanstd
-    status: supported
-    # The temptation here is the V_rmse number (3951 +/- 3561 mV). Do not use it: per-seed values
-    # span 229 -> 9213 mV (40x), rmse_safe() computed each one over an unreported finite subset of
-    # timesteps, and a std larger than any physical voltage scale is not an error bar. The rollout
-    # horizon is the honest headline — two of five seeds breach at the FIRST forecast sample.
+    status: retired
+    # ===== RETIRED 2026-08-07. Not wrong about the published run, but the published run was not a
+    # fair baseline, so the claim cannot carry the weight the paper put on it. Two controls
+    # (node_parity.jl, 5 seeds each) separate budget from architecture:
+    #   * same architecture at the UDE's own budget (Adam 5000/BFGS 300): rollout 0.548 -> 0.431 ms
+    #     and V RMSE 3951 -> 7119. MORE optimisation made it WORSE. The baseline was not
+    #     under-trained, so the budget objection is answered.
+    #   * budget held, RAW TIME INPUT REMOVED (the system is autonomous, so a clock-reading RHS is
+    #     more expressive than the physics requires and can index the training window by time):
+    #     rollout 0.431 -> 19.53 ms, V RMSE median 16.88, and EXACTLY CORRECT SPIKE COUNTS on 4 of
+    #     5 seeds. It does not blow up.
+    # So "diverges" was an artifact of an indefensible architecture. Superseded by
+    # node-failure-is-architecture-not-budget, which states the attribution and keeps the (still
+    # large, still real) UDE advantage as a quantitative and reliability gap.
+    # DO NOT restore "diverges", "blows up", or "impossible versus routine" anywhere. =====
 
   - id: ude-forecasts-accurately
     statement: >-
@@ -324,11 +331,29 @@ claims:
       confirming the equivalence on an interval that is unseen for both.
     section: results.partial-observation
     kind: empirical
-    evidence: []
+    evidence:
+      - macro: CommonEvalVRmseFull
+      - macro: CommonEvalVRmseVoltage
+      - macro: CommonEvalICaRmseFull
+      - macro: CommonEvalICaRmseVoltage
     scope: >-
-      would require window=common_eval rows for observed=voltage. NONE EXIST.
+      gCa=2.0, OU noise 0.02, train t<=30 ms, n=5 seeds, window t>50 ms which is unseen for BOTH
+      conditions. V RMSE 0.266+/-0.037 (full) vs 0.289+/-0.137 (voltage-only); ICa RMSE 1.251+/-0.212
+      vs 1.382+/-0.478. Overlapping in both cases, so this is an equivalence-within-noise statement
+      and NOT an ordering; no statistical test was run and n=5 would support none. Note the
+      voltage-only SD is the larger of the two in both metrics.
     guard: no-commoneval-voltage
-    status: unsupported
+    status: supported
+    # ===== DISCHARGED 2026-08-10, WITHOUT A RETRAIN. =====
+    # The rows did not exist because run_experiment was called without common_eval_start for this
+    # family. But the trained weights were saved, so recover_voltage_only_commoneval.jl reloads each
+    # network, re-solves the full span, and scores on common_eval_indices() -- exactly what
+    # compute_metrics would have emitted had the kwarg been passed. The script SELF-TESTS by also
+    # recomputing the forecast window and matching metrics_all.csv to a relative difference of 0,
+    # which is what licenses trusting the common-eval numbers it produces alongside them.
+    # Output: results/identifiability/voltage_only_commoneval.csv (isolated; metrics_all.csv is not
+    # appended to, because that file is the input to already-published \val macros).
+    # Original tombstone note, kept for the record:
     # ===== NO EVIDENCE EXISTS AND NONE CAN BE EXTRACTED. =====
     # run_experiment is called WITHOUT common_eval_start for the voltage-only runs
     # (experiments_runner.jl:98-103), so metrics_all.csv contains zero common_eval rows for
@@ -367,13 +392,16 @@ claims:
 
   - id: symbolic-form-recovered
     statement: >-
-      The learned neural closure distills back to the correct biophysical functional form: a
-      conductance-form fit s^2(aV+b) reproduces the true calcium current with high R^2 against the
-      analytic ground truth.
+      The learned neural closure is well approximated by the expected biophysical conductance form:
+      when the form s^2(aV+b) is SUPPLIED to a constrained fit, it reproduces the true calcium current
+      with high R^2 against the analytic ground truth. This is agreement with an assumed form, not
+      discovery of it — unconstrained symbolic regression over an open library does not recover the
+      form reliably (see sindy-does-not-sparsify).
     section: results.symbolic-recovery
     kind: empirical
     evidence:
       - macro: SymbolicRTwoCondTrue
+      - macro: SymbolicRTwoTrajTrain
       - figure: figures/fig9_calcium_symbolic_parity.png
       - figure: figures/fig10_calcium_symbolic_timeseries.png
     scope: >-
@@ -385,6 +413,15 @@ claims:
       class, not a discovery test. See sindy-does-not-sparsify for the open-library result.
     guard: r2-ens-is-uninformative
     status: supported
+    # ===== REWORDED 2026-08-07 (review point 2). The mentor's objection is correct and conceded:
+    # "the conductance form s2(aV+b) is supplied to the constrained regression rather than
+    # discovered. Since the unconstrained SINDy fit retains all terms, the accurate claim is that the
+    # neural closure can be APPROXIMATED BY the expected conductance form, but unconstrained symbolic
+    # discovery does not recover it reliably."
+    # BANNED PHRASINGS anywhere in the paper: "recovers the functional form", "discovers the
+    # conductance form", "the form is recovered". Permitted: "is well approximated by", "is
+    # consistent with", "agrees with the assumed form". The distinction is the difference between a
+    # discovery claim and a goodness-of-fit claim, and only the latter is earned. =====
     # Quote r2_cond_true (per-seed mean +/- std), NEVER R2_ens=0.997. R2_ens is measured on the pooled
     # hull grid rather than the trajectory, and it is nearly blind: across the aggressive retrain it
     # moved 0.997333 -> 0.997341 (5th decimal) while per-seed R^2 collapsed 0.984 -> 0.845. A statistic
@@ -392,20 +429,28 @@ claims:
 
   - id: symbolic-coefficients-not-identifiable
     statement: >-
-      The coefficients of the recovered form are only order-correct: the fitted conductance scatters
-      across seeds by more than half its own magnitude and its mean sits well away from the true value,
-      so the calcium conductance is not identifiable from this trajectory.
+      The coefficients read off the neural closure are only order-correct: the fitted conductance
+      scatters across seeds by more than half its own magnitude and its mean sits well away from the
+      true value, so the calcium conductance is not recoverable THROUGH THE LEARNED CLOSURE.
     section: results.symbolic-recovery
     kind: empirical
     evidence:
       - macro: SymbolicAHat
+      - macro: SymbolicAHatTrajTrain
       - figure: figures/fig11_calcium_coeff_recovery.png
     scope: >-
       gCa=2.0, OU noise level 0.02, train t<=30 ms, n=5 seeds, per-seed mean +/- std (ddof=1), no
-      statistical test. a_true=gCa=2.0. Per-seed a_hat spans 0.673 -> 3.095 (4.6x); the std is ~57%
-      of the mean. Erev = -b/a is reported as a pooled point estimate with no error bar.
+      statistical test. a_true=gCa=2.0. Per-seed a_hat spans 0.673 -> 3.095 (4.6x) on the hull domain
+      and 1.244 -> 2.816 on the strictly supervised trajectory; the std is 41-57% of the mean
+      depending on domain. Erev = -b/a is a pooled point estimate with no error bar.
     guard: a-hat-not-a-recovery
     status: supported
+    # ===== REWORDED 2026-08-07. The OLD statement ended "...not identifiable from this
+    # trajectory", which the parametric fit falsifies: fitting (gCa, ECa) directly on the SAME
+    # trajectory returns 2.09 +/- 0.13 (parametric-fit-identifies-conductance). The data DO
+    # determine the conductance. What fails is recovery *via the closure*, so the claim is now
+    # scoped to the closure and the causal reading lives in closure-induced-nonidentifiability.
+    # Do not restore "not identifiable from this trajectory" anywhere in the paper. =====
     # "a = 1.60 +/- 0.90 vs true 2.0" is NOT a recovery and the interval containing 2.0 is not a defense —
     # an interval that wide contains almost anything. State the per-seed span, not just the std.
     # fig11 caption must say panel 3 (Erev) is a pooled point estimate: the missing whisker will
@@ -507,34 +552,45 @@ claims:
 
   - id: gca-sweep-shows-nonidentifiability
     statement: >-
-      Normalized calcium-current error falls monotonically as the calcium conductance is increased, and
-      at the physiological literature value the closure's error exceeds the true current's own variation
-      — the network has learned essentially nothing about a calcium current that small, while forecasting
-      voltage well throughout.
+      Recovery of the hidden current through the closure improves as the calcium conductance is raised:
+      normalized calcium error falls by roughly eightfold across the sweep while forecast voltage error
+      is unchanged, so how well the hidden term is recovered is governed by how much it moves the
+      observed channel and not by how well the observed channel is fitted.
     section: results.identifiability
     kind: empirical
     evidence:
-      - macro: GcaAblICaNormPointFour
-      - macro: GcaAblICaNormOne
-      - macro: GcaAblICaNormTwo
-      - macro: GcaAblICaNormFour
+      - macro: GcaSweepICaNormPointFour
+      - macro: GcaSweepICaNormOne
+      - macro: GcaSweepICaNormTwo
+      - macro: GcaSweepICaNormFour
+      - macro: GcaSweepVRmsePointFour
       - figure: figures/fig7c_ablation_gca.png
-      - figure: figures/fig12_calcium_identifiability.png
     scope: >-
-      single trajectory, gCa in {0.4, 1.0, 2.0, 4.0}, OU noise level 0.02, train t<=30 ms,
-      n=1 SEED (1111) — NO ERROR BARS EXIST ON ANY POINT. Forecast window. ICa_rmse_norm =
-      ICa_rmse / std(ICa_true) within the window, so a value >1 means the closure's error is larger
-      than the signal it is supposed to reproduce. Judged against the +/-0.025 seed spread measured at
-      the shared centre point gCa=2.0 (n=5), the 0.4-vs-1.0 gap is real; the 2.0-vs-4.0 gap
-      (0.112 vs 0.068) is near seed noise and must not be narrated as a trend continuing.
+      gCa in {0.4, 1.0, 2.0, 4.0}, OU noise level 0.02, train t<=30 ms, forecast window, and now
+      n=5 SEEDS AT EVERY POINT (mean +/- sd, ddof=1): 0.724+/-0.318, 0.312+/-0.097, 0.140+/-0.025,
+      0.093+/-0.044. Only the 1.0->2.0 step clears 2 pooled SD (ratio 2.4); 0.4->1.0 (1.8) and
+      2.0->4.0 (1.3) do NOT. The claim is therefore the END-TO-END trend (0.4 vs 4.0, ~8x, far
+      outside noise), never an individual step. No statistical test.
     guard: ablations-are-n1
     status: supported
-    # The quantitative backbone of the paper and the cleanest result in the set. The reason it is
-    # decisive rather than merely suggestive: the SIGNAL amplitude is the only thing that changed.
-    # Same architecture, same data volume, same optimizer, same iterations — only how much the calcium
-    # current contributes to the voltage the loss can see. That is an identifiability axis, by construction.
-    # At gCa=0.4 the symbolic fit additionally returns the WRONG SIGN (a=-0.372 vs true +0.40) and
-    # Erev=-239.9 mV vs true +120 — a harder failure than R^2=0.78 conveys, and worth stating.
+    # ===== REWORDED 2026-08-07 after repeating the sweep over all five seeds (review point 5b).
+    # TWO THINGS THE OLD VERSION GOT WRONG, both now forbidden:
+    #  1. "at the physiological value the closure's error EXCEEDS the true current's own variation"
+    #     rested on the single-seed 1.179 — which turned out to be the WORST of the five seeds. The
+    #     five-seed mean is 0.724 and only 1 of 5 exceeds unity. Do not say "exceeds one"; say it
+    #     approaches unity, and give the spread.
+    #  2. The old scope judged every point against the +/-0.025 seed spread measured at gCa=2.0.
+    #     The spread at gCa=0.4 is +/-0.318 — 13x larger. Calibrating a low-signal point against a
+    #     high-signal point's noise understated the uncertainty badly. Each point now carries its own.
+    # STILL TRUE and still the reason the axis matters: signal amplitude is the ONLY thing that
+    # changes across it (same architecture, data volume, optimizer, iterations).
+    # NEW and worth stating: the RAW ICa error is statistically flat across the sweep
+    # (GcaSweepICaRawPointFour 1.273+/-0.560 vs GcaSweepICaRawTwo 1.189+/-0.208, intervals
+    # overlapping). The closure's absolute error barely moves; only the signal grows. That is a
+    # cleaner mechanism statement than the normalised metric alone and only 5 seeds could show it.
+    # At gCa=0.4 the symbolic fit still returns the WRONG SIGN (a=-0.372 vs true +0.40), and the
+    # parametric fit at the same conductance recovers 0.438+/-0.065 — the sharpest contrast in the
+    # paper. See parametric-fit-identifies-conductance.
 
   - id: gca-two-is-a-controlled-choice
     statement: >-
@@ -628,11 +684,33 @@ claims:
       of the baseline training budget.
     section: results.identifiability
     kind: empirical
-    evidence: []
+    evidence:
+      - macro: GcaFourRetrainAHatBefore
+      - macro: GcaFourRetrainAHatAfter
+      - macro: GcaFourRetrainRTwoBefore
+      - macro: GcaFourRetrainRTwoAfter
     scope: >-
-      would require a retrained gCa=0.4 run. NONE EXISTS.
+      gCa=0.4, seed 1111 (matching the single-seed baseline negative control), Adam 20000 / BFGS
+      1000 against the baseline's 5000/300, everything else identical. On the convex-hull domain the
+      conductance goes -0.372 -> -1.341 against a true +0.4 and R^2 against the true current goes
+      0.688 -> -0.331, i.e. wrong-signed under both budgets and markedly worse after. On the
+      supervised trajectory both estimates are indistinguishable from zero (-0.061 -> +0.021), so
+      the nominal sign change there carries no information and MUST NOT be read as recovery. n=1;
+      no statistical test.
     guard: retrain-gca-point-four-is-copied
-    status: unsupported
+    status: supported
+    # ===== DISCHARGED 2026-08-10, AND THE ARTIFACT REMOVED. =====
+    # retrain_gca2_20k.jl now takes RETRAIN_GCA / RETRAIN_SEEDS / RETRAIN_OUT (all defaulting to the
+    # published configuration, so the original gCa=2.0 run stays byte-reproducible) and SKIPS the
+    # baseline-probe copy whenever gCa != 2.0. The genuine run is results/retrain_gca04_20k/; its
+    # probe is verifiably NOT a copy (differing checksum against the baseline file).
+    # WHAT THE CONTROL SHOWS: the physiological failure is not a training-budget artifact either.
+    # Four times the optimisation makes it worse, not better, and drives R^2 below zero - the
+    # distilled form becomes a worse predictor of the true current than that current's own mean.
+    # WHAT IT DOES NOT SHOW: any recovery on the supervised trajectory. Both budgets return
+    # essentially zero there. The estimator finds nothing to fit because there is almost nothing of
+    # the calcium current in the voltage at this conductance - which is the sweep's point.
+    # Original tombstone note, kept for the record:
     # ===== NO EVIDENCE. THE "AFTER" FILE IS A COPY OF THE "BEFORE" FILE. =====
     # retrain_gca2_20k.jl retrains the 5 headline seeds at gCa=2.0 ONLY. It then cp()s
     # results/calcium/{probe,grid}_abl_gca_0.4_seed1111.csv into its own tree (lines 136-143) so the
@@ -649,21 +727,24 @@ claims:
 
   - id: ude-recovers-trajectory-not-coefficients
     statement: >-
-      The UDE recovers the trajectory and the functional form of the hidden calcium current, but not
-      its coefficients: voltage is forecast to sub-millivolt accuracy over the whole un-trained
-      remainder while the calcium conductance is only order-correct — the conductance is not
-      identifiable from a single trajectory, and neither a signal-amplitude sweep nor a fourfold
-      optimization budget closes the gap.
+      The UDE recovers the trajectory but not the hidden current's coefficients: voltage is forecast to
+      sub-millivolt accuracy over the whole un-trained remainder, and the closure agrees closely with
+      the true current's shape, while the calcium conductance read off it is only order-correct — and
+      neither a signal-amplitude sweep nor a fourfold optimisation budget closes that gap.
     section: results.identifiability
     kind: empirical
     evidence:
       - macro: UdeForecastVRmse
       - macro: SymbolicRTwoCondTrue
       - macro: SymbolicAHat
-      - macro: GcaAblICaNormPointFour
+      - macro: GcaSweepICaNormPointFour
       - macro: RetrainAHat
       - figure: figures/fig11_calcium_coeff_recovery.png
       - figure: figures/fig12_calcium_identifiability.png
+    # REWORDED 2026-08-07: dropped "the conductance is not identifiable from a single trajectory"
+    # (falsified by parametric-fit-identifies-conductance) and softened "recovers the functional
+    # form" to agreement with the true current's shape (review point 2). Swapped the retired
+    # single-seed GcaAbl* macro for the five-seed GcaSweep* one.
     scope: >-
       ONE trajectory: one Iapp=10 uA/cm2, one steady-state initial condition, one 100 ms window,
       512 samples. gCa=2.0 for the headline (the sweep covers {0.4,1.0,2.0,4.0} at n=1); OU noise
@@ -757,15 +838,23 @@ claims:
   - id: identifiability-is-the-general-lesson
     statement: >-
       Where a UDE's learned term is intended to be interpreted rather than merely simulated, its
-      identifiability from the available data should be established before its coefficients are read as
-      physical quantities; a single trajectory can be sufficient to fit and insufficient to identify.
+      identifiability should be established before its coefficients are read as physical quantities —
+      and the relevant question is not only whether the data determine the parameter, but whether they
+      still determine it once the term is represented by a flexible closure.
     section: discussion.implications
     kind: interpretive
     evidence:
       - macro: SymbolicAHat
-      - macro: GcaAblICaNormPointFour
+      - macro: ParamFitGcaHatTwo
+      - macro: GcaSweepICaNormPointFour
       - macro: RetrainAHat
       - figure: figures/fig12_calcium_identifiability.png
+    # REWORDED 2026-08-07. The old ending — "a single trajectory can be sufficient to fit and
+    # insufficient to identify" — is exactly backwards here: the single trajectory WAS sufficient to
+    # identify (2.09 +/- 0.13 parametrically). The transferable lesson is about the representation,
+    # not the data budget. The cheap diagnostic the paper recommends changes accordingly: a
+    # seed-spread check on the recovered coefficients, and where the form is known, a parametric fit
+    # as a reference point.
     scope: >-
       GENERALIZATION FROM ONE SYSTEM. Everything in this paper is one HH-type model, one Iapp, one
       initial condition, one 100 ms window, one 337-parameter closure over (V,s), one noise process,
@@ -797,14 +886,181 @@ claims:
       - macro: RetrainAHat
     scope: >-
       one Iapp=10 uA/cm2, one steady-state IC at V0=-65 mV, one t in [0,100] ms window, 512 samples.
-      No multi-trajectory run exists in this project; whether it would close the gap is untested and we
-      make no prediction. Separately: seeds jointly redraw network init and OU noise realization, so the
-      reported spread cannot be decomposed into initialization variance and data variance — a
-      fixed-data / varying-init run would separate them and does not exist either.
     guard: single-trajectory-scope
+    status: retired
+    # ===== RETIRED 2026-08-07. FALSIFIED BY OUR OWN CONTROL, which is the best possible reason.
+    # The claim presumed the single trajectory was the binding constraint. It is not: a direct
+    # two-parameter fit of (gCa, ECa) to that SAME trajectory recovers the conductance to 2.09 +/- 0.13
+    # against a true 2.0, with a profile-likelihood 95% CI of [1.63, 2.13] and a Gauss-Newton relative
+    # standard error of 6.7%. One trajectory is sufficient to identify the conductance.
+    # The binding limitation is the FLEXIBILITY OF THE CLOSURE. Superseded by
+    # closure-induced-nonidentifiability (the mechanism) and parametric-fit-identifies-conductance
+    # (the evidence). Limitations must now name a different next experiment: not "would more
+    # trajectories help?" but "which closure restrictions restore identifiability?".
+    # The one part of the old scope that survives is unrelated to the thesis and has been moved to
+    # seeds-confound-init-and-noise: seeds jointly redraw network init and OU noise, so the reported
+    # spread cannot be decomposed. =====
+
+  - id: parametric-fit-identifies-conductance
+    statement: >-
+      Fitting only the two calcium parameters (gCa, ECa) directly to the same single noisy trajectory,
+      with the true functional form known and no neural network, recovers the conductance to about six
+      per cent across seeds — so the data do determine the calcium conductance.
+    section: results.parametric-identifiability
+    kind: empirical
+    evidence:
+      - macro: ParamFitGcaHatTwo
+      - macro: ParamFitGcaHatRangeTwo
+      - macro: ParamFitGcaHatPointFour
+      - macro: CondRelSeGcaTwo
+      - macro: ParamFitChiSqPerPointTwo
+      - figure: figures/fig13_parametric_identifiability.png
+    scope: >-
+      Same data as the UDE runs: gCa in {0.4,1.0,2.0,4.0}, OU noise 0.02, train t<=30 ms, true
+      steady-state IC, n=5 seeds. Multi-start Nelder-Mead on a chi-square weighted by the KNOWN
+      per-channel noise SD; start points deliberately exclude the truth. chi2/point = 0.994, i.e. the
+      fit sits at the noise floor. Three independent diagnostics agree on the precision: observed seed
+      spread 6.2%, profile-likelihood 95% CI [1.63, 2.13], asymptotic relative SE 6.7%. At gCa=0.4 the
+      fit still recovers (0.438 +/- 0.065) though four times less precisely, and there ECa's profile CI
+      runs into the grid edge, so ECa alone IS practically non-identifiable at low conductance.
     status: supported
-    # Write the limitation that a hostile reviewer would write, in the paper, first. Two rules:
-    # (1) name the experiment that would settle it — a limitation with a concrete next step reads as
-    #     command of the problem; one without reads as an excuse;
-    # (2) do not predict the outcome. "Multiple trajectories would likely resolve this" is an
-    #     unevidenced claim smuggled into Limitations, and it is exactly where reviewers look for them.
+    # ===== THE PAPER'S POSITIVE CONTROL. The old draft conceded in Limitations that it had none. =====
+    # MANDATORY CAVEAT, must appear wherever this claim is used: a 2-parameter model handed the true
+    # functional form is EXPECTED to beat a 337-parameter closure handed no form at all, and it also
+    # forecasts about twice as well (0.123 vs 0.245 mV). So this is NOT "two equally good fits
+    # disagree". The licensed inference is one-directional and that is enough: because the data
+    # support the parameter to +/-6%, the closure's +/-57% cannot be blamed on the data.
+    # Methodological note that must survive editing: the FIM is built from FIRST-order sensitivities
+    # (Gauss-Newton) in LOG parameters. A finite-difference Hessian of the chi-square is unusable here
+    # — spike-phase sensitivity makes it return an implied relative SE of 3e-5, contradicted by both
+    # the profile and the seed spread.
+
+  - id: closure-induced-nonidentifiability
+    statement: >-
+      The non-identifiability documented in this paper is introduced by the flexible neural closure
+      rather than by the data: on identical data, parametric estimation of the calcium conductance is
+      precise while estimation through the learned closure scatters by an order of magnitude more.
+    section: discussion
+    kind: interpretive
+    evidence:
+      - macro: ParamFitGcaHatTwo
+      - macro: SymbolicAHat
+      - macro: SymbolicAHatTrajTrain
+      - macro: ParamFitGcaHatPointFour
+    scope: >-
+      One system, one trajectory, one closure architecture (2->16->16->1 tanh MLP, 337 parameters).
+      Quantitatively: 2.092 +/- 0.130 parametric vs 1.596 +/- 0.905 through the closure at gCa=2.0
+      (a ~7x ratio of relative spreads), and 0.438 +/- 0.065 vs a WRONG-SIGNED -0.372 at gCa=0.4.
+      We do not claim this holds for every closure, every architecture, or every system; we claim it
+      happened here, under a controlled comparison in which the data were held fixed. Whether smaller
+      or more constrained closures interpolate between the two regimes is untested.
+    status: supported
+    # ===== THE THESIS OF THE REVISED PAPER. This is the parametric-vs-functional identifiability
+    # distinction of Loman/Browning/Baker (arXiv 2606.30289) measured empirically: parametric
+    # identifiability holds, functional identifiability fails. Cite them and norden2025structural here.
+    # The claim is INTERPRETIVE, not empirical — the two numbers are facts, the causal attribution is
+    # an inference licensed by the fact that the data were identical. Keep it labelled as such.
+
+  - id: node-failure-is-architecture-not-budget
+    statement: >-
+      The black-box neural ODE's forecasting failure is caused by its architecture, not by an unequal
+      optimisation budget: matching the UDE's budget does not help at all, while removing the raw time
+      input from the right-hand side of an autonomous system improves the usable forecast horizon by
+      more than an order of magnitude.
+    section: results.forecasting
+    kind: empirical
+    evidence:
+      - macro: NodeParityTimeRollout
+      - macro: NodeParityTimeVRmse
+      - macro: NodeParityAutoRollout
+      - macro: NodeParityAutoVRmseMedian
+    scope: >-
+      gCa=2.0, OU noise 0.02, train t<=30 ms, n=5 seeds per variant, forecast window. Budget control:
+      same architecture as published at Adam 5000/BFGS 300 gives rollout 0.431 +/- 0.446 ms (published
+      0.548 +/- 0.655) and V RMSE 7119 +/- 4206 (published 3951 +/- 3561) — i.e. no better, slightly
+      worse. Architecture control: same budget without the time input gives rollout 19.53 +/- 17.75 ms
+      and a MEDIAN V RMSE of 16.88 mV. Per-seed rollouts 6.65/44.42/32.29/5.48/8.81 ms; 4 of 5 seeds
+      have exactly correct spike counts, 1 (seed 4444) still fails outright at 294.8 mV. No test.
+    guard: node-no-meanstd
+    status: supported
+    # Report the MEDIAN V RMSE, never the mean: the mean (73.2 +/- 124) is one bad seed. The old
+    # "impossible versus routine" framing is dead. Two honest contrasts remain and both are strong:
+    # MAGNITUDE (UDE 0.245 mV vs median 16.88, ~70x) and RELIABILITY (UDE saturates the 70 ms cap on
+    # every seed with sd 0.028; the autonomous NODE ranges 5.5-44.4 ms and fails on 1 in 5).
+    # Reliability is the sharper axis and was invisible while the baseline merely exploded.
+
+  - id: retrain-improves-loss-worsens-recovery
+    statement: >-
+      Quadrupling the optimisation budget measurably improved the training objective while making every
+      recovery quantity worse — the signature of optimisation along a direction the data do not
+      constrain.
+    section: results.retrain
+    kind: empirical
+    evidence:
+      - macro: TrainLossBefore
+      - macro: TrainLossAfter
+      - macro: RetrainAHat
+      - macro: RetrainRTwoCondTrue
+    scope: >-
+      gCa=2.0 full-state, n=5 seeds, identical model/data/seeds/solver/tolerances/loss; only the
+      iteration budget differs (Adam 5000/BFGS 300 -> 20000/1000). Training loss 35.71 +/- 1.81 ->
+      29.66 +/- 2.66, a 17% reduction on the mean. The BEFORE loss was never recorded at training time
+      and is recovered by rebuilding the exact objective and evaluating it at the saved parameters;
+      the method is validated by recomputing the AFTER loss and matching the recorded value to a
+      relative difference of 0.
+    status: supported
+    # ===== ADDED 2026-08-07 (review point 1, final sentence: "the original and retrained runs should
+    # also report directly comparable training losses"). This STRENGTHENS the retrain control.
+    # The old framing — "the final losses are tight, so the optimiser converged" — understated it.
+    # The optimiser did not merely converge, it demonstrably fit the training data BETTER by 17%
+    # while a_hat moved further from truth and R^2 fell. "More optimisation did nothing" is now the
+    # WRONG summary; "more optimisation bought a better fit and a worse closure" is the right one.
+
+  - id: symbolic-domain-robustness
+    statement: >-
+      The coefficient scatter is not an artifact of the fitting domain: refitting the conductance form
+      on the strictly supervised trajectory, on controlled neighbourhoods around it, and on the
+      original convex hull returns the same estimate and the same spread.
+    section: results.symbolic-recovery
+    kind: empirical
+    evidence:
+      - macro: SymbolicAHatTrajTrain
+      - macro: SymbolicAHatRangeTrajTrain
+      - macro: SymbolicRTwoTrajTrain
+      - macro: SymbolicCondTrajTrain
+      - macro: SymbolicCondHull
+    scope: >-
+      gCa=2.0, n=5 seeds, six domains: the published convex hull (n~4424 grid points), epsilon-tubes
+      at 0.02/0.05/0.10 in the network's own (V/100, s) input coordinates, the full 100 ms trajectory,
+      and the supervised trajectory t<=30 ms (n=154). a_hat means run 1.36-1.65 with sds 0.50-0.90
+      across all six. The domains OVERLAP rather than nest: the tubes nest in one another but not
+      in the hull (the widest keeps 5663 of 6400 grid points against the hull's 4424, with 1647 of
+      those outside the hull), and the two trajectory domains are probe points, not grid subsets.
+      The reimplementation reproduces the published hull fit to 1e-15, so the comparison is
+      like-for-like.
+    status: supported
+    # ===== ADDED 2026-08-07 (review point 3). The objection was sound: a limit cycle's convex-hull
+    # INTERIOR is never visited, so hull values are extrapolation dressed as interpolation. Conceded
+    # in full — and the conclusion is unchanged, which is why conceding costs nothing.
+    # ALSO CORRECTS A MIS-STATED JUSTIFICATION in the earlier draft. "Fitting on the trajectory alone
+    # fails because the limit cycle is near-collinear" is true of the SIX-term SINDy library (cond
+    # ~25k on the trajectory vs ~14k on the hull) but FALSE of the two-term conductance form (cond
+    # 102.4 vs 69.9 — both benign, and the trajectory fit is if anything slightly better). Move the
+    # headline conductance result onto the supervised trajectory; keep the hull only for SINDy.
+
+  - id: seeds-confound-init-and-noise
+    statement: >-
+      Because each seed redraws the network initialisation and the noise realisation together, every
+      reported spread is a joint init-and-data spread and the two sources cannot be separated from
+      these runs.
+    section: discussion.limitations
+    kind: interpretive
+    evidence:
+      - macro: UdeForecastVRmse
+      - macro: SymbolicAHat
+    scope: >-
+      Applies to every mean +/- sd in the paper. A fixed-data / varying-init run would separate them
+      and does not exist in this project.
+    status: supported
+    # Split out of the retired single-trajectory-is-the-binding-limitation, whose thesis died but
+    # whose seed-confound observation is independent of it and still true.

@@ -1,0 +1,6 @@
+variant,seed,adam_iters,bfgs_iters,nparam,final_loss,bfgs_ok,status
+timeinput,1111,5000,300,5318,3.0031721809099725,true,ok
+timeinput,2222,5000,300,5318,3.9583411660709116,true,ok
+timeinput,3333,5000,300,5318,5.531663621352651,true,ok
+timeinput,4444,5000,300,5318,2.661041418307643,true,ok
+timeinput,5555,5000,300,5318,3.8524996181135283,true,ok

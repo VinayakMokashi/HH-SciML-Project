@@ -41,15 +41,30 @@ const ADAM_ITERS = SMOKE ? 60 : 20_000
 const BFGS_ITERS = SMOKE ? 5  : 1_000
 # All 5 headline seeds in both modes (smoke just uses tiny iters) so the
 # redirected Objective-3, which expects all 5, has every probe to read.
-const RETRAIN_SEEDS = [1111, 2222, 3333, 4444, 5555]
+const RETRAIN_SEEDS = haskey(ENV, "RETRAIN_SEEDS") ?
+    parse.(Int, split(ENV["RETRAIN_SEEDS"], ",")) : [1111, 2222, 3333, 4444, 5555]
 
 # Baseline setting (unchanged from the canonical headline run).
-const G_CA        = 2.0
+#
+# The three env overrides below all DEFAULT to the published configuration, so
+# running this file with no environment set reproduces the original gCa=2.0 run
+# byte for byte. They exist so the same code can run the physiological negative
+# control at the aggressive budget:
+#
+#   RETRAIN_GCA=0.4 RETRAIN_SEEDS=1111 RETRAIN_OUT=retrain_gca04_20k \
+#       julia --project=. retrain_gca2_20k.jl
+#
+# That control was previously missing, and its absence was actively dangerous:
+# the old run COPIED the baseline gCa=0.4 probe into its own tree (see the copy
+# step at the bottom), so the "after" negative-control row was byte-identical to
+# the "before" one and read like a successful replication when nothing had been
+# rerun. The copy is now skipped whenever gCa != 2.0.
+const G_CA        = parse(Float64, get(ENV, "RETRAIN_GCA", "2.0"))
 const NOISE_LEVEL = 0.02
 const T_TRAIN_END = 30.0
 
 # --- Isolated output tree ----------------------------------------------------
-const OUT_DIR      = joinpath(ROOT, "results", "retrain_gca2_20k")
+const OUT_DIR      = joinpath(ROOT, "results", get(ENV, "RETRAIN_OUT", "retrain_gca2_20k"))
 const OUT_CALCIUM  = joinpath(OUT_DIR, "calcium")
 const OUT_PARAMS   = joinpath(OUT_DIR, "params")
 for d in (OUT_DIR, OUT_CALCIUM, OUT_PARAMS); mkpath(d); end
@@ -119,7 +134,7 @@ end
 #  Run
 # =============================================================================
 println("="^76)
-println(" gCa=2.0 aggressive re-train (Adam $ADAM_ITERS / BFGS $BFGS_ITERS)  ",
+println(" gCa=$G_CA aggressive re-train (Adam $ADAM_ITERS / BFGS $BFGS_ITERS)  ",
         SMOKE ? "[SMOKE]" : "[FULL]")
 println(" output tree: ", OUT_DIR, "  (canonical results/ + figures/ untouched)")
 println("="^76)
@@ -135,11 +150,21 @@ end
 
 # Copy the (unchanged) gCa=0.4 negative-case probe/grid into this run's calcium
 # dir so the redirected Objective-3 reads its negative control from one place.
-for f in ("probe_abl_gca_0.4_seed1111.csv", "grid_abl_gca_0.4_seed1111.csv")
-    src = joinpath(ROOT, "results", "calcium", f)
-    dst = joinpath(OUT_CALCIUM, f)
-    isfile(src) ? cp(src, dst; force = true) :
-        @warn "negative-case file missing (Obj-3 neg case will fail): $src"
+#
+# ONLY when this run is the gCa=2.0 one. If we are ourselves retraining at
+# gCa=0.4 the copy would overwrite the freshly trained probe with the baseline's
+# and silently turn a real control into a duplicate of the thing it controls --
+# which is exactly the trap the original version of this script laid.
+if G_CA == 2.0
+    for f in ("probe_abl_gca_0.4_seed1111.csv", "grid_abl_gca_0.4_seed1111.csv")
+        src = joinpath(ROOT, "results", "calcium", f)
+        dst = joinpath(OUT_CALCIUM, f)
+        isfile(src) ? cp(src, dst; force = true) :
+            @warn "negative-case file missing (Obj-3 neg case will fail): $src"
+    end
+else
+    println("\n[note] gCa=$G_CA run: NOT copying the baseline gCa=0.4 probe. ",
+            "This run's own probes are the negative control.")
 end
 
 # --- metrics_retrain.csv (this run only; canonical metrics_all.csv untouched) --

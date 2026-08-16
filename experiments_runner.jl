@@ -285,8 +285,13 @@ function ablation_fig(axiscol, xlab, fname; extra_metric = nothing, extra_lab = 
     xv, vr = axis_series(df, axiscol, "V_rmse";         window = window)
     _,  gr = axis_series(df, axiscol, "gate_rmse_mean"; window = window)
     _,  rh = axis_series(df, axiscol, "rollout_horizon_ms"; window = window)
+    # left_margin must clear the LONGEST ylabel here, which is the normalised
+    # calcium one ("I(Ca) RMSE / std (normalised)"). It was 8mm, which fitted the
+    # old 11pt default but clips at the enlarged font set in src/experiment.jl —
+    # the label rendered as "ate RMSE" / ran into the panel above. Font size and
+    # margin have to be raised together.
     common = (; xlabel=xlab, legend=false, marker=:circle, lw=2,
-                left_margin=8mm, bottom_margin=5mm, xticks=xt)
+                left_margin=16mm, bottom_margin=6mm, xticks=xt)
     # ylabels stay short; the evaluation window is named in each panel title instead
     # (a "$wl ..." ylabel is long enough to clip off the top of the panel).
     p1 = plot(xv, vr; ylabel="V RMSE (mV)", title="Voltage error ($wl)",
@@ -302,7 +307,7 @@ function ablation_fig(axiscol, xlab, fname; extra_metric = nothing, extra_lab = 
                   color=:darkorange, common...)
         push!(panels, p4)
     end
-    savefig(plot(panels..., layout=(length(panels), 1), size=(840, 290 * length(panels))),
+    savefig(plot(panels..., layout=(length(panels), 1), size=(960, 310 * length(panels))),
             joinpath(FIG_DIR, fname))
 end
 ablation_fig(:noise_level, "noise level (relative)", "fig7_ablation_noise.png";
