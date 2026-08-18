@@ -313,7 +313,7 @@ the fit, or the optimiser.
   \textbf{Not under-training, and we can now show the loss.} Quadrupling the
   optimisation budget \emph{lowers} the training objective, from
   $\valTrainLossBeforeMeanStd$ to $\valTrainLossAfterMeanStd$, while making every
-  recovery quantity worse ($\hat{a} = \valRetrainAHatMeanStd$). More optimisation
+  recovery quantity worse ($\hat{a} = \valRetrainAHatMeanStd$, hull domain). More optimisation
   buys a better fit and a worse closure, which is what a flat direction in the
   loss looks like from inside an optimiser
   (Sec.~\ref{sec:results-retrain}, Table~\ref{tab:retrain}).
@@ -1269,7 +1269,7 @@ $\valParamFitForecastVRmseTwoMeanStd$\,mV against the UDE's
 $\valUdeForecastVRmseMeanStd$\,mV. The claim is therefore not that two
 equally good fits disagree. It is one-directional and it does not need to be
 more: because the data pin the conductance to about six per cent, the closure's
-forty cannot be blamed on the data.
+forty per cent cannot be blamed on the data.
 
 Two further readings of Table~\ref{tab:parametric} are worth stating. The
 parametric fit degrades \emph{gracefully} as the calcium signal shrinks, its
@@ -1323,14 +1323,16 @@ retains a usable one even at the physiological value.
   ($n=\valUdeForecastVRmseN$ seeds, mean $\pm$ 1 SD). The last column is the
   conductance obtained instead by distilling the trained neural closure, on the
   identical data. Parametric estimation recovers $g_{Ca}$ at every setting,
-  including the physiological one where the closure returns the wrong sign.
+  including the physiological one, where the closure instead returns an unusable
+  estimate: indistinguishable from zero on the supervised trajectory, wrong-signed
+  on the hull.
   Relative standard errors come from the Fisher information in log parameters;
   $\chi^2$ per point near unity at every setting confirms each fit sits at the
   known noise floor, so the widening spread down the second column is information
   loss rather than misfit. The last column is quoted on the \emph{supervised
   trajectory}, the domain used throughout the text; on the convex hull the
-  closure is worse at both settings ($alSymbolicAHatMeanStd$ at $\gcaMain$,
-  $alSymbolicAHatNegControl$ at $\gcaPhys$), so this choice does not flatter
+  closure is worse at both settings ($\valSymbolicAHatMeanStd$ at $\gcaMain$,
+  $\valSymbolicAHatNegControl$ at $\gcaPhys$), so this choice does not flatter
   it. Dashes mark quantities we did not compute rather than failures: the
   conditioning analysis and the symbolic pipeline were both run only at
   $\gcaPhys$ and $\gcaMain$, the two ends of the story.
@@ -1424,7 +1426,7 @@ what a flat direction in the loss means, observed directly rather than inferred.
   ``after'' is Adam \AdamRe/BFGS \BfgsRe, identical in model, data, seeds,
   solver, tolerances, and loss; only the iteration budget changed. Every entry is
   mean $\pm$ 1 SD, and both columns are on the convex-hull domain, where the
-  retrained closures were distilled -- which is why the before-column differs
+  retrained closures were distilled---which is why the before-column differs
   from the supervised-trajectory values quoted in the text. Read the last row
   first: the optimiser did its job, lowering
   the training objective by about \LossDropPct\,per cent, and every row above it got
@@ -1492,7 +1494,7 @@ not evidence that a learned physical term has been identified. Three independent
 instances make the point here: sparse regression attains a high $R^2$ against the
 true current while fitting its dominant term with the wrong sign; five seeds reach
 indistinguishable forecast accuracy with conductances spanning more than a factor
-of four; and the retrain holds forecast accuracy on the representative seed while
+of two on the supervised trajectory, and more than four on the hull; and the retrain holds forecast accuracy on the representative seed while
 its agreement with the true current collapses. Parity plots and rollout error,
 the two diagnostics UDE studies most often report, are exactly the diagnostics
 that cannot see this failure. Our result is continuous with the
