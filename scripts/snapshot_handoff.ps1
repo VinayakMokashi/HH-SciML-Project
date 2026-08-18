@@ -23,58 +23,74 @@
 #     git log --oneline --all -- HANDOFF.md
 #     git show <commit>:HANDOFF.md > HANDOFF.md
 #
-# Usage (from the repo root):
+# Usage (from anywhere):
 #     powershell -ExecutionPolicy Bypass -File scripts\snapshot_handoff.ps1
 #     powershell -ExecutionPolicy Bypass -File scripts\snapshot_handoff.ps1 -Push
+#
+# IMPLEMENTATION NOTE — do not "tidy" these two things away:
+#  * No `$ErrorActionPreference = "Stop"`. Under Windows PowerShell 5.1 that turns
+#    ordinary git stderr chatter (the CRLF line-ending warnings this repo emits on
+#    nearly every add) into terminating errors.
+#  * Success is checked by asking git what actually happened, not by $LASTEXITCODE.
+#    `git commit` exits non-zero for the perfectly normal "nothing to commit", so an
+#    exit-code check reports a failure that did not occur — which is exactly how the
+#    first version of this script broke.
 
 param([switch]$Push)
 
-$ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 
-if (-not (Test-Path "HANDOFF.md")) {
-    Write-Error "HANDOFF.md not found in $root — nothing to snapshot."
-}
+function Fail($msg) { Write-Host "ERROR: $msg" -ForegroundColor Red; exit 1 }
+
+if (-not (Test-Path "HANDOFF.md")) { Fail "HANDOFF.md not found in $root — nothing to snapshot." }
 
 # Refuse to run with unrelated staged changes: this script makes two commits of its
 # own, and sweeping up someone else's staged work into them would be a nasty surprise.
-$staged = git diff --cached --name-only
-if ($staged) {
-    Write-Error ("Refusing to run: you have staged changes.`n" +
-                 "Commit or unstage them first, then re-run.`n" +
-                 "Staged: " + ($staged -join ", "))
+$staged = @(git diff --cached --name-only | Where-Object { $_ })
+if ($staged.Count -gt 0) {
+    Fail ("you have staged changes; commit or unstage them first. Staged: " + ($staged -join ", "))
 }
 
-$stamp = Get-Date -Format "yyyy-MM-dd"
+$startHead = (git rev-parse HEAD).Trim()
+$stamp     = Get-Date -Format "yyyy-MM-dd"
 
 # -f is required: HANDOFF.md is gitignored on purpose, so only a deliberate add works.
-git add -f HANDOFF.md
-if ($LASTEXITCODE -ne 0) { Write-Error "git add failed" }
-
-# Nothing to do if the content is identical to the last snapshot.
-$pending = git diff --cached --name-only
-if (-not $pending) {
-    Write-Output "HANDOFF.md is unchanged since the last snapshot — nothing committed."
+git add -f HANDOFF.md | Out-Null
+$pending = @(git diff --cached --name-only | Where-Object { $_ })
+if ($pending.Count -eq 0) {
+    Write-Host "HANDOFF.md is byte-identical to the last snapshot — nothing to do."
     exit 0
 }
 
-git commit -q -m "chore: snapshot HANDOFF.md ($stamp)"
-if ($LASTEXITCODE -ne 0) { Write-Error "snapshot commit failed" }
+# --- commit 1: the snapshot -------------------------------------------------
+git commit -q -m "chore: snapshot HANDOFF.md ($stamp)" | Out-Null
+$afterAdd = (git rev-parse HEAD).Trim()
+if ($afterAdd -eq $startHead) { Fail "snapshot commit did not happen (HEAD unchanged)." }
+git cat-file -e "${afterAdd}:HANDOFF.md" 2>$null
+if (-not $?) { Fail "snapshot commit exists but does not contain HANDOFF.md." }
 
-git rm --cached -q HANDOFF.md
-if ($LASTEXITCODE -ne 0) { Write-Error "git rm --cached failed" }
+# --- commit 2: take it back out --------------------------------------------
+git rm --cached -q HANDOFF.md | Out-Null
+git commit -q -m "chore: remove HANDOFF.md from tree (snapshot retained in history)" | Out-Null
+$afterRm = (git rev-parse HEAD).Trim()
+if ($afterRm -eq $afterAdd) { Fail "removal commit did not happen (HEAD unchanged)." }
 
-git commit -q -m "chore: remove HANDOFF.md from tree (snapshot retained in history)"
-if ($LASTEXITCODE -ne 0) { Write-Error "removal commit failed" }
+# --- verify the invariant: in history, absent from the tree -----------------
+git cat-file -e "${afterRm}:HANDOFF.md" 2>$null
+if ($?) { Fail "HANDOFF.md is still present at HEAD — the removal commit did not work." }
+if (-not (Test-Path "HANDOFF.md")) { Fail "HANDOFF.md was deleted from disk! Restore it: git show ${afterAdd}:HANDOFF.md > HANDOFF.md" }
 
-Write-Output "Snapshotted HANDOFF.md ($stamp): archived in history, absent from the tree."
+Write-Host "Snapshotted HANDOFF.md ($stamp)." -ForegroundColor Green
+Write-Host "  archived in : $afterAdd"
+Write-Host "  absent from : HEAD ($afterRm)"
+Write-Host "  on disk     : yes"
 git log --oneline -2
 
 if ($Push) {
     git push origin HEAD
-    if ($LASTEXITCODE -ne 0) { Write-Error "push failed" }
-    Write-Output "Pushed."
+    if ($LASTEXITCODE -ne 0) { Fail "push failed" }
+    Write-Host "Pushed." -ForegroundColor Green
 } else {
-    Write-Output "Not pushed. Run 'git push origin main' when ready, or pass -Push."
+    Write-Host "Not pushed. Run 'git push origin main', or pass -Push next time."
 }
