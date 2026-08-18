@@ -1404,6 +1404,55 @@ macros:
       conductance moves further from the truth and stays wrong-signed. Pair with
       GcaFourRetrainRTwoAfter, which collapses below zero.
 
+  - name: SymbolicAHatTrajTrainPointFour
+    source: identifiability/gca04_retrain_control.csv
+    filter: {case: before, domain: traj-train}
+    emit: value
+    column: a_hat
+    round: 3
+    # raw=-0.060706 (true +0.4), baseline budget, seed 1111
+    note: >-
+      The gCa=0.4 closure estimate on the SUPERVISED TRAJECTORY, i.e. the same
+      domain the text quotes everywhere else. Pair it with
+      SymbolicAHatNegControl (-0.372), which is the same quantity on the convex
+      hull. Neither is usable: one is wrong-signed and large, the other is
+      indistinguishable from zero against a true +0.4. Quote whichever domain the
+      surrounding sentence is using, and SAY which - the two differ by a factor
+      of six and a reader who sees only one will think the other is a typo.
+
+  - name: ParamFitChiSqPerPointPointFour
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 0.4}
+    aggregate: {over: seed, stats: [mean], ddof: 1, dropna: true}
+    emit: value
+    column: chi2_per_point
+    round: 3
+    # raw mean=0.994 n=5
+
+  - name: ParamFitChiSqPerPointOne
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 1.0}
+    aggregate: {over: seed, stats: [mean], ddof: 1, dropna: true}
+    emit: value
+    column: chi2_per_point
+    round: 3
+    # raw mean=0.994 n=5
+
+  - name: ParamFitChiSqPerPointFour
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 4.0}
+    aggregate: {over: seed, stats: [mean], ddof: 1, dropna: true}
+    emit: value
+    column: chi2_per_point
+    round: 3
+    # raw mean=0.996 n=5
+    note: >-
+      With ParamFitChiSqPerPointOne and ...Two this fills the chi-square column of
+      the parametric table at every swept conductance. All four sit at ~0.99, so
+      the parametric model is at the noise floor across the whole sweep, not only
+      at the headline setting - which is what licenses reading its widening spread
+      as information loss rather than as misfit.
+
   - name: GcaFourRetrainRTwoBefore
     source: identifiability/gca04_retrain_control.csv
     filter: {case: before, domain: hull}

@@ -3071,6 +3071,47 @@
     },
     "n": 1
   },
+  "SymbolicAHatTrajTrainPointFour": {
+    "macro": "valSymbolicAHatTrajTrainPointFour",
+    "value": "-0.061",
+    "raw": -0.060747628422599655,
+    "source": "results/identifiability/gca04_retrain_control.csv",
+    "filter": {
+      "case": "before",
+      "domain": "traj-train"
+    },
+    "n": 1
+  },
+  "ParamFitChiSqPerPointPointFour": {
+    "macro": "valParamFitChiSqPerPointPointFour",
+    "value": "0.994",
+    "raw": 0.9941605984976203,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 0.4
+    },
+    "n": 5
+  },
+  "ParamFitChiSqPerPointOne": {
+    "macro": "valParamFitChiSqPerPointOne",
+    "value": "0.994",
+    "raw": 0.9943831314586443,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 1.0
+    },
+    "n": 5
+  },
+  "ParamFitChiSqPerPointFour": {
+    "macro": "valParamFitChiSqPerPointFour",
+    "value": "0.996",
+    "raw": 0.9959695805566161,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 4.0
+    },
+    "n": 5
+  },
   "GcaFourRetrainRTwoBefore": {
     "macro": "valGcaFourRetrainRTwoBefore",
     "value": "0.688",

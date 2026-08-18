@@ -145,7 +145,7 @@ Hodgkin--Huxley Neuron}
   \And
   Sreedath Panat \\
   Vizuara AI Labs \\
-  \texttt{sreedat@vizuara.com} \\
+  \texttt{sreedath@vizuara.com} \\
 }
 
 \renewcommand{\shorttitle}{Identifiability Limits of UDEs in a Hodgkin--Huxley Neuron}
@@ -986,8 +986,8 @@ by construction before any physics is invoked.
 % claim: voltage-only-common-eval-matches-full
 The equivalence also survives on an interval that is unseen for \emph{both}
 conditions rather than each model's own forecast window: on the shared window
-$t>\Tcommon$\,ms the two agree to
-$\valCommonEvalVRmseFull$ against $\valCommonEvalVRmseVoltage$\,mV on voltage and
+$t>\Tcommon$\,ms full-state observation gives $\valCommonEvalVRmseFull$\,mV
+against voltage-only's $\valCommonEvalVRmseVoltage$\,mV, and
 $\valCommonEvalICaRmseFull$ against $\valCommonEvalICaRmseVoltage$ on the
 calcium current. What the physics prior supplies is
 the part that follows: the gates are then propagated correctly from the true
@@ -1058,7 +1058,9 @@ $\valGcaSweepICaRawTwoMeanStd$ at $\gcaMain$, intervals overlapping): the
 closure's absolute error barely moves, and what changes is the size of the signal
 it is being asked to explain. Finally, at $g_{Ca}=\gcaPhys$ the symbolic fit
 returns the \emph{wrong sign} for the conductance
-($\hat a = \valSymbolicAHatNegControl$ against a true $+\gcaPhys$), where the
+($\hat a = \valSymbolicAHatNegControl$ against a true $+\gcaPhys$; hull domain,
+single seed --- on the supervised trajectory the estimate is instead
+indistinguishable from zero, Sec.~\ref{sec:results-retrain}), where the
 parametric fit on the same data returns
 $\valParamFitGcaHatPointFourMeanStd$ (Sec.~\ref{sec:results-parametric}).
 
@@ -1129,8 +1131,9 @@ On the wider convex-hull domain used below for the unconstrained comparison the
 picture is the same or slightly worse ($\valSymbolicAHatMeanStd$, spanning
 \valSymbolicAHatRange), while the offset $\hat b = \valSymbolicBHatMeanStd$ is the
 better determined of the two, scattering by about a quarter of its own magnitude
-against the conductance's half. % numok: b 22.9% vs a 56.7% on the hull, results/identifiability/symbolic_domain_comparison.csv These are five different closures that happen to fit
-the same voltage, not five measurements of one conductance. A curve can match the
+% numok: b rel. spread 22.9% vs a 56.7% on the hull, results/identifiability/symbolic_domain_comparison.csv
+against the conductance's half. These are five different closures that happen
+to fit the same voltage, not five measurements of one conductance. A curve can match the
 truth at $R^2$ near unity while the coefficient it implies is off by a fifth with
 a two-fifths spread; curve-fit quality and coefficient identifiability are
 different properties, and this is the cleanest place in the study to see it.
@@ -1252,8 +1255,10 @@ still ($\valSymbolicAHatMeanStd$, spanning \valSymbolicAHatRange), so the choice
 of domain does not flatter the comparison. The contrast is
 starker at the physiological conductance, where the parametric fit still returns
 $\valParamFitGcaHatPointFourMeanStd$ against a true $\gcaPhys$ while the symbolic
-route returns the wrong sign entirely
-($\hat a = \valSymbolicAHatNegControl$). The data were the same in every one of
+route returns the wrong sign entirely on the hull domain
+($\hat a = \valSymbolicAHatNegControl$, single seed) and an estimate
+indistinguishable from zero on the supervised trajectory
+(Sec.~\ref{sec:results-retrain}); neither is usable. The data were the same in every one of
 these comparisons. What differed was how the calcium current was represented.
 
 We are careful about the inference this licenses, because the comparison is not
@@ -1264,7 +1269,7 @@ $\valParamFitForecastVRmseTwoMeanStd$\,mV against the UDE's
 $\valUdeForecastVRmseMeanStd$\,mV. The claim is therefore not that two
 equally good fits disagree. It is one-directional and it does not need to be
 more: because the data pin the conductance to about six per cent, the closure's
-sixty per cent cannot be blamed on the data.
+forty cannot be blamed on the data.
 
 Two further readings of Table~\ref{tab:parametric} are worth stating. The
 parametric fit degrades \emph{gracefully} as the calcium signal shrinks, its
@@ -1320,7 +1325,15 @@ retains a usable one even at the physiological value.
   identical data. Parametric estimation recovers $g_{Ca}$ at every setting,
   including the physiological one where the closure returns the wrong sign.
   Relative standard errors come from the Fisher information in log parameters;
-  $\chi^2$ per point near unity confirms each fit sits at the known noise floor.
+  $\chi^2$ per point near unity at every setting confirms each fit sits at the
+  known noise floor, so the widening spread down the second column is information
+  loss rather than misfit. The last column is quoted on the \emph{supervised
+  trajectory}, the domain used throughout the text; on the convex hull the
+  closure is worse at both settings ($alSymbolicAHatMeanStd$ at $\gcaMain$,
+  $alSymbolicAHatNegControl$ at $\gcaPhys$), so this choice does not flatter
+  it. Dashes mark quantities we did not compute rather than failures: the
+  conditioning analysis and the symbolic pipeline were both run only at
+  $\gcaPhys$ and $\gcaMain$, the two ends of the story.
   The comparison is deliberately unequal (two parameters and the true form,
   versus $\NparamUde$ parameters and no form) and licenses only the
   one-directional reading given in the text.}
@@ -1330,10 +1343,10 @@ retains a usable one even at the physiological value.
     True $g_{Ca}$ & $\hat g_{Ca}$ (parametric) & rel.\ SE & $\chi^2$/point
       & $\hat a$ (via closure) \\
     \midrule
-    \gcaPhys & $\valParamFitGcaHatPointFourMeanStd$ & $\valCondRelSeGcaPointFourMean$ & --- & $\valSymbolicAHatNegControl$ \\
-    \gcaMid  & $\valParamFitGcaHatOneMeanStd$ & --- & --- & --- \\
-    \gcaMain & $\valParamFitGcaHatTwoMeanStd$ & $\valCondRelSeGcaTwoMean$ & $\valParamFitChiSqPerPointTwo$ & $\valSymbolicAHatMeanStd$ \\
-    \gcaHi   & $\valParamFitGcaHatFourMeanStd$ & --- & --- & --- \\
+    \gcaPhys & $\valParamFitGcaHatPointFourMeanStd$ & $\valCondRelSeGcaPointFourMean$ & $\valParamFitChiSqPerPointPointFour$ & $\valSymbolicAHatTrajTrainPointFour$ \\
+    \gcaMid  & $\valParamFitGcaHatOneMeanStd$ & --- & $\valParamFitChiSqPerPointOne$ & --- \\
+    \gcaMain & $\valParamFitGcaHatTwoMeanStd$ & $\valCondRelSeGcaTwoMean$ & $\valParamFitChiSqPerPointTwo$ & $\valSymbolicAHatTrajTrainMeanStd$ \\
+    \gcaHi   & $\valParamFitGcaHatFourMeanStd$ & --- & $\valParamFitChiSqPerPointFour$ & --- \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -1358,8 +1371,12 @@ $\valTrainLossAfterMeanStd$ after, a reduction of about \LossDropPct\,per cent.
 \emph{recorded} after-loss to a relative difference of zero.) L-BFGS also reported
 success on all five seeds ($\valRetrainBfgsOk$).
 
-And yet every recovery quantity got \emph{worse and noisier}: the conductance
-moved farther from the truth and its standard deviation inflated
+And yet every recovery quantity got \emph{worse and noisier}. Both sides of this
+comparison are quoted on the convex-hull domain, because that is where the
+retrained closures were distilled, so it is like-for-like; the before-value
+differs from the supervised-trajectory figure quoted earlier for that reason
+alone. The conductance moved farther from the truth and its standard deviation
+inflated
 ($\hat a$: $\valSymbolicAHatMeanStd \to \valRetrainAHatMeanStd$), agreement with
 the true current fell
 ($R^2$: $\valSymbolicRTwoCondTrueMeanStd \to \valRetrainRTwoCondTrueMeanStd$), and
@@ -1406,14 +1423,17 @@ what a flat direction in the loss means, observed directly rather than inferred.
   $n=\valUdeForecastVRmseN$ seeds). ``Before'' is Adam \AdamUde/BFGS \BfgsUde;
   ``after'' is Adam \AdamRe/BFGS \BfgsRe, identical in model, data, seeds,
   solver, tolerances, and loss; only the iteration budget changed. Every entry is
-  mean $\pm$ 1 SD. Read the last row first: the optimiser did its job, lowering
+  mean $\pm$ 1 SD, and both columns are on the convex-hull domain, where the
+  retrained closures were distilled -- which is why the before-column differs
+  from the supervised-trajectory values quoted in the text. Read the last row
+  first: the optimiser did its job, lowering
   the training objective by about \LossDropPct\,per cent, and every row above it got
   worse. L-BFGS also reported success on all five after-runs
   ($\valRetrainBfgsOk$). The before-loss was not recorded during training and is
   recovered by evaluating the exact training objective at the saved parameters,
   a procedure validated by its reproducing the recorded after-loss exactly. The
-  physiological $g_{Ca}=\gcaPhys$ negative control was \emph{not} retrained and
-  is excluded here.}
+  physiological $g_{Ca}=\gcaPhys$ case was retrained separately as a single-seed
+  negative control and is reported in the text, not pooled into this table.}
   \label{tab:retrain}
   \begin{tabular}{lcc}
     \toprule
@@ -1528,8 +1548,8 @@ methods are otherwise comparable, and a reader who wants the converse claim,
 that a closure could match parametric precision given the right constraints, will
 not find it supported here.
 
-Three further limitations bound the claims. The window and noise ablations remain
-single-seed and carry no error bars; only the conductance sweep has been repeated
+Three further limitations bound the claims. The training-window ablation remains
+single-seed and carries no error bars; only the conductance sweep has been repeated
 across seeds, and we claim from it only the end-to-end trend, since two of its
 three adjacent steps fall within seed noise. No statistical test is run anywhere,
 and $n=\valUdeForecastVRmseN$ would support almost none; every comparative

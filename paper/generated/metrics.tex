@@ -19,7 +19,7 @@
 %   * The provenance line above each macro is the audit trail: file, filter, column,
 %     full unrounded value, and n. Rounding here loses nothing an auditor needs.
 %   * No timestamp is emitted on purpose: it would churn git and defeat --check.
-% 282 macros from 15 results file(s).
+% 286 macros from 15 results file(s).
 %======================================================================================
 
 % note: *** GUARDED — see claim-guards.md G2. THIS MACRO MUST NOT BE A HEADLINE. *** It exists so that if the number appears at all (e.g. an appendix table of raw metrics) it is traceable, NOT so that it can be quoted as "3951 ± 3561 mV". Per-seed: 4122.7 / 229.1 / 1134.0 / 5056.6 / 9213.4 — a 40x spread; the distribution is nowhere near normal and the std exceeds any meaningful voltage scale. This is a diverged integration, and rmse_safe (src/metrics.jl:20-25) drops non-finite pairs, so it is the RMSE of the *finite part* of a blown-up solve, over an unreported subset of timesteps. The honest headline for NODE failure is NodeForecastRollout. Prose: "diverges (V RMSE 10^2–10^4 mV across seeds)".
@@ -1019,6 +1019,20 @@
 % note: The physiological failure does not improve under a fourfold budget; the conductance moves further from the truth and stays wrong-signed. Pair with GcaFourRetrainRTwoAfter, which collapses below zero.
 % source=results/identifiability/gca04_retrain_control.csv filter={case=after, domain=hull} column=a_hat raw=-1.341351055239545 n=1
 \newcommand{\valGcaFourRetrainAHatAfter}{-1.341}
+
+% note: The gCa=0.4 closure estimate on the SUPERVISED TRAJECTORY, i.e. the same domain the text quotes everywhere else. Pair it with SymbolicAHatNegControl (-0.372), which is the same quantity on the convex hull. Neither is usable: one is wrong-signed and large, the other is indistinguishable from zero against a true +0.4. Quote whichever domain the surrounding sentence is using, and SAY which - the two differ by a factor of six and a reader who sees only one will think the other is a typo.
+% source=results/identifiability/gca04_retrain_control.csv filter={case=before, domain=traj-train} column=a_hat raw=-0.060747628422599655 n=1
+\newcommand{\valSymbolicAHatTrajTrainPointFour}{-0.061}
+
+% source=results/identifiability/parametric_fit.csv filter={gCa_true=0.4} column=chi2_per_point raw=0.9941605984976203 n=5
+\newcommand{\valParamFitChiSqPerPointPointFour}{0.994}
+
+% source=results/identifiability/parametric_fit.csv filter={gCa_true=1.0} column=chi2_per_point raw=0.9943831314586443 n=5
+\newcommand{\valParamFitChiSqPerPointOne}{0.994}
+
+% note: With ParamFitChiSqPerPointOne and ...Two this fills the chi-square column of the parametric table at every swept conductance. All four sit at ~0.99, so the parametric model is at the noise floor across the whole sweep, not only at the headline setting - which is what licenses reading its widening spread as information loss rather than as misfit.
+% source=results/identifiability/parametric_fit.csv filter={gCa_true=4.0} column=chi2_per_point raw=0.9959695805566161 n=5
+\newcommand{\valParamFitChiSqPerPointFour}{0.996}
 
 % source=results/identifiability/gca04_retrain_control.csv filter={case=before, domain=hull} column=r2_vs_true_on_domain raw=0.6881648342515774 n=1
 \newcommand{\valGcaFourRetrainRTwoBefore}{0.688}
