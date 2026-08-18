@@ -24,14 +24,23 @@ __pycache__/
 Main_Clean.jl
 main.jl
 
-# HANDOFF.md was previously listed here and is now TRACKED ON PURPOSE (2026-08-18).
-# Decision: the continuity notes are worth more as a recoverable artifact than as a
-# local-only file — a wholesale rewrite had already destroyed several sections once,
-# with no git copy to restore them from.
-# Consequence, stated so it is not rediscovered by accident: this repo is PUBLIC, so
-# HANDOFF.md's contents are public too — including the mentor's quoted emails, the
-# Overleaf project link, and local filesystem paths. That was a considered choice, not
-# an oversight. Do not paste anything into HANDOFF.md you would not publish.
+# HANDOFF.md — SNAPSHOT-ONLY (decided 2026-08-18).
+#
+# Ignored here so it never appears in the repo's file tree, but deliberately committed
+# as a point-in-time snapshot and then removed again, so every version stays in git
+# history and remains recoverable. Use the helper, which does both commits for you:
+#
+#     powershell -ExecutionPolicy Bypass -File scripts\snapshot_handoff.ps1
+#
+# Committing it by hand needs `git add -f HANDOFF.md` — this ignore rule is what stops
+# it being committed by accident, and that is intentional.
+#
+# *** THIS DOES NOT MAKE IT PRIVATE. *** The repo is PUBLIC, so every snapshot is
+# readable by anyone who opens the commit history, including the mentor. The file is
+# out of the working tree, not out of sight. Do not put anything in HANDOFF.md you
+# would not publish — unpublished results, candid assessments of collaborators, or
+# credentials belong somewhere else entirely.
+HANDOFF.md
 
 # NOTE: results/ — including results/params/*.jld parameter snapshots — IS
 # tracked on purpose. It is the committed quantitative evidence (metric CSVs +
