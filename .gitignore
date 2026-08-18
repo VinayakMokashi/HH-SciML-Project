@@ -19,12 +19,19 @@ __pycache__/
 *.pyc
 
 # Local-only working files (kept off GitHub on purpose):
-#   HANDOFF.md      — internal session-to-session reference
 #   Main_Clean.jl   — full narrative incl. the Objective-3 (SINDy) attempt
 #   main.jl         — single-script narrative incl. Objective 3
-HANDOFF.md
 Main_Clean.jl
 main.jl
+
+# HANDOFF.md was previously listed here and is now TRACKED ON PURPOSE (2026-08-18).
+# Decision: the continuity notes are worth more as a recoverable artifact than as a
+# local-only file — a wholesale rewrite had already destroyed several sections once,
+# with no git copy to restore them from.
+# Consequence, stated so it is not rediscovered by accident: this repo is PUBLIC, so
+# HANDOFF.md's contents are public too — including the mentor's quoted emails, the
+# Overleaf project link, and local filesystem paths. That was a considered choice, not
+# an oversight. Do not paste anything into HANDOFF.md you would not publish.
 
 # NOTE: results/ — including results/params/*.jld parameter snapshots — IS
 # tracked on purpose. It is the committed quantitative evidence (metric CSVs +
