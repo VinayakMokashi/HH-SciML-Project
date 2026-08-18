@@ -1,4 +1,4 @@
-# scripts/snapshot_handoff.ps1 — archive HANDOFF.md into git history without
+# scripts/snapshot_handoff.ps1 - archive HANDOFF.md into git history without
 # leaving it in the repo's file tree.
 #
 # WHY THIS EXISTS
@@ -8,13 +8,13 @@
 # it back out, leaving the content in history and the working tree clean.
 #
 # It makes TWO commits:
-#   1. "chore: snapshot HANDOFF.md (<date>)"  — adds the file
-#   2. "chore: remove HANDOFF.md from tree"   — removes it again
+#   1. "chore: snapshot HANDOFF.md (<date>)"  - adds the file
+#   2. "chore: remove HANDOFF.md from tree"   - removes it again
 # so HEAD never carries it, while commit 1 preserves it forever.
 #
 # *** THIS IS NOT A PRIVACY MECHANISM. ***
 # The repository is PUBLIC. Every snapshot is readable by anyone who browses the
-# commit history — GitHub shows deleted files in their commit diffs. Keeping the file
+# commit history - GitHub shows deleted files in their commit diffs. Keeping the file
 # out of the working tree hides it from a casual glance at the file list and from
 # nothing else. If something genuinely must not be seen, it does not belong in this
 # file at all.
@@ -27,13 +27,16 @@
 #     powershell -ExecutionPolicy Bypass -File scripts\snapshot_handoff.ps1
 #     powershell -ExecutionPolicy Bypass -File scripts\snapshot_handoff.ps1 -Push
 #
-# IMPLEMENTATION NOTE — do not "tidy" these two things away:
-#  * No `$ErrorActionPreference = "Stop"`. Under Windows PowerShell 5.1 that turns
-#    ordinary git stderr chatter (the CRLF line-ending warnings this repo emits on
-#    nearly every add) into terminating errors.
+# IMPLEMENTATION NOTES - do not "tidy" these three things away:
+#  * ASCII ONLY. Windows PowerShell 5.1 reads .ps1 as ANSI unless the file has a BOM,
+#    so a stray em-dash in a comment becomes mojibake and breaks the PARSER - the
+#    script dies on a syntax error nowhere near the character. This bit us once.
+#  * No `$ErrorActionPreference = "Stop"`. Under 5.1 that turns ordinary git stderr
+#    chatter (the CRLF line-ending warnings this repo emits on nearly every add) into
+#    terminating errors.
 #  * Success is checked by asking git what actually happened, not by $LASTEXITCODE.
 #    `git commit` exits non-zero for the perfectly normal "nothing to commit", so an
-#    exit-code check reports a failure that did not occur — which is exactly how the
+#    exit-code check reports a failure that did not occur - which is exactly how the
 #    first version of this script broke.
 
 param([switch]$Push)
@@ -43,7 +46,7 @@ Set-Location $root
 
 function Fail($msg) { Write-Host "ERROR: $msg" -ForegroundColor Red; exit 1 }
 
-if (-not (Test-Path "HANDOFF.md")) { Fail "HANDOFF.md not found in $root — nothing to snapshot." }
+if (-not (Test-Path "HANDOFF.md")) { Fail "HANDOFF.md not found in $root - nothing to snapshot." }
 
 # Refuse to run with unrelated staged changes: this script makes two commits of its
 # own, and sweeping up someone else's staged work into them would be a nasty surprise.
@@ -59,7 +62,7 @@ $stamp     = Get-Date -Format "yyyy-MM-dd"
 git add -f HANDOFF.md | Out-Null
 $pending = @(git diff --cached --name-only | Where-Object { $_ })
 if ($pending.Count -eq 0) {
-    Write-Host "HANDOFF.md is byte-identical to the last snapshot — nothing to do."
+    Write-Host "HANDOFF.md is byte-identical to the last snapshot - nothing to do."
     exit 0
 }
 
@@ -78,8 +81,10 @@ if ($afterRm -eq $afterAdd) { Fail "removal commit did not happen (HEAD unchange
 
 # --- verify the invariant: in history, absent from the tree -----------------
 git cat-file -e "${afterRm}:HANDOFF.md" 2>$null
-if ($?) { Fail "HANDOFF.md is still present at HEAD — the removal commit did not work." }
-if (-not (Test-Path "HANDOFF.md")) { Fail "HANDOFF.md was deleted from disk! Restore it: git show ${afterAdd}:HANDOFF.md > HANDOFF.md" }
+if ($?) { Fail "HANDOFF.md is still present at HEAD - the removal commit did not work." }
+if (-not (Test-Path "HANDOFF.md")) {
+    Fail "HANDOFF.md was deleted from disk. Restore it: git show ${afterAdd}:HANDOFF.md > HANDOFF.md"
+}
 
 Write-Host "Snapshotted HANDOFF.md ($stamp)." -ForegroundColor Green
 Write-Host "  archived in : $afterAdd"
@@ -92,5 +97,5 @@ if ($Push) {
     if ($LASTEXITCODE -ne 0) { Fail "push failed" }
     Write-Host "Pushed." -ForegroundColor Green
 } else {
-    Write-Host "Not pushed. Run 'git push origin main', or pass -Push next time."
+    Write-Host "Not pushed. Run: git push origin main"
 }
