@@ -502,14 +502,23 @@
 % EXPECTED BUILD WARNING -- DO NOT "FIX" IT BY CHANGING THE ENTRY TYPE.
 % unsrtnat.bst has no `software` entry type, so BibTeX prints
 %     entry type for "pal2023lux" isn't style-file defined
-% for each of the two below and formats them with its default type, `misc`.
+% for each of the two below and formats them with its default type, misc.
 % That is a warning, not an error, and the rendered entry is already the misc
 % format; the version reaches print through the `note` field, which misc does
-% emit.  Retyping these as @misc would silence the warning and produce BYTE-
+% emit.  Retyping these as misc would silence the warning and produce BYTE-
 % IDENTICAL output -- but scripts/verify_references.py:256 keys on
 % `type == "software"` to enforce that every software record carries a
 % `version`.  Retyping therefore trades a cosmetic warning for a real
-% provenance guard.  Keep them as @software and let the warning stand.
+% provenance guard.  Keep the software type and let the warning stand.
+%
+% NOTE TO WHOEVER EDITS THIS FILE: never write an at-sign in a .bib comment.
+% "%" is a LaTeX convention with no meaning to BibTeX, which ignores text
+% between entries but still scans for the at-sign character -- so one inside a
+% comment opens a bogus entry and the parse dies with
+%     I was expecting a `{' or a `('
+% This exact block did that on 2026-08-19 by writing the two type names with
+% at-signs in front of them. scripts/check_bib_sanity.py now fails on it, and
+% caught a second instance in this very paragraph on its first run.
 @software{pal2023lux,
   author    = {Pal, Avik},
   title     = {{Lux: Explicit Parameterization of Deep Neural Networks in Julia}},

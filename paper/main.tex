@@ -917,6 +917,10 @@ is the subject of Sec.~\ref{sec:results-symbolic}.
   saturate it. Neural ODEs have no calcium closure and hence no $I_{Ca}$ entry.
   No statistical test was run; the two UDE rows are not ranked.}
   \label{tab:forecast}
+  % Six columns of span/mean+-SD values overrun \textwidth by 24.4pt at full
+  % size. Both commands are scoped to this table environment and leak nowhere.
+  \small
+  \setlength{\tabcolsep}{5pt}
   \begin{tabular}{lccccc}
     \toprule
     Model & Adam/BFGS & $V$ RMSE (mV) & gate RMSE & $I_{Ca}$ RMSE & rollout (ms) \\
