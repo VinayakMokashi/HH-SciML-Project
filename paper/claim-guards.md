@@ -634,6 +634,15 @@ else.
 **Grep before submit:** `monotonic`, `dose`, `trend` near an ablation; `0.068`/`0.0677` presented as
 an improvement.
 
+**AMENDED 2026-08 (five-seed sweep).** The gCa sweep is now run at n=5 at every point, so
+for that one ablation the "single seed" wording is retired -- but the guard tightens rather
+than relaxes. With spreads available, the adjacent steps can be tested, and two of the three
+fail: `0.4->1.0` separates by 1.8 pooled SD and `2.0->4.0` by 1.3, against 2.4 for
+`1.0->2.0`. So the ban on reading `gCa 2.0->4.0` as a step is no longer a precaution about
+sample size; it is a measured negative result. Claim the end-to-end 0.4-vs-4.0 trend (~8x,
+far outside noise) and nothing finer. The remaining ablations are still n=1 and must still
+say so.
+
 **Guard id:** `ablations-are-n1`
 
 ---
@@ -788,9 +797,13 @@ Qualified, the claim is **strong, defensible, and interesting** — and the qual
 A negative result with a precisely drawn boundary is a contribution; the same result with a boundary
 drawn past the data is a rejection. The controls make the qualified version genuinely hard to attack:
 
-- **The gCa sweep** (G13): the failure is a smooth function of how much signal the hidden current
-  contributes to the observable voltage — at the literature value the closure's error exceeds the
-  current's own variation. That is an information argument, not an anecdote.
+- **The gCa sweep** (G13): the failure is a smooth function of how much the hidden current moves
+  the observable voltage. Over five seeds the normalised calcium error runs from
+  `0.093 ± 0.044` at `gCa = 4.0` to `0.724 ± 0.318` at the literature value `0.4` — it
+  **approaches** the true current's own variation, with a spread that reaches it. Say *approaches
+  unity and give the spread*; **do not write that it exceeds one** — claims.yaml forbids that
+  phrasing and the five-seed mean does not support it (the `1.179` this bullet used to lean on is
+  one realisation, BLOCK 3 of metrics_map.yaml). That is an information argument, not an anecdote.
 - **The aggressive retrain**: 4× the iterations (Adam 20k/BFGS 1k vs 5k/300) made **every quantity
   worse and noisier** — `a` 1.5956 ± 0.9046 → 1.4947 ± 1.4843 (std +64%, moving *away* from 2.0);
   `r2_cond_true` 0.9836 ± 0.0145 → 0.8455 ± 0.1603; forecast V RMSE 0.2452 ± 0.0284 → 0.7556 ± 0.4114.
@@ -811,14 +824,24 @@ Three controls, three foreclosed rebuttals. The scope qualifier is what lets you
 `results/symbolic/symbolic_recovery_metrics.csv` vs
 `results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv`, filter `gCa==2.0`.
 
+**AMENDED 2026-08-19 — THE QUALIFIER CHANGED. READ THIS BEFORE COPYING ANYTHING BELOW.**
+This guard's *requirement* stands: the claim needs an explicit scope or it overreaches. But the
+scope it used to prescribe — "from a single 100 ms trajectory" — was **falsified by our own
+control** and is marked `status: retired` in claims.yaml (`single-trajectory-is-the-binding-
+limitation`). One trajectory is *sufficient*: a direct two-parameter fit to that same trajectory
+recovers the conductance to about six per cent. The binding limit is the **closure**, not the data.
+Any draft that says "not identifiable from a single trajectory" is reintroducing a dead claim.
+
 **Honest rewrite (abstract-grade — this exact qualifier goes in the abstract, not only Limitations).**
 > …the UDE reproduces the voltage trace and recovers the functional form of the hidden calcium
-> current, but **not its coefficients: from a single 100 ms trajectory under constant drive**, the
-> calcium conductance is not identifiable (a = 1.60 ± 0.90 against a true 2.0). Two controls locate
-> the limit in the data rather than in the optimiser or the regression: quadrupling the training
-> budget makes every recovered quantity worse and noisier while the loss converges (BFGS succeeds on
-> all seeds, final loss 29.7 ± 2.7) — different closures fit the same voltage equally well — and
-> fitting the *true* current with the same estimator on the same domain returns the exact coefficients.
+> current, but **not its coefficients: read out through the neural closure**, the calcium conductance
+> is not identifiable (a = 1.60 ± 0.90 against a true 2.0). The limit is the closure and not the
+> data: a two-parameter fit to the *same* trajectory recovers the conductance to about six per cent
+> (2.092 ± 0.130; profile-likelihood 95% interval [1.63, 2.13] on the representative seed). Two
+> further controls foreclose the optimiser and the regression: quadrupling the training budget makes
+> every recovered quantity worse and noisier while the loss converges (BFGS succeeds on all seeds,
+> final loss 29.7 ± 2.7) — different closures fit the same voltage equally well — and fitting the
+> *true* current with the same estimator on the same domain returns the exact coefficients.
 
 Every claim of non-identifiability in the paper carries `scope:` in `claims.yaml` reading
 `"single trajectory, Iapp=10.0 constant, one IC, 100 ms, 512 samples, n=5 seeds (init+noise jointly)"`
@@ -957,7 +980,7 @@ Run in the **Verify** phase, before the build. Each line is one grep over the `.
 | G10 | `retrain-gca-point-four-is-copied` | no `gCa=0.4` row in any before/after table; retrain scope stated |
 | G11 | `fig7b-confounded` | `fig7b_ablation_window` absent from the main text |
 | G12 | `window-nonmonotonicity-is-artifact` | the artifact sentence is in the caption; no trend claim past 20 ms |
-| G13 | `ablations-are-n1` | every ablation says "single seed"; no claim on `gCa 2.0→4.0` |
+| G13 | `ablations-are-n1` | the gCa sweep is n=5 and says so; every OTHER ablation says "single seed"; still no claim on `gCa 2.0→4.0` |
 | G14 | `fig11-mixed-estimators` | fig11 caption names panel 3 as a pooled point estimate |
 | G15 | `uncited-constants` | no fabricated citation keys; the "modelling choices" footnote is present |
 | G16 | `single-trajectory-scope` | the scope qualifier is **in the abstract**; no "random inits" |

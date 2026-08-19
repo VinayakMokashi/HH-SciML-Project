@@ -61,34 +61,24 @@
 # ---------------------------------------------------------------------------
 # MACRO RECONCILIATION — READ BEFORE EDITING
 # ---------------------------------------------------------------------------
-# Every `macro:` below must resolve to a `name:` in examples/hh-sciml/metrics_map.yaml, and
-# thence to a `\val<Name>` in the generated paper/generated/metrics.tex.
+# Every `macro:` below must resolve to a `name:` in paper/metrics_map.yaml, and thence to a
+# `\val<Name>` in the generated paper/generated/metrics.tex.
 #
-# RECONCILED against metrics_map.yaml as it now stands (36 macros defined). The 20 macros this
-# ledger uses that ARE defined there need no action. The following 7 are referenced here, are
-# extractable from the CSVs, and are NOT YET in metrics_map.yaml. Add them there with the
-# source/filter/column given — do NOT delete the evidence line:
-#   RetrainBfgsOk                results/retrain_gca2_20k/metrics_retrain.csv, col bfgs_ok, emit list
-#                                (all 5 seeds true [verified] — this is the convergence control)
-#   SindyNTermsRetained          results/symbolic/symbolic_recovery_metrics.csv, gCa==2.0, col n_sindy_terms, emit list
-#                                (6,6,6,6,6 [verified]; the gCa=0.4 row is also 6)
-#   UdeVoltageForecastGateRmse   results/metrics_baseline_multiseed.csv,
-#                                {model:UDE, observed:voltage, window:forecast, metric:gate_rmse_mean}
-#                                emit mean_std → 0.00106 +/- 0.000434, n_seeds=5 [verified]
-#     *** DO NOT substitute the already-defined `UdeForecastGateRmse` — that macro filters
-#         observed:full. physics-prior-reconstructs-unobserved-gates is ABOUT the voltage-only
-#         runs; using the full-state gate error would make the claim's own subject wrong. ***
-#   BaselineRepSeedForecastVRmse results/metrics_all.csv, {model:UDE, observed:full, window:forecast,
-#                                metric:V_rmse, seed:1111, @base}  → 0.219197 [verified]
-#   RetrainRepSeedForecastVRmse  results/retrain_gca2_20k/metrics_retrain.csv, seed==1111,
-#                                col forecast_V_rmse → 0.250936 [verified]
-#   BaselineRepSeedRTwoCondTrue  results/symbolic/symbolic_recovery_metrics.csv, {gCa:2.0, seed:1111},
-#                                col r2_cond_true → 0.988146 [verified]
-#   RetrainRepSeedRTwoCondTrue   results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv,
-#                                {gCa:2.0, seed:1111}, col r2_cond_true → 0.579578 [verified]
+# RECONCILED 2026-08-19. paper/metrics_map.yaml now holds 90 entries expanding to 286 macros, and
+# EVERY `macro:` referenced below resolves: check_claims.py reports 0 errors, 0 unsupported.
+# THERE IS NO OUTSTANDING MACRO WORK.
 #
-# WindowAblCommonEvalVRmse{Fifteen,Thirty} were previously listed here as missing; metrics_map.yaml
-# now defines them (plus Twenty/Forty/Fifty). No action.
+# This paragraph used to carry a worklist of seven macros described as "referenced here but NOT YET
+# in metrics_map.yaml" (RetrainBfgsOk, SindyNTermsRetained, UdeVoltageForecastGateRmse, and the four
+# Baseline/Retrain RepSeed* pairs), plus a note about WindowAblCommonEvalVRmse*. All of them were
+# added during the 2026-08 review round and are verified present in metrics.tex. The list is deleted
+# rather than left sitting here reading as open work; `git log -p -- paper/claims.yaml` has it if the
+# per-macro provenance is ever wanted.
+#
+# One line of it is kept, because it is a standing trap rather than a task:
+#     *** DO NOT substitute `UdeForecastGateRmse` for `UdeVoltageForecastGateRmse`. ***
+#     The former filters observed:full. physics-prior-reconstructs-unobserved-gates is ABOUT the
+#     voltage-only runs, so using the full-state gate error would make the claim's own subject wrong.
 # Macro names are LaTeX control sequences: letters only. That is why the gCa sweep uses
 # `PointFour` not `0.4`, and why seed 1111 is `RepSeed` (REP_SEED, experiments_runner.jl:46).
 #
@@ -437,7 +427,7 @@ claims:
     evidence:
       - macro: SymbolicAHat
       - macro: SymbolicAHatTrajTrain
-      - figure: figures/fig11_calcium_coeff_recovery.png
+      - figure: figures/fig11_coeff_recovery_before.png
     scope: >-
       gCa=2.0, OU noise level 0.02, train t<=30 ms, n=5 seeds, per-seed mean +/- std (ddof=1), no
       statistical test. a_true=gCa=2.0. Per-seed a_hat spans 0.673 -> 3.095 (4.6x) on the hull domain
@@ -564,7 +554,7 @@ claims:
       - macro: GcaSweepICaNormTwo
       - macro: GcaSweepICaNormFour
       - macro: GcaSweepVRmsePointFour
-      - figure: figures/fig7c_ablation_gca.png
+      - figure: figures/fig7c_ablation_gca_5seed.png
     scope: >-
       gCa in {0.4, 1.0, 2.0, 4.0}, OU noise level 0.02, train t<=30 ms, forecast window, and now
       n=5 SEEDS AT EVERY POINT (mean +/- sd, ddof=1): 0.724+/-0.318, 0.312+/-0.097, 0.140+/-0.025,
@@ -602,11 +592,12 @@ claims:
     evidence:
       - macro: GcaAblICaNormTwo
       - macro: GcaAblICaNormPointFour
-      - figure: figures/fig7c_ablation_gca.png
+      - figure: figures/fig7c_ablation_gca_5seed.png
     scope: >-
       gCa is a builder argument to make_hh_advanced(gCa), never a model constant and never visible to
       the UDE — it shapes only the TRUE data being fitted. Swept over {0.4, 1.0, 2.0, 4.0} with all
-      other axes pinned to baseline, n=1 seed. gCa=0.4 is the physiological value; gCa=2.0 is the
+      other axes pinned to baseline, n=5 seeds at every point. gCa=0.4 is the physiological value;
+      gCa=2.0 is the
       main setting. Everything else in the paper is reported at gCa=2.0.
     status: supported
     # ===== THIS IS THE ANSWER TO "you tuned gCa until your method worked." =====
@@ -631,7 +622,7 @@ claims:
       - macro: RetrainForecastVRmse
       - macro: RetrainFinalLoss
       - macro: RetrainBfgsOk
-      - figure: results/retrain_gca2_20k/figures/fig11_calcium_coeff_recovery.png
+      - figure: figures/fig11_coeff_recovery_after.png
     scope: >-
       gCa=2.0, full-state observation only, OU noise level 0.02, train t<=30 ms, n=5 seeds.
       Adam 20000 + BFGS 1000 vs the baseline's 5000 + 300; identical network, ADJOINT, Tsit5, 1e-8
@@ -739,7 +730,7 @@ claims:
       - macro: SymbolicAHat
       - macro: GcaSweepICaNormPointFour
       - macro: RetrainAHat
-      - figure: figures/fig11_calcium_coeff_recovery.png
+      - figure: figures/fig11_coeff_recovery_before.png
       - figure: figures/fig12_calcium_identifiability.png
     # REWORDED 2026-08-07: dropped "the conductance is not identifiable from a single trajectory"
     # (falsified by parametric-fit-identifies-conductance) and softened "recovers the functional
@@ -747,7 +738,7 @@ claims:
     # single-seed GcaAbl* macro for the five-seed GcaSweep* one.
     scope: >-
       ONE trajectory: one Iapp=10 uA/cm2, one steady-state initial condition, one 100 ms window,
-      512 samples. gCa=2.0 for the headline (the sweep covers {0.4,1.0,2.0,4.0} at n=1); OU noise
+      512 samples. gCa=2.0 for the headline (the sweep covers {0.4,1.0,2.0,4.0} at n=5); OU noise
       level 0.02; train t<=30 ms; n=5 seeds for every mean +/- std, where a seed jointly redraws the
       network initialization and the OU noise realization. No statistical test was run anywhere.
       The UDE retains all known physics and learns only I_Ca(V,s); gCa, ECa, and the form s^2(V-ECa)

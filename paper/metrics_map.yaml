@@ -310,13 +310,17 @@ macros:
       parallel entry only if the paper quotes it separately.
 
   # ===========================================================================
-  # BLOCK 3 — gCa sweep. The quantitative backbone of the identifiability claim.
+  # BLOCK 3 — gCa sweep, SINGLE SEED (1111). *** SUPERSEDED FOR INFERENCE BY
+  # BLOCK 12 ***, which runs the same sweep at n=5 with spreads and is what the
+  # paper's Fig 5 and every quantitative sentence now cite.
   # Source: ablation_gca.csv (WIDE, 4 rows, axis column `gCa`).
-  # *** SINGLE SEED (1111), n=1, NO ERROR BARS — claim-guards.md G13. ***
-  # Yardstick: UdeForecastICaRmseNorm gives the seed spread at the shared centre
-  # point as ±0.025. By that measure the 0.4→1.0 gap (1.179 → 0.333) is real and
-  # the 2.0→4.0 gap (0.112 → 0.068) is near seed noise. Claim the monotone trend
-  # and the 0.4 collapse; do not claim the 2.0-vs-4.0 difference.
+  # These four macros survive for ONE purpose: showing that gCa=2.0 was a
+  # CONTROLLED choice rather than a tuned one (claim gca-two-is-a-controlled-
+  # choice). Do not quote them as the backbone of the identifiability claim.
+  # The old guidance here inferred which gaps were real from a single
+  # realisation. That is now MEASURED over five seeds, and it disagrees: only
+  # the 1.0→2.0 step clears two pooled SD (2.44); 0.4→1.0 (1.75) and 2.0→4.0
+  # (1.32) do NOT. Claim the end-to-end 0.4-vs-4.0 trend, never a single step.
   # Do NOT use ablation_gca.csv's common_eval_* columns for anything: they are
   # populated on the gCa=2.0 row only (inherited from the shared baseline run)
   # and empty on the other three.
@@ -330,10 +334,14 @@ macros:
     round: 3
     # raw=1.1791588919620495  -> 1.179
     note: >-
-      gCa = 0.4 (the physiological value). >1 means THE CLOSURE'S ERROR EXCEEDS
-      THE TRUE CURRENT'S OWN STANDARD DEVIATION — the network has learned
-      nothing about I_Ca at this conductance. This is the strongest single
-      number in the identifiability argument and the reason the paper's main
+      gCa = 0.4 (the physiological value), SINGLE SEED. This 1.179 does exceed 1,
+      but it is ONE realisation: the same quantity over five seeds is
+      0.724 +/- 0.318 (BLOCK 12), which APPROACHES the true current's own
+      standard deviation without exceeding it. *** Do not write "the closure's
+      error exceeds the current's own variation" anywhere in the paper —
+      claims.yaml forbids that phrasing and the five-seed mean does not support
+      it. Say it approaches unity, and give the spread. *** The physiological
+      setting is still where recovery fails, which remains the reason the main
       setting is the non-physiological gCa=2.0. Single seed (G13).
 
   - name: GcaAblICaNormOne
