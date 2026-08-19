@@ -498,6 +498,18 @@
 % this project actually ran, read from Manifest.toml.  A concept DOI resolves to
 % the newest release, so the `version` field -- not the DOI -- is what pins
 % reproducibility.  Both records checked against DataCite (2026-08-06).
+%
+% EXPECTED BUILD WARNING -- DO NOT "FIX" IT BY CHANGING THE ENTRY TYPE.
+% unsrtnat.bst has no `software` entry type, so BibTeX prints
+%     entry type for "pal2023lux" isn't style-file defined
+% for each of the two below and formats them with its default type, `misc`.
+% That is a warning, not an error, and the rendered entry is already the misc
+% format; the version reaches print through the `note` field, which misc does
+% emit.  Retyping these as @misc would silence the warning and produce BYTE-
+% IDENTICAL output -- but scripts/verify_references.py:256 keys on
+% `type == "software"` to enforce that every software record carries a
+% `version`.  Retyping therefore trades a cosmetic warning for a real
+% provenance guard.  Keep them as @software and let the warning stand.
 @software{pal2023lux,
   author    = {Pal, Avik},
   title     = {{Lux: Explicit Parameterization of Deep Neural Networks in Julia}},

@@ -9,8 +9,8 @@
 #                             Open the folder, select all four items (main.tex,
 #                             references.bib, figures, generated) and drag them
 #                             onto the file tree. Overleaf merges the folders and
-#                             asks before overwriting. Keeps the project URL,
-#                             its collaborators, and its arxiv.sty.
+#                             asks before overwriting. Keeps the project URL and
+#                             its collaborators.
 #
 #    overleaf_upload.zip   <- ONLY for New Project -> Upload Project, which
 #                             creates a BRAND NEW project by extracting it.
@@ -18,7 +18,6 @@
 #                             does NOT extract it. *** Overleaf stores it as a
 #                             binary file and nothing compiles. That is a real
 #                             thing that happened; hence the folder above.
-#                             A new project also has NO arxiv.sty (see below).
 #
 #  WHY A SCRIPT AND NOT "just zip the paper folder":
 #
@@ -31,12 +30,14 @@
 #    root and every one of those three paths misses. The contents must sit at
 #    the ZIP ROOT, which is what this script builds.
 #
+#  arxiv.sty IS INCLUDED (since 2026-08-19). main.tex has \usepackage{arxiv},
+#  and arxiv.sty is not a CTAN package, so neither Overleaf nor a local TeX Live
+#  can supply it. It was previously assumed to live in the Overleaf project; it
+#  did not, and its absence was what broke the first upload. It is now vendored
+#  at paper/arxiv.sty and shipped in every bundle, so the upload is
+#  self-contained and a brand-new project compiles without a manual step.
+#
 #  WHAT IS DELIBERATELY NOT INCLUDED:
-#    - arxiv.sty. main.tex has \usepackage{arxiv}; arxiv.sty is NOT a CTAN
-#      package and is NOT in this repo, so TeX Live/Overleaf cannot supply it.
-#      It already exists in the live Overleaf project -- that is the only reason
-#      the paper has ever compiled there. NEVER delete it, and if you ever start
-#      a NEW project, copy it in first or the build dies on line 3.
 #    - claims.yaml, claim-guards.md, metrics_map.yaml, citations-audit.md.
 #      These are the audit trail, not build inputs; Overleaf ignores them.
 #    - Unreferenced figures. Only the images main.tex actually includes are
@@ -79,6 +80,7 @@ function Add-Item2Plan($src, $entry) {
 
 Add-Item2Plan $tex                                    "main.tex"
 Add-Item2Plan (Join-Path $paper "references.bib")     "references.bib"
+Add-Item2Plan (Join-Path $paper "arxiv.sty")          "arxiv.sty"
 Add-Item2Plan (Join-Path $paper "generated\metrics.tex")  "generated/metrics.tex"
 Add-Item2Plan (Join-Path $paper "generated\metrics.json") "generated/metrics.json"
 
@@ -145,11 +147,11 @@ Write-Host ("  main.tex + references.bib + generated/metrics.{tex,json} + " +
             $names.Count + " figures")
 foreach ($p in $plan) { Write-Host ("    " + $p.Entry) }
 Write-Host ""
-Write-Host "TO UPDATE THE EXISTING PROJECT (normal case, keeps the URL and arxiv.sty):"
-Write-Host "  open overleaf_upload\ , select all 4 items (main.tex, references.bib,"
+Write-Host "TO UPDATE THE EXISTING PROJECT (normal case, keeps the URL and collaborators):"
+Write-Host "  open overleaf_upload\ , select ALL 5 items (main.tex, references.bib, arxiv.sty,"
 Write-Host "  figures, generated) and DRAG them onto the Overleaf file tree. Overwrite when asked."
 Write-Host ""
 Write-Host "The .zip is ONLY for New Project -> Upload Project, which makes a NEW project."
 Write-Host "Uploading the zip INTO an existing project does not extract it -- it just sits there."
-Write-Host "arxiv.sty is in neither artifact by design: it lives in the Overleaf project and is"
-Write-Host "not a CTAN package, so a NEW project needs it copied in or the build fails on line 3."
+Write-Host "arxiv.sty is now vendored at paper/arxiv.sty and IS included, so the bundle is"
+Write-Host "self-contained: a brand-new Overleaf project will compile from it unaided."
