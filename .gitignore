@@ -53,3 +53,6 @@ Paper Writing Skills/
 # Overleaf upload bundle, rebuilt on demand by scripts/make_overleaf_zip.ps1.
 # A derived artifact: everything in it is already tracked under paper/.
 overleaf_upload.zip
+
+# Drag-ready Overleaf bundle, rebuilt on demand alongside overleaf_upload.zip.
+overleaf_upload/

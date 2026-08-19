@@ -1,8 +1,24 @@
 # =============================================================================
-#  make_overleaf_zip.ps1  ->  overleaf_upload.zip
+#  make_overleaf_zip.ps1  ->  overleaf_upload/  AND  overleaf_upload.zip
 # =============================================================================
 #  Assembles exactly what Overleaf needs, with the directory structure the
-#  document's relative paths assume. Run it, then drag the zip into Overleaf.
+#  document's relative paths assume. TWO artifacts, because Overleaf treats them
+#  completely differently and only one of them fits the usual case:
+#
+#    overleaf_upload/      <- DRAG THIS into an EXISTING project's file tree.
+#                             Open the folder, select all four items (main.tex,
+#                             references.bib, figures, generated) and drag them
+#                             onto the file tree. Overleaf merges the folders and
+#                             asks before overwriting. Keeps the project URL,
+#                             its collaborators, and its arxiv.sty.
+#
+#    overleaf_upload.zip   <- ONLY for New Project -> Upload Project, which
+#                             creates a BRAND NEW project by extracting it.
+#                             *** Uploading this zip INTO an existing project
+#                             does NOT extract it. *** Overleaf stores it as a
+#                             binary file and nothing compiles. That is a real
+#                             thing that happened; hence the folder above.
+#                             A new project also has NO arxiv.sty (see below).
 #
 #  WHY A SCRIPT AND NOT "just zip the paper folder":
 #
@@ -50,6 +66,7 @@ $ErrorActionPreference = "Stop"
 $repo  = Split-Path -Parent $PSScriptRoot
 $paper = Join-Path $repo "paper"
 $zip   = Join-Path $repo "overleaf_upload.zip"
+$dir   = Join-Path $repo "overleaf_upload"
 
 $tex = Join-Path $paper "main.tex"
 if (-not (Test-Path $tex)) { throw "main.tex not found at $tex" }
@@ -105,11 +122,34 @@ try {
     $check.Dispose()
 }
 
+# --- write the drag-ready folder -------------------------------------------
+#  Same plan, laid out on disk. This is the artifact for the normal case: an
+#  existing project that already has arxiv.sty and collaborators on it.
+if (Test-Path $dir) { Remove-Item $dir -Recurse -Force }
+New-Item -ItemType Directory -Path $dir -Force | Out-Null
+foreach ($p in $plan) {
+    $target = Join-Path $dir ($p.Entry -replace "/", "\")
+    $parent = Split-Path -Parent $target
+    if (-not (Test-Path $parent)) { New-Item -ItemType Directory -Path $parent -Force | Out-Null }
+    Copy-Item $p.Src $target -Force
+}
+$staged = @(Get-ChildItem $dir -Recurse -File).Count
+if ($staged -ne $plan.Count) {
+    throw ("staged $staged files but planned " + $plan.Count)
+}
+
 Write-Host ""
+Write-Host ("wrote " + $dir + "\   (" + $plan.Count + " files, verified)")
 Write-Host ("wrote " + $zip)
 Write-Host ("  main.tex + references.bib + generated/metrics.{tex,json} + " +
-            $names.Count + " figures, verified " + $plan.Count + " entries")
+            $names.Count + " figures")
 foreach ($p in $plan) { Write-Host ("    " + $p.Entry) }
 Write-Host ""
-Write-Host "Upload: open the Overleaf project -> Upload -> select this zip -> overwrite when asked."
-Write-Host "arxiv.sty is NOT in the zip and must stay in the project. Do not delete it."
+Write-Host "TO UPDATE THE EXISTING PROJECT (normal case, keeps the URL and arxiv.sty):"
+Write-Host "  open overleaf_upload\ , select all 4 items (main.tex, references.bib,"
+Write-Host "  figures, generated) and DRAG them onto the Overleaf file tree. Overwrite when asked."
+Write-Host ""
+Write-Host "The .zip is ONLY for New Project -> Upload Project, which makes a NEW project."
+Write-Host "Uploading the zip INTO an existing project does not extract it -- it just sits there."
+Write-Host "arxiv.sty is in neither artifact by design: it lives in the Overleaf project and is"
+Write-Host "not a CTAN package, so a NEW project needs it copied in or the build fails on line 3."
