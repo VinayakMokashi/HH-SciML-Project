@@ -1,0 +1,52 @@
+MIT License
+
+Copyright (c) 2026 Vinayak Mokashi and the HH-SciML-Project authors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+-------------------------------------------------------------------------------
+SCOPE, AND WHAT THIS LICENCE DOES NOT COVER
+
+This MIT licence covers the SOFTWARE in this repository: the Julia sources
+(src/, the root *.jl entry points), the Python and PowerShell tooling
+(scripts/), and the LaTeX sources under paper/ that are our own work.
+
+Two other things in this repository are licensed differently:
+
+  results/ and figures/   The quantitative evidence -- every results CSV, every
+                          .jld trained-parameter snapshot, and every generated
+                          figure -- is released under Creative Commons
+                          Attribution 4.0 International instead. See
+                          LICENSE-DATA.
+
+  Third-party files       NOT covered by either licence, and not ours to
+                          relicense:
+                            paper/arxiv.sty       vendored from
+                                                  kourgeorge/arxiv-style, MIT,
+                                                  under its own copyright; the
+                                                  provenance stamp is in the
+                                                  file header.
+                            Vizuara_Paper_HH.pdf  a third-party publication
+                                                  (Kainth et al., MSML 2025),
+                                                  included here only as a
+                                                  reading reference. All rights
+                                                  remain with its authors and
+                                                  publisher. Do not redistribute
+                                                  it on the strength of this
+                                                  licence.

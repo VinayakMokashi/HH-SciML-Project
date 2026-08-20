@@ -1905,11 +1905,12 @@ this work.
 %  - Replace TODO-REPOSITORY-URL, TODO-COMMIT-SHA and TODO-ARCHIVE-DOI with the
 %    repository, the tag or commit the reported results were produced from, and
 %    the DOI of an archived snapshot (Zenodo or equivalent).
-%  - Replace TODO-CODE-LICENCE and TODO-DATA-LICENCE with the licences actually
-%    added to the repository.  The usual split is a permissive software licence
-%    for the code and an attribution data licence for the results tables, the
-%    trained-parameter snapshots and the figures.  Until those files exist,
-%    default copyright applies and none of it is legally reusable.
+%  - LICENCES: DONE 2026-08-20.  MIT for the software (LICENSE), CC BY 4.0 for
+%    results/ and figures/ (LICENSE-DATA), and both files exist, so the release
+%    sentence above is no longer empty.  arxiv.sty and the third-party PDF are
+%    carved out in LICENSE and named in the sentence.  README.md carries the same
+%    split -- keep the two in sync.  If you change a licence, change it in three
+%    places: LICENSE / LICENSE-DATA, README.md, and the sentence below.
 %  - LAW I: a licence version, a DOI and a commit hash all contain digits, and
 %    the number checker is line-based.  After substituting, append a Law-I
 %    exemption comment (percent sign, then numok, then a justification) at the
@@ -1924,9 +1925,13 @@ All code, the trained-network parameter snapshots, and every results table
 behind the numbers and figures reported here are available at
 \url{TODO-REPOSITORY-URL}. The state that produced these results is tagged
 \texttt{TODO-COMMIT-SHA}, and an archived snapshot of that state is deposited at
-\url{TODO-ARCHIVE-DOI}. The source code is released under the
-\texttt{TODO-CODE-LICENCE} licence; the results tables, the parameter snapshots,
-and the figures are released under the \texttt{TODO-DATA-LICENCE} licence.
+\url{TODO-ARCHIVE-DOI}. The source code is released under the MIT licence; the
+results tables, the trained-parameter snapshots and the figures are released
+under Creative Commons Attribution 4.0 International. % numok: licence version, LICENSE-DATA
+Two files are covered by neither and are not ours to relicense: the vendored
+\texttt{arxiv.sty} keeps its own upstream copyright, and the third-party
+publication included in the repository as a reading reference remains all rights
+reserved to its authors.
 The repository's README gives the ordered entry points, the environment switches
 that select each experiment, and a table mapping every table and figure in this
 paper to the script that produces it and the results file it reads.

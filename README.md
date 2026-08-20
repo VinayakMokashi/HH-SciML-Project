@@ -19,26 +19,26 @@ rather than attributing the whole gap to representation alone.
 
 ## Licence
 
-> **[TODO - AUTHOR DECISION. Nothing in this repository is licensed yet.]**
->
-> Until a licence file is added, default copyright applies and **no one may legally reuse
-> the code, the `.jld` parameter snapshots, or the results CSVs**, even though the
-> repository is public. The paper's availability statement is not a licence.
->
-> Conventional choice for a project of this shape is a two-part split:
->
-> - **Code** (`*.jl`, `src/`, `scripts/`) under a permissive software licence such as
->   MIT or Apache-2.0. Apache-2.0 additionally grants patent rights and requires a
->   NOTICE-style change statement; MIT is shorter and imposes less. Either is compatible
->   with the dependency stack.
-> - **Results and figures** (`results/`, `figures/`, `paper/figures/`) under a data
->   licence such as CC-BY-4.0, so reuse requires attribution rather than the
->   code-oriented terms above.
->
-> Whichever is chosen, add the licence text as `LICENSE` (code) and, if the split is
-> used, `LICENSE-DATA` or `results/LICENSE`, and say so in the paper's Data and Code
-> Availability section. Note that `paper/arxiv.sty` is a **vendored third-party file**
-> with its own licence stamped in its header (MIT); do not relicense it.
+A two-part split, because code and evidence want different terms:
+
+| What | Licence | File |
+|---|---|---|
+| **Software** — `src/`, the root `*.jl` entry points, `scripts/`, and our own LaTeX under `paper/` | MIT | [`LICENSE`](LICENSE) |
+| **Evidence** — `results/` (every metric CSV and every `.jld` trained-parameter snapshot) and `figures/` (including the staged copies in `paper/figures/`) | CC BY 4.0 | [`LICENSE-DATA`](LICENSE-DATA) |
+
+MIT because it is the shortest thing that works and it matches the Julia and SciML
+ecosystem this builds on; CC BY 4.0 because the evidence is what a reader would want to
+reuse, and attribution is the only condition worth attaching to it.
+
+**Two files are covered by neither, and are not ours to relicense:**
+
+- `paper/arxiv.sty` — vendored from [kourgeorge/arxiv-style](https://github.com/kourgeorge/arxiv-style)
+  under its own MIT copyright; the provenance stamp is in the file header.
+- `Vizuara_Paper_HH.pdf` — a third-party publication (Kainth et al., MSML 2025), kept here
+  only as a reading reference. All rights remain with its authors and publisher.
+
+Keep this section, `LICENSE`/`LICENSE-DATA`, and the paper's Data and Code Availability
+section in sync: a licence change is a three-place edit.
 
 ---
 
