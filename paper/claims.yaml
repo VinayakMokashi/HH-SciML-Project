@@ -442,7 +442,7 @@ claims:
     scope: >-
       gCa=2.0, OU noise level 0.02, train t<=30 ms, n=5 seeds, per-seed mean +/- std (ddof=1), no
       statistical test. a_true=gCa=2.0. Per-seed a_hat spans 0.673 -> 3.095 (4.6x) on the hull domain
-      and 1.244 -> 2.816 on the strictly supervised trajectory; the std is 41-57% of the mean
+      and 1.241 -> 2.816 on the strictly supervised trajectory; the std is 41-57% of the mean
       depending on domain. Erev = -b/a is a pooled point estimate with no error bar.
     guard: a-hat-not-a-recovery
     status: supported

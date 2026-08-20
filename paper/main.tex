@@ -37,7 +37,7 @@
 %  fails if the canary is not defined in generated/metrics.tex, so a rename or a
 %  typo here cannot go unnoticed -- but only YOU can keep it pointed at a recent
 %  macro, and a canary left on an old one silently stops guarding.
-\ifdefined\valParamFitSseFullTwoMeanStd\else
+\ifdefined\valParamFitGcaHatTwoSseFullMeanStd\else
   \GenericError{}{%
     STALE generated/metrics.tex -- re-upload the generated/ folder to Overleaf%
   }{%
@@ -59,18 +59,18 @@
 %  the comment here; a reviewer auditing a result reads generated/metrics.tex.
 % =========================================================================
 % -- protocol (src/hh_core.jl) --
-\newcommand{\Tfull}{100}       % TSPAN_FULL=(0,100) ms                 src/hh_core.jl:74
+\newcommand{\Tfull}{100}       % TSPAN_FULL=(0,100) ms                 src/hh_core.jl:78
 \newcommand{\Ttrain}{30}       % baseline t_train_end                  experiments_runner.jl:49
-\newcommand{\Tcommon}{50}      % COMMON_EVAL_START                     src/hh_core.jl:85
-\newcommand{\Ndata}{512}       % DATASIZE                              src/hh_core.jl:75
-\newcommand{\Ntrain}{154}      % samples with t<=\Ttrain ms            src/hh_core.jl:76,174
+\newcommand{\Tcommon}{50}      % COMMON_EVAL_START                     src/hh_core.jl:89
+\newcommand{\Ndata}{512}       % DATASIZE                              src/hh_core.jl:79
+\newcommand{\Ntrain}{154}      % samples with t<=\Ttrain ms            src/hh_core.jl:80,178
 \newcommand{\Nchisq}{924}      % 6 channels x \Ntrain = chi^2/point denom  identifiability_parametric.jl:186
 \newcommand{\Ttube}{10}        % rollout tube threshold, mV            src/metrics.jl:81
 \newcommand{\Rcap}{70}         % rollout cap_ms                        src/metrics.jl:82
-\newcommand{\Vrest}{-65}       % V0 rest potential, mV                 src/hh_core.jl:94
+\newcommand{\Vrest}{-65}       % V0 rest potential, mV                 src/hh_core.jl:98
 % -- metric knobs (src/metrics.jl); spelled out in Appendix B --
 \newcommand{\Rsus}{1.0}        % rollout sustained_ms                  src/metrics.jl:82
-\newcommand{\Tfcast}{30.137}   % first forecast sample = 154*100/511   src/hh_core.jl:76 + src/metrics.jl:167
+\newcommand{\Tfcast}{30.137}   % first forecast sample = 154*100/511   src/hh_core.jl:80 + src/metrics.jl:167
 \newcommand{\Vthresh}{0}       % spike detector vthresh, mV            src/metrics.jl:31
 \newcommand{\SpikeSep}{2.0}    % spike min_dist_ms (refractory merge)  src/metrics.jl:31
 \newcommand{\SpikeTol}{2.0}    % spike match_tol_ms (greedy match)     src/metrics.jl:54
@@ -87,17 +87,17 @@
 % -- calcium conductance settings (builder argument; the ablation axis) --
 \newcommand{\gcaMain}{2.0}     % main setting                          experiments_runner.jl:49
 \newcommand{\gcaPhys}{0.4}     % physiological value (negative case)   experiments_runner.jl:46
-% -- model constants for the parameter table (src/hh_core.jl:30-40,62,67) --
+% -- model constants for the parameter table (src/hh_core.jl:30-44,66,71) --
 \newcommand{\mCm}{1.0}\newcommand{\mgNa}{120}\newcommand{\mgK}{36}\newcommand{\mgL}{0.3}
 \newcommand{\mENa}{50}\newcommand{\mEK}{-77}\newcommand{\mEL}{-54.4}
 \newcommand{\mgNaP}{0.5}\newcommand{\mECa}{120}\newcommand{\mIapp}{10}
 \newcommand{\mtaup}{1}\newcommand{\mtaus}{5}
 \newcommand{\mOUth}{5}\newcommand{\mOUsig}{0.5}
-% -- gate steady-state activations (src/hh_core.jl:61,66) --
-\newcommand{\pHalf}{-50}       % p_inf half-activation, mV           src/hh_core.jl:61
-\newcommand{\pSlope}{6}        % p_inf slope factor, mV              src/hh_core.jl:61
-\newcommand{\sHalf}{-25}       % s_inf half-activation, mV           src/hh_core.jl:66
-\newcommand{\sSlope}{9}        % s_inf slope factor, mV              src/hh_core.jl:66
+% -- gate steady-state activations (src/hh_core.jl:65,70) --
+\newcommand{\pHalf}{-50}       % p_inf half-activation, mV           src/hh_core.jl:65
+\newcommand{\pSlope}{6}        % p_inf slope factor, mV              src/hh_core.jl:65
+\newcommand{\sHalf}{-25}       % s_inf half-activation, mV           src/hh_core.jl:70
+\newcommand{\sSlope}{9}        % s_inf slope factor, mV              src/hh_core.jl:70
 % -- noise level (the ablation centre point; the axis itself is swept) --
 \newcommand{\NoisePct}{2}      % noise_level=0.02 as a percentage    experiments_runner.jl:49
 % -- literature calcium density used to justify the physiological gCa --
@@ -114,7 +114,7 @@
 % -- derived / typeset-only constants (inputs, not results) --
 \newcommand{\gcaMid}{1.0}      % gCa sweep midpoint                     experiments_runner.jl:46
 \newcommand{\gcaHi}{4.0}       % gCa sweep top                          experiments_runner.jl:46
-\newcommand{\bTrue}{-240}      % b=-gCa*ECa at gCa=2.0 (true offset)     src/hh_core.jl:39
+\newcommand{\bTrue}{-240}      % b=-gCa*ECa at gCa=2.0 (true offset)     src/hh_core.jl:43
 \newcommand{\NNinputs}{[\,V/100,\ s\,]}              % closure inputs    src/experiment.jl:161
 % \NodeVspan removed 2026-08-08: it existed to say the original neural ODE's
 % forecast spanned 10^2-10^4 mV. That framing is retired --- the failure was an
@@ -143,16 +143,16 @@
 \newcommand{\LossShareGates}{0.03}   % the complement: all five gates together
 \newcommand{\GateSdRatio}{100}  % order of magnitude of sd(V) / mean sd(gates) = 137
 % Absolute noise magnitudes at the baseline level, sigma_i = 0.02 x channel SD of
-% the clean gCa=2.0 trajectory (src/hh_core.jl:165).  Voltage 0.5121 mV; gates
+% the clean gCa=2.0 trajectory (src/hh_core.jl:169).  Voltage 0.5121 mV; gates
 % 0.001553 (s) to 0.006576 (m).
 \newcommand{\sigmaV}{0.51}          % mV
 \newcommand{\sigmaGateLo}{0.0016}   % dimensionless (gate s)
 \newcommand{\sigmaGateHi}{0.0066}   % dimensionless (gate m)
 % Sampling interval and the resulting OU relaxation factor per sample.
 % dt = 100/511 ms = 0.19569; 1 - theta*dt = 1 - 5*0.19569 = 0.0215.
-\newcommand{\dtSample}{0.196}       % ms                    src/hh_core.jl:76
-\newcommand{\ouAR}{0.02}            % 1 - theta*dt          src/hh_core.jl:88
-\newcommand{\NodeScaleV}{100}       % NODE voltage normaliser  src/hh_core.jl:77
+\newcommand{\dtSample}{0.196}       % ms                    src/hh_core.jl:80
+\newcommand{\ouAR}{0.02}            % 1 - theta*dt          src/hh_core.jl:92
+\newcommand{\NodeScaleV}{100}       % NODE voltage normaliser  src/hh_core.jl:81
 % Profile-likelihood scan resolution: gCa is fixed on range(0.0, 5.0; length=81),
 % so the grid step is 5/80.  identifiability_parametric.jl:235 (NP=81) and :265.
 \newcommand{\ProfileStep}{0.0625}   % profile grid step in gCa, mS/cm^2
@@ -207,7 +207,8 @@ ionic current from an observed voltage trace and then read the recovered
 current's coefficients as biophysical estimates. We test whether that reading is
 earned.
 We replace the calcium current in a six-state Hodgkin--Huxley model with a
-neural closure $U(V,s)$, train on a single \Tfull\,ms noisy trajectory, and
+neural closure $U(V,s)$, train on the first \Ttrain\,ms of a single \Tfull\,ms
+noisy trajectory, and
 distil the closure back into the conductance form $s^2(aV+b)$.
 % claim: ude-forecasts-accurately
 % claim: voltage-only-equivalent
@@ -305,9 +306,10 @@ random seeds.
 The contribution is not that this can happen; it is a characterisation of
 \emph{when} it happens, and a demonstration, through a chain of controls, that
 the failure is a property of the flexible representation rather than of the data,
-the fit, or the optimiser: on the same trajectory, the parametric estimates stay
-inside the stretch of the trade-off the likelihood tolerates, while the estimates
-distilled from the closure do not.
+the fit, or the optimiser: on the same trajectory, a direct two-parameter fit
+pins the conductance to about six per cent, while the estimates distilled from
+the closure scatter across a factor of two and all but one of them fall outside
+the short stretch of the trade-off the likelihood tolerates.
 
 \subsection{Contributions}
 
@@ -553,15 +555,16 @@ choice below and in Sec.~\ref{sec:setup-hidden}.
   stated for reproducibility, not measurements attributed to a source. The
   calcium conductance $g_{Ca}$ is not listed here: it is a swept builder argument
   (Sec.~\ref{sec:results-ablations}), not a fixed constant. Two entries need a
-  word of care. The OU volatility $\sigma$ sets only the shape of the noise
-  process, not its size: each channel's noise path is renormalised to unit
-  variance before being scaled to the stated percentage of that channel's own
-  standard deviation, so $\sigma$ cancels and the noise level is the only
-  amplitude knob. And the calcium current here is activation-only, $s^2$; the
+  word of care. The OU volatility $\sigma$ sets neither the size of the noise nor
+  its shape: each channel's noise path is renormalised to unit variance before
+  being scaled to the stated percentage of that channel's own standard deviation,
+  so $\sigma$ cancels outright. The noise level is the only amplitude knob, and the
+  relaxation rate $\theta$ is what sets the temporal structure. And the calcium current here is activation-only, $s^2$; the
   source model of \citet{reuveni1993} carries a further inactivation gate
   ($m^2h$), which we omit. That omission is a declared simplification of the
-  target dynamics, not a claim about the biology, and it is what makes the
-  recovery target exactly two scalars.}
+  target dynamics, not a claim about the biology. The recovery target is two
+  scalars because the conductance form $s^2(aV+b)$ has two coefficients, which is
+  true with or without the inactivation gate.}
   \label{tab:params}
   \begin{tabular}{llll}
     \toprule
@@ -571,15 +574,15 @@ choice below and in Sec.~\ref{sec:setup-hidden}.
     $g_{Na},\ g_K,\ g_L$ & \mgNa,\ \mgK,\ \mgL & \nicefrac{mS}{cm$^2$} & \citep{hodgkin1952} \\ % numok: conductances, src/hh_core.jl:31-33
     $E_{Na},\ E_K,\ E_L$ & \mENa,\ \mEK,\ \mEL & mV & \citep{hodgkin1952} \\ % numok: reversal potentials, src/hh_core.jl:34-36
     $g_{NaP}$ & \mgNaP & \nicefrac{mS}{cm$^2$} & choice (App.~\ref{app:eqns}) \\ % numok: persistent-Na conductance, src/hh_core.jl:38
-    $p_\infty$ half-activation $V_{1/2}$ & \pHalf & mV & \citep{magistretti1999} \\ % numok: p_inf V-half, src/hh_core.jl:61
-    $p_\infty$ slope factor & \pSlope & mV & choice (App.~\ref{app:eqns}) \\ % numok: p_inf slope, src/hh_core.jl:61
-    $s_\infty$ half-activation $V_{1/2}$ & \sHalf & mV & choice (App.~\ref{app:eqns}) \\ % numok: s_inf V-half, src/hh_core.jl:66
-    $s_\infty$ slope factor & \sSlope & mV & choice (App.~\ref{app:eqns}) \\ % numok: s_inf slope, src/hh_core.jl:66
-    $E_{Ca}$ & \mECa & mV & \citep{reuveni1993} \\ % numok: calcium reversal, src/hh_core.jl:39
-    $I_{\mathrm{app}}$ & \mIapp & \nicefrac{$\mu$A}{cm$^2$} & choice (drives spiking) \\ % numok: applied drive, src/hh_core.jl:40
-    $\tau_p,\ \tau_s$ & \mtaup,\ \mtaus & ms & choice \\ % numok: gate time constants, src/hh_core.jl:62,67
-    OU relaxation rate $\theta$ & \mOUth & ms$^{-1}$ & choice \\ % numok: noise process, src/hh_core.jl:88
-    OU volatility $\sigma$ & \mOUsig & ms$^{-1/2}$ & choice \\ % numok: noise process, src/hh_core.jl:89
+    $p_\infty$ half-activation $V_{1/2}$ & \pHalf & mV & \citep{magistretti1999} \\ % numok: p_inf V-half, src/hh_core.jl:65
+    $p_\infty$ slope factor & \pSlope & mV & choice (App.~\ref{app:eqns}) \\ % numok: p_inf slope, src/hh_core.jl:65
+    $s_\infty$ half-activation $V_{1/2}$ & \sHalf & mV & choice (App.~\ref{app:eqns}) \\ % numok: s_inf V-half, src/hh_core.jl:70
+    $s_\infty$ slope factor & \sSlope & mV & choice (App.~\ref{app:eqns}) \\ % numok: s_inf slope, src/hh_core.jl:70
+    $E_{Ca}$ & \mECa & mV & \citep{reuveni1993} \\ % numok: calcium reversal, src/hh_core.jl:43
+    $I_{\mathrm{app}}$ & \mIapp & \nicefrac{$\mu$A}{cm$^2$} & choice (drives spiking) \\ % numok: applied drive, src/hh_core.jl:44
+    $\tau_p,\ \tau_s$ & \mtaup,\ \mtaus & ms & choice \\ % numok: gate time constants, src/hh_core.jl:66,71
+    OU relaxation rate $\theta$ & \mOUth & ms$^{-1}$ & choice \\ % numok: noise process, src/hh_core.jl:92
+    OU volatility $\sigma$ & \mOUsig & ms$^{-1/2}$ & choice \\ % numok: noise process, src/hh_core.jl:93
     Noise level & \NoisePct & \% of channel SD & choice \\ % numok: baseline noise level, experiments_runner.jl:49
     \bottomrule
   \end{tabular}
@@ -620,10 +623,13 @@ it as an experiment rather than a setting: $g_{Ca}$ controls how much the calciu
 current contributes to the voltage the loss can see, so it \emph{is} an
 identifiability axis. We sweep it in full (Sec.~\ref{sec:results-ablations}),
 report the value where the method fails hardest, and make that failure part of
-the result. At the physiological value the calcium current is too small a
-contribution to the voltage to be recoverable at all; $\gcaMain$ is the regime in
-which recovery is possible enough to be interesting, which is exactly why the
-residual coefficient gap there is a finding rather than a shrug.
+the result. At the physiological value the calcium current contributes so little
+to the voltage that the \emph{closure} cannot recover it at all --- though a
+direct two-parameter fit to the same trajectory still can
+(Sec.~\ref{sec:results-parametric}), so this is a limit of the closure and not of
+the data. Setting $g_{Ca}=\gcaMain$ moves the problem into the regime where
+recovery through the closure is possible enough to be interesting, which is
+exactly why the residual coefficient gap there is a finding rather than a shrug.
 
 \subsection{Data generation and evaluation protocol}
 \label{sec:setup-data}
@@ -679,7 +685,7 @@ algebraic term replaced by a network, and the two observation conditions.
     \draw[->] (dv) -- (roll);
     \draw[->] (roll) -- (loss);
     \draw[->] (loss.west) -- ++(-6mm,0) |- (nn.east);
-    \node[below=1mm of nn, font=\footnotesize, align=center] {inputs $[\,V/100,\ s\,]$}; % numok: input normalisation, src/experiment.jl:145
+    \node[below=1mm of nn, font=\footnotesize, align=center] {inputs $[\,V/100,\ s\,]$}; % numok: input normalisation, src/experiment.jl:161
   \end{tikzpicture}
   \caption{The universal differential equation. The six-state vector field is
   retained exactly except for the single algebraic calcium term, which is
@@ -760,11 +766,12 @@ what is known about the initial state or evolved by the physics.
 
 Given a trained closure $U$, we recover an equation for it in two complementary
 ways, both fit on a grid of $(V,s)$ points restricted to the convex hull of the
-training trajectory's $(V,s)$ cloud. We chose that restriction because the
+trajectory's $(V,s)$ cloud, taken over the full simulated span rather than the
+training window alone. We chose that restriction because the
 spiking limit cycle is a near-one-dimensional loop in $(V,s)$, which we expected
 to leave the terms poorly separable on the trajectory itself, whereas the
 hull-masked grid is the network's genuine two-dimensional interpolation region.
-We report in Sec.~\ref{sec:results-parametric} that this reasoning does not
+We report in Sec.~\ref{sec:results-symbolic} that this reasoning does not
 survive measurement for the two-term conductance form, which is well conditioned
 on both domains; we did not measure it for the six-term library, so the
 restriction is a design choice we made in advance rather than one the data
@@ -932,10 +939,10 @@ essentially the whole remaining trajectory, so the horizon is right-censored and
 its true value is unknown), and its forecast voltage RMSE is
 $\valUdeForecastVRmseMeanStd$\,mV.
 % claim: ude-learns-true-dynamics-not-noise
-The fit is not memorisation of the training window: the UDE's training-window
-error against the clean trajectory, $\valUdeTrainVRmseMeanStd$\,mV, is well below
-its error against the noisy signal it was actually fit to,
-$\valUdeTrainVRmseVsNoisyMeanStd$\,mV. The inequality on its own is weak, since
+The fit is not memorisation of the training window (Fig.~\ref{fig:bars}): the
+UDE's training-window error against the clean trajectory,
+$\valUdeTrainVRmseMeanStd$\,mV, is well below its error against the noisy signal
+it was actually fit to, $\valUdeTrainVRmseVsNoisyMeanStd$\,mV. The inequality on its own is weak, since
 it holds for any model that does not interpolate the individual noisy samples;
 what carries the argument is the \emph{level} of the second number. The voltage
 channel was corrupted with additive noise of standard deviation \NoisePct\,\% of
@@ -954,8 +961,10 @@ alongside the six states. The second of those is the more serious: the true
 system is autonomous, driven by a constant $I_{\mathrm{app}}$, so a right-hand
 side that reads the clock is strictly more expressive than the physics requires,
 and it can fit the training window by time index instead of learning a vector
-field. We therefore ran two controls, each over $\valUdeForecastVRmseN$ seeds,
-and they separate cleanly (Table~\ref{tab:forecast}).
+field. Figure~\ref{fig:node-vs-ude} shows that failure for the published
+configuration. We therefore ran two controls, each over
+$\valUdeForecastVRmseN$ seeds, and they separate cleanly
+(Table~\ref{tab:forecast}).
 
 Raising the budget to the UDE's own \AdamUde/\BfgsUde{} while keeping the
 architecture does not help. The rollout horizon does not improve, it drifts down
@@ -1057,14 +1066,14 @@ is the subject of Sec.~\ref{sec:results-symbolic}.
   \setlength{\tabcolsep}{5pt}
   \begin{tabular}{lccccc}
     \toprule
-    Model & Adam/BFGS & $V$ RMSE (mV) & gate RMSE & $I_{Ca}$ RMSE & rollout (ms) \\
+    Model & Adam/BFGS & $V$ RMSE (mV) & gate RMSE & $I_{Ca}$ RMSE (\nicefrac{$\mu$A}{cm$^2$}) & rollout (ms) \\
     \midrule
     Neural ODE, $+t$ & \AdamNode/\BfgsNode & $\valNodePublishedVRmseMin$--$\valNodePublishedVRmseMax$ (span) & --- & --- & $\valNodeForecastRolloutMeanStd$ \\
     Neural ODE, $+t$ & \AdamUde/\BfgsUde & $\valNodeParityTimeVRmseMin$--$\valNodeParityTimeVRmseMax$ (span) & --- & --- & $\valNodeParityTimeRolloutMeanStd$ \\
     Neural ODE, autonomous & \AdamUde/\BfgsUde & $\valNodeParityAutoVRmseMedian$ (median) & $\valNodeParityAutoGateRmseMedian$ (median) & --- & $\valNodeParityAutoRolloutMeanStd$ \\
     \midrule
     UDE, full & \AdamUde/\BfgsUde & $\valUdeForecastVRmseMeanStd$ & $\valUdeForecastGateRmseMeanStd$ & $\valUdeForecastICaRmseMeanStd$ & $\valUdeForecastRollout$ \\
-    UDE, $V$ only & \AdamUde/\BfgsUde & $\valUdeVoltageForecastVRmseMeanStd$ & $\valUdeVoltageForecastGateRmseMeanStd$ & $\valUdeVoltageForecastICaRmseMeanStd$ & $\valUdeForecastRollout$ \\
+    UDE, $V$ only & \AdamUde/\BfgsUde & $\valUdeVoltageForecastVRmseMeanStd$ & $\valUdeVoltageForecastGateRmseMeanStd$ & $\valUdeVoltageForecastICaRmseMeanStd$ & $\valUdeVoltageForecastRollout$ \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -1212,8 +1221,7 @@ The training-window sweep, scored on the shared unseen window
 $t>\Tcommon$\,ms, shows that too little data fails: a fifteen-millisecond window
 gives $\valWindowAblCommonEvalVRmseFifteen$\,mV, roughly seven times the value at
 the twenty- and thirty-millisecond windows and at least three and a half times
-the value at every longer one, because that window ends inside the initial
-transient and never observes a full limit cycle. Beyond twenty milliseconds the
+the value at every longer one. Beyond twenty milliseconds the
 axis carries no evidence that more data helps. The twenty- and thirty-millisecond
 windows are indistinguishable ($\valWindowAblCommonEvalVRmseTwenty$ and
 $\valWindowAblCommonEvalVRmseThirty$\,mV, a gap well inside the
@@ -1231,7 +1239,7 @@ non-monotonicity beyond naming its likely cause
 
 % claim: noise-ablation-degrades-gracefully
 The noise-level sweep completes the ablation set. Holding every other axis at
-baseline and varying the observation-noise level over $\{0, 1, 2, 5, 10\}$ per cent of % numok: noise sweep axis, experiments_runner.jl:44 and :37
+baseline and varying the observation-noise level over $\{0, 1, 2, 5, 10\}$ per cent of % numok: noise sweep axis, experiments_runner.jl:44; the 2 per cent baseline point is B_NOISE, experiments_runner.jl:49
 each channel's own standard deviation, the normalised calcium error rises
 monotonically: $\valNoiseAblICaNormZero$, $\valNoiseAblICaNormOnePct$,
 $\valNoiseAblICaNormTwoPct$, $\valNoiseAblICaNormFivePct$,
@@ -1394,7 +1402,7 @@ terms; this is an identifiability limit, not a defect of the sparse solver.
   \valSymbolicAHatRange{} across seeds. The reversal-potential bar is a
   \emph{single pooled point estimate} with \emph{no} error bar, because $-b/a$ is
   unstable when $a$ is small; its absent whisker must not be read as zero
-  uncertainty; it is the least accurate recovered quantity in the study. % numok: reversal potential is a pooled estimate, results/symbolic/learned_calcium_equation.txt:8
+  uncertainty; it is the least accurate recovered quantity in the study. % numok: reversal potential is a pooled estimate, results/symbolic/learned_calcium_equation.txt:7
   The same estimator fit to the \emph{analytic} true current on the same hull
   domain returns $a\approx\gcaMain$, $b\approx\bTrue$. That is exact by
   construction---the analytic current lies in the estimator's two-column
@@ -1505,9 +1513,11 @@ $\hat E_{Ca} = \valParamFitEcaHatTwoMeanStd$\,mV carries a wider relative
 interval than the conductance, the log-parameter information matrix is
 ill-conditioned (condition number about $\valCondNumberTwo$, a five-seed mean
 whose printed precision is not significant), and the two parameters are almost perfectly
-anti-correlated. There \emph{is} a sloppy direction here, along a
-combination of conductance and reversal potential that the data constrain far
-better than either parameter alone --- the classic signature of a sloppy, rather than structurally non-identifiable, pair \citep{raue2009, wieland2021}. At the
+anti-correlated. There \emph{is} a sloppy direction here --- the anti-correlated
+trade-off between conductance and reversal potential --- and, orthogonal to it, a
+combination of the two that the data constrain far better than either parameter
+alone. That pairing of one flat and one stiff direction is the classic signature
+of a sloppy, rather than structurally non-identifiable, pair \citep{raue2009, wieland2021}. At the
 physiological $g_{Ca}=\gcaPhys$ the reversal potential's 95\% profile interval % numok: 95% confidence level, a convention
 runs from $60$ to $300$\,mV: bounded below, but still open at the top of the % numok: profile CI bounds over an 81-point grid on [0,300] mV, results/identifiability/profile_eca_gca0.4.csv
 range we scanned, so $E_{Ca}$ alone is practically non-identifiable there. Sloppy is not the same as
@@ -1525,7 +1535,8 @@ retains a usable one even at the physiological value.
   do trade off along this curve, and the likelihood is far flatter along it than
   across it, but the trade-off is \emph{bounded} --- the shaded stretch is
   where the data still tolerate the pairing, and it is short. Parametric fits
-  from all $\valUdeForecastVRmseN$ seeds land on it near the truth; the tick
+  from all $\valUdeForecastVRmseN$ seeds land on the valley floor near the truth,
+  the outermost two just beyond the shaded stretch; the tick
   marks along the bottom are the conductances obtained instead by distilling the
   neural closure. (b) The profile likelihood for $g_{Ca}$, that valley read along
   its floor with $E_{Ca}$ re-optimised at every point. The horizontal dashed line
@@ -1562,7 +1573,8 @@ retains a usable one even at the physiological value.
   Relative standard errors come from the Fisher information in log parameters;
   $\chi^2$ per point---the statistic of \eqref{eq:chisq} divided by its $\Nchisq$
   residuals---stays near unity at every setting, so each fit sits at the
-  known noise floor and the widening spread down the second column is information
+  known noise floor; the spread in the second column widens as the calcium signal
+  shrinks toward the top row, and that is information
   loss rather than misfit. The last column is quoted on the \emph{supervised
   trajectory}, the domain used throughout the text; on the convex hull the
   closure is worse at both settings ($\valSymbolicAHatMeanStd$ at $\gcaMain$,
@@ -1642,15 +1654,19 @@ even the trajectory forecast degraded
 The same holds at the physiological conductance, which is worth checking
 separately because that is where the method fails hardest. Retraining the
 $g_{Ca}=\gcaPhys$ case at the same aggressive budget leaves the conductance
-wrong-signed and moves it further from the truth
+wrong-signed and moves it further from the truth \emph{on the convex-hull
+domain}, the domain these retrained closures were distilled on
 ($\valGcaFourRetrainAHatBefore \to \valGcaFourRetrainAHatAfter$ against a true
-$+\gcaPhys$), and agreement with the true current falls below zero
+$+\gcaPhys$), and agreement with the true current falls below zero there
 ($R^2$: $\valGcaFourRetrainRTwoBefore \to \valGcaFourRetrainRTwoAfter$), meaning
 the distilled form becomes a worse predictor of the calcium current than that
 current's own mean. On the supervised trajectory both budgets instead return an
-estimate indistinguishable from zero, which is the same failure seen from the
-other side: at this conductance there is almost nothing of the calcium current
-in the voltage for the estimator to find.
+estimate indistinguishable from zero. The two domains disagree by roughly a
+factor of six at this conductance, which is why each number here is labelled with
+the domain it came from; but they fail in the same direction, and the failure is
+the closure's rather than the data's, since the direct fit still recovers
+$\valParamFitGcaHatPointFourMeanStd$ here
+(Sec.~\ref{sec:results-parametric}).
 
 That combination is the result, and it is sharper than a harmlessly flat
 direction. It is not that more optimisation achieved nothing, which would only
@@ -1951,15 +1967,15 @@ paper to the script that produces it and the results file it reads.
 The classical gating kinetics are (constants verbatim from the cited source; each
 line names its provenance):
 \begin{align*}
-  \alpha_m(V) &= \frac{0.1\,(V+40)}{1-e^{-(V+40)/10}}, &  % numok: HH kinetics, src/hh_core.jl:46-59
-  \beta_m(V)  &= 4\,e^{-(V+65)/18}, \\                    % numok: HH kinetics, src/hh_core.jl:46-59
-  \alpha_h(V) &= 0.07\,e^{-(V+65)/20}, &                  % numok: HH kinetics, src/hh_core.jl:46-59
-  \beta_h(V)  &= \frac{1}{1+e^{-(V+35)/10}}, \\           % numok: HH kinetics, src/hh_core.jl:46-59
-  \alpha_n(V) &= \frac{0.01\,(V+55)}{1-e^{-(V+55)/10}}, & % numok: HH kinetics, src/hh_core.jl:46-59
-  \beta_n(V)  &= 0.125\,e^{-(V+65)/80},                   % numok: HH kinetics, src/hh_core.jl:46-59
+  \alpha_m(V) &= \frac{0.1\,(V+40)}{1-e^{-(V+40)/10}}, &  % numok: HH kinetics, src/hh_core.jl:50-63
+  \beta_m(V)  &= 4\,e^{-(V+65)/18}, \\                    % numok: HH kinetics, src/hh_core.jl:50-63
+  \alpha_h(V) &= 0.07\,e^{-(V+65)/20}, &                  % numok: HH kinetics, src/hh_core.jl:50-63
+  \beta_h(V)  &= \frac{1}{1+e^{-(V+35)/10}}, \\           % numok: HH kinetics, src/hh_core.jl:50-63
+  \alpha_n(V) &= \frac{0.01\,(V+55)}{1-e^{-(V+55)/10}}, & % numok: HH kinetics, src/hh_core.jl:50-63
+  \beta_n(V)  &= 0.125\,e^{-(V+65)/80},                   % numok: HH kinetics, src/hh_core.jl:50-63
 \end{align*}
 with the removable singularities of $\alpha_m,\alpha_n$ evaluated at their
-analytic limits. The two added gates use steady-state activations $p_\infty(V) = [1+e^{-(V+50)/6}]^{-1}$ and $s_\infty(V) = [1+e^{-(V+25)/9}]^{-1}$ % numok: p_inf/s_inf, src/hh_core.jl:61,66
+analytic limits. The two added gates use steady-state activations $p_\infty(V) = [1+e^{-(V+50)/6}]^{-1}$ and $s_\infty(V) = [1+e^{-(V+25)/9}]^{-1}$ % numok: p_inf/s_inf, src/hh_core.jl:65,70
 with first-order relaxation at fixed time constants $\tau_p,\tau_s$
 (Table~\ref{tab:params}). Both are logistic approximations, not kinetics transcribed from a source: the high-threshold calcium activation of the source model \citep{reuveni1993} is specified by voltage-dependent rate functions whose steady state sits lower and rises more steeply than the single logistic used here. We approximate it because nothing reported in this paper depends on the shape of $s_\infty$ --- the gate kinetics are known physics, supplied identically to the data generator, to the closure, and to the parametric fit, so they cancel from every comparison we draw, and the recovery target is the pair $(g_{Ca},E_{Ca})$, not the activation curve. Of the four added-gate activation constants only one is literature-anchored: the persistent-sodium half-point follows
 \citet{magistretti1999}, whose reported activation slopes are nonetheless all steeper than the slope factor we pair with it. The other three --- the persistent-sodium slope and both calcium activation constants --- are choices, and Table~\ref{tab:params} labels them as such. The calcium reversal potential is a separate matter and does follow

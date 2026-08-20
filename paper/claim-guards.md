@@ -357,7 +357,7 @@ the base is closed (mentor: no further experiments).
 **The evidence.** `results/metrics_all.csv`, filter `window=='common_eval'` → 117 rows, all
 `model==UDE ∧ observed=='full'` (= 9 `(t_train_end, seed)` cells × 13 metrics: `t_train_end ∈
 {15,20,30,40,50}` at seed 1111, plus `t_train_end=30` at all 5 seeds).
-Code: `experiments_runner.jl:110-115`; `common_eval_indices`, `src/hh_core.jl:85`.
+Code: `experiments_runner.jl:110-115`; `common_eval_indices`, `src/hh_core.jl:89`.
 
 **Honest rewrite.** Say nothing. If a reviewer asks, the Limitations sentence is:
 > The shared evaluation window was instrumented only for the full-state UDE and the training-window
@@ -412,14 +412,14 @@ forecast metrics."*
 
 **Why it is wrong.** It is true, and it is **true by construction**, so it validates nothing. It
 could not have come out any other way. `common_eval_indices` selects `findall(t -> t > 50.0, TSTEPS)`
-(`src/hh_core.jl:85-86`); `make_split(50.0)` sets `forecast_idx = findall(t -> t > 50.0, TSTEPS)`
+(`src/hh_core.jl:89-90`); `make_split(50.0)` sets `forecast_idx = findall(t -> t > 50.0, TSTEPS)`
 (`src/experiment.jl`). **The same index set.** The two column families are then computed from
 identical predictions on identical indices, so they are byte-identical — verified: at the
 `t_train_end==50.0` row, **every** `common_eval_*` column equals its `forecast_*` twin exactly
 (`common_eval_V_rmse == forecast_V_rmse == 0.417721`, and so on for all 13 metrics).
 
 A "check" whose outcome is entailed by the code is a tautology. Presenting it as a passed test is
-worse than omitting it: a reviewer who reads `hh_core.jl:85` sees that you tested `x == x` and
+worse than omitting it: a reviewer who reads `hh_core.jl:89` sees that you tested `x == x` and
 reported it as evidence. That damages the credibility of the protocol it was meant to support.
 
 **The evidence.** `results/ablation_window.csv`, row `t_train_end == 50.0`: all 10 `common_eval_*`
@@ -502,7 +502,7 @@ wrong is a `\includegraphics` typo with a scientific consequence.
 **The evidence.** Confounded: `experiments_runner.jl:322-323` → `fig7b_ablation_window.png`,
 `window="forecast"` (default). Correct: `experiments_runner.jl:326-328` →
 `fig7b_commoneval_ablation_window.png`, `window="common_eval"`. Rationale in code:
-`src/hh_core.jl:81-84` ("the forecast window otherwise shifts with the training window, so its
+`src/hh_core.jl:85-88` ("the forecast window otherwise shifts with the training window, so its
 metrics are not directly comparable across runs"). The two series differ materially — e.g. at
 `t_train=15`, `forecast_V_rmse = 1.261599` vs `common_eval_V_rmse = 1.558603`.
 
@@ -709,9 +709,9 @@ plainly which values are conventional-but-uncited. It cannot inherit a citation 
 
 | Constant | Value | Citation status in code |
 |---|---|---|
-| `gNaP` | 0.5 | **Golomb–Amitai 1997** (range) — `src/hh_core.jl:47` |
-| `p_inf` V½ / slope | −50 / 6 | **Magistretti–Alonso 1999** — `src/hh_core.jl:88` |
-| `s_inf` V½ / slope | −25 / 9 | **Reuveni 1993** — `src/hh_core.jl:93` |
+| `gNaP` | 0.5 | **Golomb–Amitai 1997** (range) — `src/hh_core.jl:51` |
+| `p_inf` V½ / slope | −50 / 6 | **Magistretti–Alonso 1999** — `src/hh_core.jl:92` |
+| `s_inf` V½ / slope | −25 / 9 | **Reuveni 1993** — `src/hh_core.jl:97` |
 | `ECa` | 120.0 | **Reuveni 1993**, but *only* via a comment in `objective3_symbolic.jl:44-45`; **no citation in `hh_core.jl`** |
 | `Cm` | 1.0 | **none** |
 | `gNa` | 120.0 | **none** |
@@ -816,7 +816,7 @@ drawn past the data is a rejection. The controls make the qualified version genu
 Three controls, three foreclosed rebuttals. The scope qualifier is what lets you spend them.
 
 **The evidence.** Single trajectory: `TSPAN_FULL = (0.0, 100.0)`, `DATASIZE = 512`,
-`Iapp = 10.0`, `V0 = -65.0`, `steady_state_u0()` — `src/hh_core.jl:39-40, 74-76, 103-105`;
+`Iapp = 10.0`, `V0 = -65.0`, `steady_state_u0()` — `src/hh_core.jl:43-44, 78-80, 107-109`;
 `gen_clean_data(gCa)` is the only data generator. Seed coupling: `src/experiment.jl` (`run_experiment`,
 `run_node_baseline`). Retrain: `results/retrain_gca2_20k/metrics_retrain.csv` — all 5 rows
 `bfgs_ok = True`, `final_loss` per-seed `29.212284, 26.260637, 31.822533, 32.795931, 28.208120`

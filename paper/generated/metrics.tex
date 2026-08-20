@@ -19,7 +19,7 @@
 %   * The provenance line above each macro is the audit trail: file, filter, column,
 %     full unrounded value, and n. Rounding here loses nothing an auditor needs.
 %   * No timestamp is emitted on purpose: it would churn git and defeat --check.
-% 321 macros from 17 results file(s).
+% 322 macros from 17 results file(s).
 %======================================================================================
 
 % note: *** GUARDED — see claim-guards.md G2. THIS MACRO MUST NOT BE A HEADLINE. *** It exists so that if the number appears at all (e.g. an appendix table of raw metrics) it is traceable, NOT so that it can be quoted as "3951 ± 3561 mV". Per-seed: 4122.7 / 229.1 / 1134.0 / 5056.6 / 9213.4 — a 40x spread; the distribution is nowhere near normal and the std exceeds any meaningful voltage scale. This is a diverged integration, and rmse_safe (src/metrics.jl:20-25) drops non-finite pairs, so it is the RMSE of the *finite part* of a blown-up solve, over an unreported subset of timesteps. The honest headline for NODE failure is NodeForecastRollout. Prose: "diverges (V RMSE 10^2–10^4 mV across seeds)".
@@ -241,6 +241,10 @@
 % note: *** THE HONEST NODE HEADLINE — use this, not NodeForecastVRmse (G2). *** Milliseconds until |V_pred − V_true| exceeds 10 mV for a sustained ≥1 ms. dt ≈ 0.196 ms, so 0.55 ms means the black-box Neural ODE leaves the tube within ONE TO EIGHT SAMPLES; per-seed 0.783/0.0/0.391/1.566/0.0, and the two 0.0 seeds breached at the very first forecast sample. Uncensored (far from the 70 ms cap), physically interpretable, and it states the failure without the spurious precision of a diverged RMSE. Not censored ⇒ mean_std is legitimate here, unlike UdeForecastRollout.
 % source=results/metrics_baseline_multiseed.csv filter={model=NODE, observed=full, window=forecast, metric=rollout_horizon_ms} column=n_seeds raw=5 n=5
 \newcommand{\valNodeForecastRolloutN}{5}
+
+% note: *** GUARDED — claim-guards.md G1, exactly as UdeForecastRollout. *** The voltage-only twin, added 2026-08-21 because Table 2's "UDE, V only" row was printing the FULL-STATE macro in its rollout cell: numerically the same censored value, but the cell was not sourced from the voltage-only run and would have silently stopped tracking it if the two ever diverged. Same censoring caveat: 70.0 is cap_ms, returned when the tube is never breached, so it is right-censored and must render with "\ge". Never print a mean +/- SD for it; the SD is 0 by construction.
+% source=results/metrics_baseline_multiseed.csv filter={model=UDE, observed=voltage, window=forecast, metric=rollout_horizon_ms} column=mean raw=70.0 n=1
+\newcommand{\valUdeVoltageForecastRollout}{\ge 70}
 
 % note: *** GUARDED — claim-guards.md G1. emit: ge IS MANDATORY HERE. *** 70.0 is cap_ms (src/metrics.jl:81-82), returned when the 10 mV tube is NEVER breached — a right-censored value, not a measured horizon. It is also exactly 100 − 30, i.e. the entire remaining trajectory: the metric is saturated for all 5 seeds and cannot discriminate among them. A macro emitting "70.0 ± 0.0 ms" asserts zero variance on a number that is really "≥ 70 and unknown" — the single most misleading rendering available in this results tree. Renders "\ge 70"; the caption must name the cap. Same censoring applies to UDE/voltage (also 70.0 ± 0.0); add a parallel entry only if the paper quotes it separately.
 % source=results/metrics_baseline_multiseed.csv filter={model=UDE, observed=full, window=forecast, metric=rollout_horizon_ms} column=mean raw=70.0 n=1
@@ -1078,19 +1082,19 @@
 
 % note: The budget control. Same architecture as published, the UDE's own budget, and the horizon does not improve: it drops slightly (0.548 to 0.431). This is what rules out "the baseline was under-trained".
 % source=results/node_parity/node_parity_summary.csv filter={key=parity_time, metric=rollout_horizon_ms} column=mean/sd raw={mean=0.43052837573385505, std=0.44625261256326343} n=5
-\newcommand{\valNodeParityTimeRollout}{0.431 \pm 0.446}
+\newcommand{\valNodeParityTimeRollout}{0.43 \pm 0.45}
 
 % note: The budget control. Same architecture as published, the UDE's own budget, and the horizon does not improve: it drops slightly (0.548 to 0.431). This is what rules out "the baseline was under-trained".
 % source=results/node_parity/node_parity_summary.csv filter={key=parity_time, metric=rollout_horizon_ms} column=mean/sd raw={mean=0.43052837573385505, std=0.44625261256326343} n=5
-\newcommand{\valNodeParityTimeRolloutMeanStd}{0.431 \pm 0.446}
+\newcommand{\valNodeParityTimeRolloutMeanStd}{0.43 \pm 0.45}
 
 % note: The budget control. Same architecture as published, the UDE's own budget, and the horizon does not improve: it drops slightly (0.548 to 0.431). This is what rules out "the baseline was under-trained".
 % source=results/node_parity/node_parity_summary.csv filter={key=parity_time, metric=rollout_horizon_ms} column=mean raw=0.43052837573385505 n=5
-\newcommand{\valNodeParityTimeRolloutMean}{0.431}
+\newcommand{\valNodeParityTimeRolloutMean}{0.43}
 
 % note: The budget control. Same architecture as published, the UDE's own budget, and the horizon does not improve: it drops slightly (0.548 to 0.431). This is what rules out "the baseline was under-trained".
 % source=results/node_parity/node_parity_summary.csv filter={key=parity_time, metric=rollout_horizon_ms} column=sd raw=0.44625261256326343 n=5
-\newcommand{\valNodeParityTimeRolloutStd}{0.446}
+\newcommand{\valNodeParityTimeRolloutStd}{0.45}
 
 % note: The budget control. Same architecture as published, the UDE's own budget, and the horizon does not improve: it drops slightly (0.548 to 0.431). This is what rules out "the baseline was under-trained".
 % source=results/node_parity/node_parity_summary.csv filter={key=parity_time, metric=rollout_horizon_ms} column=n raw=5 n=5

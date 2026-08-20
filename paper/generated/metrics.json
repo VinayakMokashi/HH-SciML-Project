@@ -780,6 +780,19 @@
     },
     "n": 5
   },
+  "UdeVoltageForecastRollout": {
+    "macro": "valUdeVoltageForecastRollout",
+    "value": "\\ge 70",
+    "raw": 70.0,
+    "source": "results/metrics_baseline_multiseed.csv",
+    "filter": {
+      "model": "UDE",
+      "observed": "voltage",
+      "window": "forecast",
+      "metric": "rollout_horizon_ms"
+    },
+    "n": 1
+  },
   "UdeForecastRollout": {
     "macro": "valUdeForecastRollout",
     "value": "\\ge 70",
@@ -3219,7 +3232,7 @@
   },
   "NodeParityTimeRollout": {
     "macro": "valNodeParityTimeRollout",
-    "value": "0.431 \\pm 0.446",
+    "value": "0.43 \\pm 0.45",
     "raw": {
       "mean": 0.43052837573385505,
       "std": 0.44625261256326343
@@ -3233,7 +3246,7 @@
   },
   "NodeParityTimeRolloutMeanStd": {
     "macro": "valNodeParityTimeRolloutMeanStd",
-    "value": "0.431 \\pm 0.446",
+    "value": "0.43 \\pm 0.45",
     "raw": {
       "mean": 0.43052837573385505,
       "std": 0.44625261256326343
@@ -3247,7 +3260,7 @@
   },
   "NodeParityTimeRolloutMean": {
     "macro": "valNodeParityTimeRolloutMean",
-    "value": "0.431",
+    "value": "0.43",
     "raw": 0.43052837573385505,
     "source": "results/node_parity/node_parity_summary.csv",
     "filter": {
@@ -3258,7 +3271,7 @@
   },
   "NodeParityTimeRolloutStd": {
     "macro": "valNodeParityTimeRolloutStd",
-    "value": "0.446",
+    "value": "0.45",
     "raw": 0.44625261256326343,
     "source": "results/node_parity/node_parity_summary.csv",
     "filter": {

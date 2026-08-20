@@ -293,6 +293,24 @@ macros:
       without the spurious precision of a diverged RMSE. Not censored ⇒ mean_std
       is legitimate here, unlike UdeForecastRollout.
 
+  - name: UdeVoltageForecastRollout
+    source: metrics_baseline_multiseed.csv
+    filter: {model: UDE, observed: voltage, window: forecast, metric: rollout_horizon_ms}
+    emit: ge
+    censored_at: 70.0
+    column: mean
+    round: 0
+    # raw mean=70.0 std=0.0 n=5  -> renders "\ge 70"
+    note: >-
+      *** GUARDED — claim-guards.md G1, exactly as UdeForecastRollout. *** The
+      voltage-only twin, added 2026-08-21 because Table 2's "UDE, V only" row was
+      printing the FULL-STATE macro in its rollout cell: numerically the same
+      censored value, but the cell was not sourced from the voltage-only run and
+      would have silently stopped tracking it if the two ever diverged. Same
+      censoring caveat: 70.0 is cap_ms, returned when the tube is never breached,
+      so it is right-censored and must render with "\ge". Never print a mean +/- SD
+      for it; the SD is 0 by construction.
+
   - name: UdeForecastRollout
     source: metrics_baseline_multiseed.csv
     filter: {model: UDE, observed: full, window: forecast, metric: rollout_horizon_ms}
@@ -1240,7 +1258,7 @@ macros:
     emit: range
     column: a_hat
     round: 3
-    # raw min=1.244 max=2.816 n=5
+    # raw min=1.241 max=2.816 n=5
 
   - name: SymbolicRTwoTrajTrain
     source: identifiability/symbolic_domain_comparison.csv
@@ -1487,7 +1505,7 @@ macros:
     emit: mean_std
     columns: {mean: mean, std: sd, n: n}
     round: 2
-    # raw mean=19.53 sd=17.83 n=5; per-seed 6.65/44.42/32.29/5.48/8.81
+    # raw mean=19.53 sd=17.75 n=5; per-seed 6.65/44.42/32.29/5.48/8.81
     note: >-
       Against the published 0.55 +/- 0.65 and the parity-with-time 0.43 +/- 0.45.
       The UDE saturates the 70 ms cap on every seed with zero variance, so the
@@ -1498,7 +1516,9 @@ macros:
     filter: {key: parity_time, metric: rollout_horizon_ms}
     emit: mean_std
     columns: {mean: mean, std: sd, n: n}
-    round: 3
+    # 2 dp, matching NodeForecastRollout in the row above it. At 3 dp the same
+    # censored quantity printed at two precisions in adjacent table rows.
+    round: 2
     # raw mean=0.4305 sd=0.4462 n=5
     note: >-
       The budget control. Same architecture as published, the UDE's own budget,
