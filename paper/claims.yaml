@@ -989,6 +989,7 @@ claims:
     kind: interpretive
     evidence:
       - macro: ParamFitGcaHatTwo
+      - macro: ParamFitGcaHatTwoSseFull
       - macro: SymbolicAHat
       - macro: SymbolicAHatTrajTrain
       - macro: ParamFitGcaHatPointFour
@@ -999,18 +1000,26 @@ claims:
       We do not claim this holds for every closure, every architecture, or every system; we claim it
       happened here, under a controlled comparison in which the data were held fixed. Whether smaller
       or more constrained closures interpolate between the two regimes is untested.
-      CONFOUND, must stay stated wherever this claim is used: the DATA are held fixed but the
-      REPRESENTATION is not the only thing that changes between the two arms. The parametric arm
-      minimises the noise-weighted chi-square (identifiability_parametric.jl:117) by multi-start
-      Nelder-Mead (identifiability_parametric.jl:129,137); the UDE minimises the unweighted
-      native-units SSE (src/experiment.jl:185), which is 99.97% voltage, by Adam + BFGS under a
-      continuous adjoint (src/experiment.jl:126,133). Objective and optimiser co-vary with the
-      representation, so the ~7x ratio may NOT be read as a pure representation effect and no
-      decomposition of it may be reported. What the confound does NOT touch is the one-directional
-      inference this claim actually rests on: some estimator recovers gCa to 6% from this single
-      trajectory, therefore the information IS in the data and the closure's scatter cannot be
-      blamed on the data. No committed CSV in results/ measures the parametric fit under the UDE's
-      own unweighted objective, so any such number is unreportable under Law I until one exists.
+      CONFOUND, NOW MEASURED (2026-08-20) -- it is no longer a caveat, and must not be restated as
+      one. The DATA are held fixed, but the REPRESENTATION was never the only thing that changed:
+      the parametric arm minimises the noise-weighted chi-square (identifiability_parametric.jl:117)
+      by multi-start Nelder-Mead (identifiability_parametric.jl:129,137), while the UDE minimises
+      the unweighted native-units SSE (src/experiment.jl:185), which is 99.97% voltage, by
+      Adam + BFGS under a continuous adjoint (src/experiment.jl:126,133).
+      parametric_matched_objective.jl now repeats the IDENTICAL two-parameter fit -- same data, same
+      true form, same starts, same solver -- under the UDE's own objective, and gets
+      2.478 +/- 0.489 (19.7%) against 2.092 +/- 0.130 (6.2%) under the likelihood
+      (ParamFitGcaHatTwoSseFull). Its self-test re-fits the chi-square row through the same code
+      path and reproduces parametric_fit.csv with worst relative disagreement exactly 0, so the sole
+      variable is the objective. DECOMPOSITION, and this is the licensed one: objective ~3.2x
+      (6.2 -> 19.7%), representation ~2.1x (19.7 -> 40.9%). Quote the ~2x figure for the
+      representation, NEVER the ~6-7x ratio, which is objective and representation compounded. The
+      one-directional inference is untouched and remains the load-bearing part: some estimator
+      recovers gCa to 6% from this single trajectory, so the information IS in the data and the
+      closure's scatter cannot be blamed on the data. The same run at every other gCa setting shows
+      the same direction (0.4: 14.9 vs 37.3%; 1.0: 8.1 vs 26.4%; 4.0: 2.9 vs 12.9%), and the
+      voltage-only objective agrees with the full-state one to three decimals, which independently
+      corroborates LossShareV.
     status: supported
     # ===== THE THESIS OF THE REVISED PAPER. This is the parametric-vs-functional identifiability
     # distinction of Loman/Browning/Baker (arXiv 2606.30289) measured empirically: parametric

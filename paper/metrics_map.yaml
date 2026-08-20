@@ -1031,6 +1031,31 @@ macros:
       licenses the chi-square threshold used for the profile-likelihood CI.
       Report it as a goodness-of-fit sanity check, not as a result in itself.
 
+  - name: ParamFitGcaHatTwoSseFull
+    source: identifiability/parametric_matched_objective.csv
+    filter: {gCa_true: 2.0, objective: sse_full}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: gCa_hat
+    round: 2
+    # raw mean=2.4780 std=0.4893 n=5 -> 2.48 +/- 0.49 (rel SD 19.7%)
+    # SAME setting under the weighted chi-square: ParamFitGcaHatTwo 2.09 +/- 0.13 (6.2%).
+    note: >-
+      *** THE MATCHED-OBJECTIVE CONTROL. *** The same two-parameter fit as
+      ParamFitGcaHatTwo -- same data, same true functional form, same three
+      Nelder-Mead starts, same solver and tolerances -- minimising the FULL-STATE
+      UDE's own unweighted SSE instead of the weighted chi-square. Produced by
+      parametric_matched_objective.jl, whose self-test re-fits the chi-square row
+      through the identical code path and reproduces parametric_fit.csv with a
+      worst relative disagreement of exactly 0, so the ONLY variable between the
+      two numbers is the objective. Use it to say what the paper could previously
+      only disclose: of the 6%-to-41% gap between the parametric fit and the
+      closure, the objective accounts for about 3.2x (6.2 -> 19.7%) and the
+      representation for about 2.1x (19.7 -> 40.9%). Quote it wherever the
+      parametric-vs-closure ratio is stated, or the ratio reads as pure
+      representation. The voltage-only objective gives 2.479 +/- 0.489, i.e. the
+      same to three decimals -- an independent confirmation of LossShareV.
+
   - name: ParamFitSseFullTwo
     source: identifiability/parametric_fit.csv
     filter: {gCa_true: 2.0}

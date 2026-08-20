@@ -232,8 +232,12 @@ asymptotic relative standard error of $\valCondRelSeGcaTwoMean$. The
 representative seed's own estimate is the lowest of the five, and the
 profile-likelihood 95\% interval centred on \emph{that} estimate is $[1.6065, 2.1477]$; % numok: Delta-chi2 = 3.8415 crossings, linearly interpolated between the bracketing grid points of results/identifiability/profile_gca_gca2.0.csv
 each realisation owns its own interval. % claim: closure-induced-nonidentifiability
-The data determine the conductance to about six per cent, where the estimate
-distilled from the closure scatters roughly six times wider.
+The data determine the conductance to about six per cent under the correctly
+weighted likelihood, where the estimate distilled from the closure scatters
+roughly six times wider. Repeating that fit under the closure's own
+voltage-dominated objective, changing nothing else, gives about twenty per cent,
+so the objective and the representation each account for roughly half the gap;
+the representation's own contribution is a factor of about two.
 % claim: retrain-improves-loss-worsens-recovery
 Nor is it under-training: quadrupling the budget lowers the training loss by
 \LossDropPct\,\% while making every recovery quantity worse, including agreement with
@@ -356,10 +360,12 @@ distilled from the closure do not.
   standard error $\valCondRelSeGcaTwoMean$, $\chi^2$ per point
   $\valParamFitChiSqPerPointTwo$). One trajectory identifies the conductance to
   about six per cent; the same conductance distilled from a $\NparamUde$-parameter
-  closure scatters more than sixfold wider, an arm-to-arm comparison in which
-  objective and optimiser differ alongside the representation
-  (Sec.~\ref{sec:methods-parametric}). This is parametric
-  identifiability holding while functional identifiability fails
+  closure scatters about six times wider. We do not attribute all of that to the
+  representation, because the two arms also differ in objective: repeating the
+  identical parametric fit under the closure's own voltage-dominated loss gives
+  $\valParamFitGcaHatTwoSseFullMeanStd$, so the objective accounts for about a
+  threefold inflation and the representation for a further twofold. This is
+  parametric identifiability holding while functional identifiability fails
   (Sec.~\ref{sec:results-parametric}, Table~\ref{tab:parametric}).
 
   \item % claim: retrain-improves-loss-worsens-recovery
@@ -825,8 +831,12 @@ scale, by a derivative-free simplex method. Since \eqref{eq:loss} is
 \LossShareV\,\% voltage at the noise floor while \eqref{eq:chisq} weighs the six
 channels comparably, the two arms are not putting the same question to the data.
 Representation, objective and optimiser therefore change together between them,
-and nothing we run here separates their contributions to the gap reported in
-Sec.~\ref{sec:results-parametric}. Three diagnostics follow:
+so we separate them rather than assume they do not matter: we repeat the
+\emph{identical} fit --- same data, same true functional form, same two free
+parameters, same three starting points, same solver and tolerances --- under
+\eqref{eq:loss} instead of \eqref{eq:chisq}. That control is reported in
+Sec.~\ref{sec:results-parametric} and it is what licenses reading any part of the
+gap as representation. Three diagnostics follow:
 
 \begin{itemize}
   \item \textbf{The estimate and its seed spread.} The fit is repeated on all
@@ -1445,8 +1455,7 @@ far below the resolution of the profile itself. % numok: 4 of 5 outside the inte
 Set that beside the closure. On identical data, the conductance estimated
 parametrically is $\valParamFitGcaHatTwoMeanStd$ and the conductance distilled
 from the neural closure is $\valSymbolicAHatTrajTrainMeanStd$: the relative
-spread grows from roughly six per cent to roughly forty per cent, more than
-sixfold, and
+spread grows from roughly six per cent to roughly forty per cent, and
 the per-seed span widens from \valParamFitGcaHatRangeTwo{} to
 \valSymbolicAHatRangeTrajTrain. On the wider hull domain the closure is worse
 still ($\valSymbolicAHatMeanStd$, spanning \valSymbolicAHatRange), so the choice
@@ -1456,15 +1465,26 @@ $\valParamFitGcaHatPointFourMeanStd$ against a true $\gcaPhys$ while the symboli
 route returns the wrong sign entirely on the hull domain
 ($\hat a = \valSymbolicAHatNegControl$, single seed) and an estimate
 indistinguishable from zero on the supervised trajectory
-(Sec.~\ref{sec:results-retrain}); neither is usable. The data were the same in every one of
-these comparisons. What differed was not only how the calcium current was
-represented: the parametric fit minimises the noise-weighted $\chi^2$ of
-\eqref{eq:chisq} by multi-start Nelder--Mead, while the closure descends the
-unweighted \eqref{eq:loss}, which is \LossShareV\,\% voltage, by Adam and
-BFGS (Sec.~\ref{sec:methods-parametric}). Representation, objective and
-optimiser move together between the two arms, so we do not attribute the whole
-of the gap to the representation; what the comparison licenses is the
-one-directional point we state next.
+(Sec.~\ref{sec:results-retrain}); neither is usable.
+
+The data were the same in every one of these comparisons, but the representation
+was not the only thing that differed, and it is worth measuring how much of the
+gap it actually owns. The parametric fit minimises the noise-weighted $\chi^2$ of
+\eqref{eq:chisq} by multi-start Nelder--Mead; the closure descends the unweighted
+\eqref{eq:loss}, which is \LossShareV\,\% voltage, by Adam and BFGS. So we repeat
+the parametric fit under \eqref{eq:loss} --- the closure's own objective, on the
+same data, with the same true functional form, the same two free parameters and
+the same starting points, changing nothing but which residual is minimised. It
+returns $\valParamFitGcaHatTwoSseFullMeanStd$: a relative spread of roughly
+twenty per cent, against six per cent under the likelihood. Descending a
+voltage-dominated objective, rather than representing the current with a network,
+therefore accounts for about a threefold inflation on its own. The closure's
+forty per cent sits a further twofold above \emph{that}. % claim: closure-induced-nonidentifiability
+The representation is not innocent, but it is responsible for roughly half of the
+gap on a log scale, not all of it, and we quote the twofold figure rather than
+the sixfold one wherever the two arms are compared. (The voltage-only objective
+returns the same estimate to three decimals, which is what
+\eqref{eq:loss} being \LossShareV\,\% voltage predicts.)
 
 We are careful about the inference this licenses, because the comparison is not
 between equals and we do not want it read as one. A two-parameter model given the

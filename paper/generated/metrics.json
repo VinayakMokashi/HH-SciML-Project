@@ -1981,6 +1981,67 @@
     },
     "n": 5
   },
+  "ParamFitGcaHatTwoSseFull": {
+    "macro": "valParamFitGcaHatTwoSseFull",
+    "value": "2.48 \\pm 0.49",
+    "raw": {
+      "mean": 2.478478521894787,
+      "std": 0.4891573186992122
+    },
+    "source": "results/identifiability/parametric_matched_objective.csv",
+    "filter": {
+      "gCa_true": 2.0,
+      "objective": "sse_full"
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatTwoSseFullMeanStd": {
+    "macro": "valParamFitGcaHatTwoSseFullMeanStd",
+    "value": "2.48 \\pm 0.49",
+    "raw": {
+      "mean": 2.478478521894787,
+      "std": 0.4891573186992122
+    },
+    "source": "results/identifiability/parametric_matched_objective.csv",
+    "filter": {
+      "gCa_true": 2.0,
+      "objective": "sse_full"
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatTwoSseFullMean": {
+    "macro": "valParamFitGcaHatTwoSseFullMean",
+    "value": "2.48",
+    "raw": 2.478478521894787,
+    "source": "results/identifiability/parametric_matched_objective.csv",
+    "filter": {
+      "gCa_true": 2.0,
+      "objective": "sse_full"
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatTwoSseFullStd": {
+    "macro": "valParamFitGcaHatTwoSseFullStd",
+    "value": "0.49",
+    "raw": 0.4891573186992122,
+    "source": "results/identifiability/parametric_matched_objective.csv",
+    "filter": {
+      "gCa_true": 2.0,
+      "objective": "sse_full"
+    },
+    "n": 5
+  },
+  "ParamFitGcaHatTwoSseFullN": {
+    "macro": "valParamFitGcaHatTwoSseFullN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/parametric_matched_objective.csv",
+    "filter": {
+      "gCa_true": 2.0,
+      "objective": "sse_full"
+    },
+    "n": 5
+  },
   "ParamFitSseFullTwo": {
     "macro": "valParamFitSseFullTwo",
     "value": "39.33 \\pm 1.26",
