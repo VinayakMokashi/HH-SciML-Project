@@ -26,6 +26,27 @@
 % =========================================================================
 \input{generated/metrics}
 
+% ---- STALE-UPLOAD GUARD -------------------------------------------------
+%  Overleaf keeps whatever generated/metrics.tex it already has. Drag main.tex
+%  across without generated/, and every macro added since the last upload is
+%  undefined -- and LaTeX then reports "Undefined control sequence" once per
+%  USE, pointing at the prose, never at the cause. That happened on 2026-08-20:
+%  eighteen errors across nine sections, all of them one missing file.
+%  The canary below turns that into a single legible error naming the fix.
+%  WHEN YOU ADD MACROS: point it at one of the new ones. scripts/check_tex_sanity.py
+%  fails if the canary is not defined in generated/metrics.tex, so a rename or a
+%  typo here cannot go unnoticed -- but only YOU can keep it pointed at a recent
+%  macro, and a canary left on an old one silently stops guarding.
+\ifdefined\valParamFitSseFullTwoMeanStd\else
+  \GenericError{}{%
+    STALE generated/metrics.tex -- re-upload the generated/ folder to Overleaf%
+  }{%
+    main.tex uses result macros that the generated/metrics.tex it just read does
+    not define. Nothing is wrong with the source; the upload was partial.%
+  }{Drag ALL FIVE items from overleaf_upload/ onto the file tree: main.tex,
+    references.bib, arxiv.sty, figures, generated.}
+\fi
+
 \graphicspath{{figures/}}   % single staged figure directory (see scripts/stage_figures.ps1)
 
 % =========================================================================

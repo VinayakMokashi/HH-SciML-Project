@@ -126,6 +126,43 @@ def check_midline_comments(path):
     return out
 
 
+def check_stale_upload_canary():
+    """CHECK 4 -- the stale-upload canary in main.tex must name a real macro.
+
+    main.tex guards against a partial Overleaf upload with an \\ifdefined on one
+    result macro. If generated/metrics.tex is stale, that one macro is undefined
+    and the guard raises a single legible error instead of one "Undefined control
+    sequence" per USE, scattered across the prose. (On 2026-08-20 a partial upload
+    produced eighteen of those, none of which named the missing file.)
+
+    The guard is only as good as its canary: point it at a macro that does not
+    exist and it never fires. This verifies the canary resolves. It cannot verify
+    the canary is still a RECENT macro -- that stays a human job, noted in the
+    comment beside the guard.
+    """
+    main_tex = ROOT / "paper" / "main.tex"
+    metrics = ROOT / "paper" / "generated" / "metrics.tex"
+    if not (main_tex.exists() and metrics.exists()):
+        return []
+
+    src = main_tex.read_text(encoding="utf-8", errors="replace")
+    m = re.search(r"\\ifdefined\\(val[A-Za-z]+)", src)
+    if not m:
+        return [(main_tex, 0, "stale-upload canary is MISSING from main.tex",
+                 "expected an \\ifdefined\\val... guard just after \\input{generated/metrics}")]
+
+    canary = m.group(1)
+    line = src[: m.start()].count("\n") + 1
+    defined = re.search(r"\\newcommand\{\\" + canary + r"\}",
+                        metrics.read_text(encoding="utf-8", errors="replace"))
+    if not defined:
+        return [(main_tex, line,
+                 "stale-upload canary names a macro that does not exist",
+                 "\\%s is not defined in generated/metrics.tex, so the guard can never fire"
+                 % canary)]
+    return []
+
+
 def main():
     paths = [Path(a) for a in sys.argv[1:]] or DEFAULT
     findings = []
@@ -137,6 +174,8 @@ def main():
                                 + check_midline_comments(p)):
             findings.append((p, line, kind, ctx))
 
+    findings.extend(check_stale_upload_canary())
+
     for p, line, kind, ctx in sorted(findings, key=lambda f: (str(f[0]), f[1])):
         try:
             rel = p.relative_to(ROOT)
@@ -146,10 +185,13 @@ def main():
 
     print()
     if findings:
-        print("FAIL: %d finding(s). All three classes compile cleanly -- fix before shipping." % len(findings))
+        print("FAIL: %d finding(s). These compile cleanly -- fix before shipping." % len(findings))
         print("  control byte  -> replace with the characters that were intended")
         print("  non-ASCII     -> use the ASCII form (em dash is '---'); comments are exempt")
         print("  mid-line %%    -> move the comment to its own line, or to the true end of the line")
+        print("  canary        -> point the \\ifdefined guard after \\input{generated/metrics}")
+        print("                   at a macro that exists, or a partial Overleaf upload goes")
+        print("                   back to failing as scattered 'Undefined control sequence'")
         return 1
     print("OK: no control characters, no non-ASCII in live text, "
           "no prose lost behind a mid-line comment.")
