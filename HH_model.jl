@@ -1,3 +1,25 @@
+# =============================================================================
+#  HH_model.jl  --  SUPERSEDED NARRATIVE SCRIPT.  NOT A PAPER ARTIFACT.
+# =============================================================================
+#  Nothing in the tracked tree includes, calls or documents this file. It is a
+#  single-file walkthrough (Sections 0-5) kept for reading, not running.
+#
+#  IT DOES NOT REPRODUCE THE PAPER'S NUMBERS. It draws the data noise, the
+#  Neural-ODE init and the UDE init sequentially from ONE shared StableRNG(1111)
+#  (see the RNG note in Section 0), whereas the experiment engine
+#  src/experiment.jl gives every network a FRESH StableRNG(seed). Same model,
+#  same architecture, same hyperparameters, different draws: qualitatively
+#  similar, numerically different. The authoritative artifacts are
+#  results/metrics_all.csv and the figures written by experiments_runner.jl.
+#
+#  Because of that its figures go to figures_narrative/, NOT figures/. It used to
+#  write figures/, where its fig2_neural_ode_overview.png and fig3_ude_overview.png
+#  silently replaced the two files paper/main.tex actually includes
+#  (the two panels of the neural-ODE / UDE overview figure), along with
+#  07_Stacked_Overview.png and
+#  08_Noisy_Data_Comparison.png. Do not point output_dir back at figures/.
+# =============================================================================
+#
 #  UNITS (standard squid-axon convention, resting potential ~ -65 mV)
 #        V  : mV          t : ms          C : uF/cm^2
 #        g  : mS/cm^2     I : uA/cm^2     E : mV
@@ -257,8 +279,13 @@ tsteps_train      = tsteps[train_idx]
 #   Save Figures
 # =============================================================================
 
-# Set the explicit output directory using a raw string to handle Windows backslashes
-output_dir = raw"D:\SciML\bootcamp\Research Project\HH-SciML-Project\figures"
+# Output directory: DERIVED from this file's location, and deliberately NOT
+# figures/. This is the superseded narrative script (see the banner at the top of
+# the file), so it must never overwrite the released figures the paper includes.
+# The previous value was an absolute raw"D:\SciML\..." path that existed on one
+# machine and pointed straight at figures/, where lines 413 and 544 below clobber
+# fig2_neural_ode_overview.png and fig3_ude_overview.png (main.tex:874,878).
+output_dir = joinpath(@__DIR__, "figures_narrative")
 
 # Create the directory if it doesn't already exist
 mkpath(output_dir)

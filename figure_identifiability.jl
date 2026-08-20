@@ -100,8 +100,32 @@ plot!(pa, legend = :topright, foreground_color_legend = nothing,
 # ---------------------------------------------------------------- panel (b)
 pr = sort(prof[prof.chi2 .< 1e6, :], :gCa)
 dmin = minimum(pr.delta_chi2)
-inCI = pr.gCa[pr.delta_chi2 .<= CHI2_95 .+ dmin]
-lo, hi = minimum(inCI), maximum(inCI)
+
+#  Interpolate the Delta-chi2 threshold crossings rather than taking the
+#  outermost GRID POINTS that happen to fall under the threshold.  The scan step
+#  is 0.0625 in gCa, and rounding outward to the grid inflated the interval to
+#  [1.625, 2.125].  That inflation is not cosmetic: it pushed seed 3333's closure
+#  estimate (a_hat = 1.6069) outside the band and let the paper say "every one of
+#  the five falls outside", which is a statement about the scan resolution and not
+#  about the data.  The interpolated crossings are [1.6065, 2.1477] and that is
+#  what main.tex now quotes -- keep the two in step.  Delta-chi2 is convex on both
+#  flanks here, so linear interpolation is if anything marginally too narrow.
+#  Wrapped in a function on purpose: on 1.6 a value assigned inside a top-level
+#  `for` never reaches the global scope.
+function ci_crossings(g, d, thr)
+    lo = NaN
+    hi = NaN
+    for i in 1:(length(g) - 1)
+        if (d[i] - thr) * (d[i + 1] - thr) < 0
+            c = g[i] + (thr - d[i]) * (g[i + 1] - g[i]) / (d[i + 1] - d[i])
+            isnan(lo) && (lo = c)
+            hi = c
+        end
+    end
+    return lo, hi
+end
+
+lo, hi = ci_crossings(pr.gCa, pr.delta_chi2, CHI2_95 + dmin)
 
 pb = plot(pr.gCa, pr.delta_chi2;
           lw = 2.5, color = :steelblue, label = "profile likelihood",
@@ -110,9 +134,15 @@ pb = plot(pr.gCa, pr.delta_chi2;
           xlims = (0, 5), ylims = (0, 60), left_margin = 5mm,
           bottom_margin = 4mm, FS...)
 vspan!(pb, [lo, hi], color = :steelblue, alpha = 0.15, label = "95% interval")
-hline!(pb, [CHI2_95], color = :black, ls = :dash, lw = 1.5,
-       label = "95% threshold")
-vline!(pb, [GCA_TRUE], color = :black, ls = :dot, lw = 1.5, label = "truth")
+#  These two carry NO legend entry, deliberately. They used to, and the legend
+#  disagreed with the plot: the dashed threshold drew a key that read as solid
+#  and the dotted truth line a key that read as dashed. That is not a styling
+#  bug to chase -- a legend key is only a few tens of pixels long, which is too
+#  short to render a dash or dot pattern faithfully at this line width, so any
+#  key for these two will misdescribe them. The caption names both lines
+#  instead, which is unambiguous. Do not re-add labels here.
+hline!(pb, [CHI2_95], color = :black, ls = :dash, lw = 1.5, label = "")
+vline!(pb, [GCA_TRUE], color = :black, ls = :dot, lw = 1.5, label = "")
 # Closure estimates on the same axis, as rug marks along the bottom.
 scatter!(pb, symb2.a_hat, fill(2.0, nrow(symb2));
          m = (:vline, 12, :crimson), msw = 2.5,
@@ -129,7 +159,11 @@ pc_clo = [symb2.a_hat[findfirst(==(s), symb2.seed)] for s in seeds]
 pc = plot(; xlabel = "seed", ylabel = "recovered g(Ca)  (mS/cm²)",
           title = "(c)  same data, two representations",
           xticks = (xp, string.(seeds)), xlims = (0.4, length(seeds) + 0.6),
-          ylims = (0.6, 3.4), left_margin = 5mm, bottom_margin = 4mm, FS...)
+          # Headroom above the largest closure estimate (seed 2222, a_hat = 2.816).
+          # At the old top of 3.4 the :topleft legend box sat ON that diamond and
+          # erased the point that defines the upper end of the span the caption
+          # quotes; the legend is also transparent now so nothing can hide a marker.
+          ylims = (0.6, 4.0), left_margin = 5mm, bottom_margin = 4mm, FS...)
 hline!(pc, [GCA_TRUE], color = :black, ls = :dash, lw = 2, label = "truth = 2.0")
 scatter!(pc, xp, pc_clo; m = (:diamond, 9, :crimson), msw = 0.8, msc = :white,
          label = "via neural closure")
@@ -139,7 +173,7 @@ for i in xp                                  # pair the two estimates per seed
     plot!(pc, [i, i], [pc_par[i], pc_clo[i]], color = :gray60, lw = 1, label = "")
 end
 plot!(pc, legend = :topleft, foreground_color_legend = nothing,
-      background_color_legend = RGBA(1, 1, 1, 0.75))
+      background_color_legend = nothing)
 
 # Two rows: (a) and (b) share the top, (c) spans the bottom. A 1x3 strip is
 # 3.2:1, which at \textwidth is only ~5 cm tall and shrinks every label past
@@ -151,7 +185,7 @@ out = joinpath(FIG_DIR, "fig13_parametric_identifiability.png")
 savefig(fig, out)
 
 @printf("\nwrote %s\n", out)
-@printf("  panel (b) 95%% CI from the profile grid: [%.3f, %.3f]\n", lo, hi)
+@printf("  panel (b) 95%% CI, interpolated threshold crossings: [%.4f, %.4f]\n", lo, hi)
 @printf("  parametric: mean %.3f  sd %.3f  range [%.3f, %.3f]\n",
         mean(pc_par), std(pc_par), minimum(pc_par), maximum(pc_par))
 @printf("  closure   : mean %.3f  sd %.3f  range [%.3f, %.3f]\n",

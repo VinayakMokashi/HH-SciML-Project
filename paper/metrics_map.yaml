@@ -104,7 +104,7 @@ defaults:
   # extractor's own default is 3 dp when omitted), and every aggregating entry
   # repeats `ddof: 1, dropna: true` in full.
   # Those two are not decoration: Julia `Statistics.std` is the SAMPLE std, and
-  # the runner's agg() helper (experiments_runner.jl:187-188) drops non-finite
+  # the runner's agg() helper (experiments_runner.jl:199-200) drops non-finite
   # BEFORE averaging. Reproduce both or (a) stds come out too small and (b) the
   # NODE spike metric returns NaN instead of its n=2 mean.
   results_root: results   # OVERRIDDEN by --results-root when given; see header
@@ -164,7 +164,7 @@ macros:
     # raw mean=0.2635508680094284 std=0.11760231838630762 n=5  -> 0.264 ± 0.118
     note: >-
       Voltage-only observation: the loss selects row 1 only
-      (make_ude_loss, experiment.jl:129-144); the gates are hidden from the
+      (make_ude_loss, experiment.jl:157-172); the gates are hidden from the
       OBJECTIVE, not from the solver (u0 is the full true 6-state IC in every
       run). Say "voltage-only observation in the loss", never "only V is known".
       EQUIVALENCE CLAIM ONLY — see claim-guards.md: 0.264 vs 0.245 against stds
@@ -178,12 +178,16 @@ macros:
     filter: {model: UDE, observed: full, window: forecast, metric: gate_rmse_mean}
     emit: mean_std
     columns: {mean: mean, std: std, n: n_seeds}
-    round: 4
-    # raw mean=0.000951766817970978 std=0.00017026484222479465 n=5 -> 0.0010 ± 0.0002
+    round: 5
+    # raw mean=0.000951766817970978 std=0.00017026484222479465 n=5 -> 0.00095 ± 0.00017
     note: >-
       Mean of the five per-gate RMSEs (m,h,n,p,s) — an arithmetic MEAN OF RMSEs,
       not a pooled RMSE (src/metrics.jl); each gate is weighted equally
-      regardless of dynamic range. Describe it as such. round: 4 because the
+      regardless of dynamic range. Describe it as such. round: 5, NOT 4: the
+      voltage-only twin UdeVoltageForecastGateRmse rounds to 5 and sits in the
+      SAME column of Table 1, so round: 4 here printed one quantity at two
+      precisions (0.0010 +/- 0.0002 stacked above 0.00106 +/- 0.00043). Do not
+      drop below 5 either, because the
       value is ~1e-3 and 3 dp would render it as 0.001 ± 0.000.
 
   - name: UdeForecastICaRmse
@@ -198,7 +202,7 @@ macros:
       not exist for NODE (no calcium closure), so there is no baseline
       comparison for this metric and none should be implied. CRITICAL: this is a
       FUNCTION-APPROXIMATION error, not a rollout error. ICa_nn is probed at the
-      true CLEAN (V,s) (experiment.jl:363-365), decoupled from trajectory error,
+      true CLEAN (V,s) (experiment.jl:391-393), decoupled from trajectory error,
       whereas V_rmse comes from a free 100 ms rollout. Different objects — do
       not narrate them as one.
 
@@ -680,6 +684,34 @@ macros:
       aggregate, and `column: rmse_nn_true` (singular — see the header).
       Do not hand-transcribe 1.270.
 
+  - name: RetrainTrainVRmse
+    source: retrain_gca2_20k/metrics_retrain.csv
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: train_V_rmse
+    round: 3
+    # raw mean=0.243172 std=0.053636 n=5 -> 0.243 +/- 0.054
+    # BEFORE (semantic twin): UdeTrainVRmse 0.148 +/- 0.045.
+    note: >-
+      *** THE OVERFITTING ROW. *** Train-window (t <= 30 ms, 154 points) V RMSE
+      against the CLEAN trajectory - retrain_gca2_20k.jl:127,
+      rmse_safe(data_clean[1, ti], pred_full[1, ti]) - which is the SAME object
+      as UdeTrainVRmse, its legitimate BEFORE twin (same window, same n, also vs
+      clean). AFTER 0.243 +/- 0.054 vs BEFORE 0.148 +/- 0.045: on the very
+      samples the objective scores, the retrained model moved AWAY from the truth
+      while the objective itself fell 35.71 -> 29.66. Quote this pair wherever
+      TrainLossBefore/TrainLossAfter appear, or the 17% loss drop reads as a free
+      lunch when it was bought by fitting one noise realisation. BESPOKE SCHEMA -
+      no filter needed (all 5 rows are gCa=2.0 full-state, one per seed; the
+      window lives in the column-name prefix).
+      *** NOTE THE LIMIT. *** metrics_retrain.csv has NO V_rmse_vs_noisy column,
+      so the retrain has no noise-floor twin of UdeTrainVRmseVsNoisy, and NO
+      "below the noise floor" statement about the retrain is citable from any
+      committed file. A loss evaluated at the true (gCa, ECa) is in no results
+      CSV at all - do not quote one. Report the DIRECTION only: objective down,
+      error against the truth up.
+
+
   - name: RetrainForecastVRmse
     source: retrain_gca2_20k/metrics_retrain.csv
     aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
@@ -730,7 +762,7 @@ macros:
       the last callback value over the concatenated Adam+BFGS history.
       bfgs_ok deserves its own value macro if the paper asserts the two-stage
       schedule ran — a failed BFGS polish degrades SILENTLY to the Adam result
-      with only an @warn (train_two_stage, experiment.jl:68-97).
+      with only an @warn (train_two_stage, experiment.jl:96-125).
 
   # ===========================================================================
   # BLOCK 7 — setup constants and honesty counters.
@@ -822,7 +854,13 @@ macros:
       every one of the 5 seeds. This is the point of sindy-does-not-sparsify —
       emit list, not mean_std, because "6.0 ± 0.0" would present a constant as a
       distribution and invite the reader to wonder about the spread. There is no
-      spread. The 6-term library and TAU=0.05 are in src/metrics.jl.
+      spread. The 6-term library (EXPONENTS) is objective3_symbolic.jl:56 and
+      TAU=0.05 is objective3_symbolic.jl:49 -- NOT src/metrics.jl, which contains
+      neither. CAVEAT ON THE COUNT: sindy_recover (objective3_symbolic.jl:107-112)
+      thresholds only the five NON-constant columns and forces the intercept into
+      the active set unconditionally, so 5 of 6 is the sparsest model this
+      estimator can return and "6" means "all five thresholded terms retained",
+      not "nothing could be dropped".
 
   - name: BaselineRepSeedForecastVRmse
     source: metrics_all.csv
@@ -834,7 +872,7 @@ macros:
     # raw=0.2191970340109573
     note: >-
       The BEFORE half of retrain-seed-decoupling, at the representative seed
-      1111 (REP_SEED, experiments_runner.jl:46). The full baseline condition
+      1111 (REP_SEED, experiments_runner.jl:58). The full baseline condition
       must be pinned — gCa/noise_level/t_train_end all vary in metrics_all.csv,
       and without them this filter matches 12 rows. Compare only against
       RetrainRepSeedForecastVRmse, which is the same seed.
@@ -992,6 +1030,34 @@ macros:
       noise floor: the model is correct and the weighting is right. This is what
       licenses the chi-square threshold used for the profile-likelihood CI.
       Report it as a goodness-of-fit sanity check, not as a result in itself.
+
+  - name: ParamFitSseFullTwo
+    source: identifiability/parametric_fit.csv
+    filter: {gCa_true: 2.0}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: sse_full
+    round: 2
+    # raw mean=39.3296 std=1.2585 n=5 -> 39.33 +/- 1.26
+    note: >-
+      *** THE NOISE-FLOOR REFERENCE FOR THE UDE'S OWN OBJECTIVE. *** This is
+      sse_full evaluated at the maximum-likelihood (gCa, ECa) of the TRUE model
+      structure - identifiability_parametric.jl:115 computes it as
+      sum(abs2, data_noisy[:, train_idx] .- pred), which is BYTE-FOR-BYTE the
+      full-state UDE objective of make_ude_loss (src/experiment.jl:185): same six
+      channels, same 154 training samples, unweighted, native units, no
+      normalisation. So it is directly comparable to TrainLossBefore /
+      TrainLossAfter and to nothing else. It says what score the correct physics
+      can achieve on this noisy data. The UDE beats it (35.71 before, 29.66
+      after, against 39.33): a model that scores BELOW what the true structure
+      can score is fitting the noise realisation, which is the whole point of the
+      retrain control. CAVEAT to keep with it: this is the SSE at the chi-square
+      optimum, not the argmin of SSE, so it is a slight OVER-estimate of the true
+      floor - on seed 1111, where loss_surface_gca2.0.csv gives the full grid, the
+      SSE-optimal point scores 39.57 against 39.74 here, i.e. under half a per
+      cent lower. The margin to 35.71 is twenty times that, so the conclusion is
+      not sensitive to it. Never describe this as "the objective at the true
+      parameters" - that quantity is in no committed CSV.
 
   - name: ParamFitForecastVRmseTwo
     source: identifiability/parametric_fit.csv
@@ -1165,6 +1231,62 @@ macros:
       by 18% with a 41% spread. Curve-fit quality and coefficient
       identifiability are different properties; this pair of macros is the
       cleanest place in the paper to say so.
+      *** THIS IS AGREEMENT WITH THE TRUE CURRENT, NOT WITH THE CLOSURE. *** It
+      does NOT support the sentence "the learned closure is well approximated by
+      the expected conductance form" - that one needs SymbolicRTwoNnTrajTrain
+      below, which scores the same fit against the NETWORK's output.
+
+  - name: SymbolicRTwoNnTrajTrain
+    source: identifiability/symbolic_domain_comparison.csv
+    filter: {domain: traj-train}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: r2_vs_nn_on_domain
+    round: 3
+    # raw mean=0.984670 std=0.009246 n=5
+    note: >-
+      *** THE CLOSURE-AGREEMENT NUMBER. NOT interchangeable with
+      SymbolicRTwoTrajTrain. *** Same rows, same domain, different column:
+      r2_vs_nn_on_domain scores the two-term fit against the NETWORK's own
+      output (symbolic_domain_comparison.py:152), r2_vs_true_on_domain scores it
+      against the analytic current (line 151). Only this one licenses "the
+      learned closure is well approximated by the expected conductance form"
+      (claim symbolic-form-recovered). On the supervised trajectory the two
+      happen to be close (0.985 against 0.991); on the hull they are not
+      (0.936 against 0.973), so the substitution is not harmless.
+
+  - name: SymbolicRTwoNnRangeTrajTrain
+    source: identifiability/symbolic_domain_comparison.csv
+    filter: {domain: traj-train}
+    emit: range
+    column: r2_vs_nn_on_domain
+    round: 3
+    # raw min=0.974644 max=0.996549 n=5
+
+  - name: SymbolicRTwoNnHull
+    source: identifiability/symbolic_domain_comparison.csv
+    filter: {domain: hull}
+    aggregate: {over: seed, stats: [mean, std], ddof: 1, dropna: true}
+    emit: mean_std
+    column: r2_vs_nn_on_domain
+    round: 3
+    # raw mean=0.936042 std=0.074783 n=5
+    note: >-
+      The same closure-agreement score on the CONVEX HULL, i.e. off the points
+      the network was supervised on. Lower and far more seed-dependent than the
+      supervised-trajectory value (0.936 +/- 0.075 against 0.985 +/- 0.009;
+      worst seed 0.816 against 0.975). This is the domain the two symbolic
+      figure panels are fitted on, so it is the number that governs how much
+      those panels may be read as "the form describes the closure". DOMAIN RULE:
+      any sentence or caption quoting this macro must contain the word "hull".
+
+  - name: SymbolicRTwoNnRangeHull
+    source: identifiability/symbolic_domain_comparison.csv
+    filter: {domain: hull}
+    emit: range
+    column: r2_vs_nn_on_domain
+    round: 3
+    # raw min=0.816229 max=0.990936 n=5
 
   - name: SymbolicCondTrajTrain
     source: identifiability/symbolic_domain_comparison.csv
@@ -1178,8 +1300,14 @@ macros:
       Corrects a mis-stated justification in the earlier draft. For the TWO-term
       conductance form the trajectory is perfectly well conditioned (about 102,
       against 70 on the hull), so the near-collinearity argument does NOT apply
-      here. It applies to the SIX-term SINDy library, which is ill-conditioned on
-      every domain (about 25k on the trajectory, 14k on the hull).
+      here. Whether it applies to the SIX-term SINDy library is UNMEASURED:
+      nothing in this repo computes a six-column condition number
+      (scripts/symbolic_domain_comparison.py:107-119 forms only the 2x2 Gram of
+      [V s^2, s^2], and no results file carries a library-conditioning column).
+      The "about 25k on the trajectory, 14k on the hull" figures that stood here
+      until 2026-08-20 had no source and were deleted. Do not restore them
+      without a committed computation; this note is copied verbatim into
+      generated/metrics.tex, whose header promises mechanical extraction.
 
   - name: SymbolicCondHull
     source: identifiability/symbolic_domain_comparison.csv
@@ -1307,6 +1435,26 @@ macros:
       seeds land between 8.7 and 34.5 mV with exactly correct spike counts. The
       honest summary is "usually finite, occasionally catastrophic", and the
       median plus the per-seed range says that; the mean hides it.
+
+  - name: NodeParityAutoGateRmseMedian
+    source: node_parity/node_parity_summary.csv
+    filter: {key: parity_auto, metric: gate_rmse_mean}
+    emit: value
+    column: median
+    round: 3
+    # raw median=0.10051358864421904; mean=0.7779 sd=1.4956 n=5;
+    # per-seed 0.2341/0.0398/0.0651/3.4499/0.1005
+    note: >-
+      Gate RMSE of the REPAIRED (autonomous) neural ODE. This is the only NODE
+      row that can be compared like-for-like against the UDE gate column, which
+      is why the cell is filled rather than dashed. *** QUOTE THE MEDIAN, NOT
+      THE MEAN, for exactly the reason given under NodeParityAutoVRmseMedian:
+      *** seed 4444, the one seed that still blows up, contributes 3.4499 of the
+      five values and drags the mean to 0.778 with an sd of 1.496 - an sd nearly
+      twice the mean, which is not an error bar. Guard G2 (node-no-meanstd)
+      scopes to the two TIME-INDEXED rows, whose integrations diverge, so this
+      row is outside that guard; its single bad seed makes the median the honest
+      summary anyway.
 
   - name: NodeParityAutoRollout
     source: node_parity/node_parity_summary.csv
@@ -1561,6 +1709,120 @@ macros:
       Same guard as NodeParityTimeVRmseMax. Supersedes NodeForecastVRmse's
       mean +/- SD wherever a magnitude is actually printed.
 
+# ===========================================================================
+# BLOCK 16 - NOISE ABLATION (added 2026-08-20; the axis was swept, committed and
+# figured from the first run and never reported in a single sentence).
+# Source: ablation_noise.csv (WIDE, 5 rows, axis column `noise_level`), written
+# by write_ablation_csv(df, :noise_level, ...) at experiments_runner.jl:229 from
+# metrics_all.csv with model=UDE, observed=full, seed=1111, gCa=2.0 and
+# t_train_end=30.0 all pinned (the writer is at :206-216).
+#
+# *** THE FIVE ROWS ARE NOT FIVE NOISE RUNS. *** Four are the swept extras
+# NOISE_EXTRA = [0.0, 0.01, 0.05, 0.10] (experiments_runner.jl:44, run at
+# :112-119). The fifth, noise_level=0.02, is the SHARED BASELINE centre point
+# (B_NOISE, :37) inherited from the headline run at seed 1111. Cross-check: its
+# forecast_V_rmse is 0.219197, byte-identical to BaselineRepSeedForecastVRmse.
+# Never describe 0.02 as an additional ablation run.
+#
+# SINGLE SEED (G13): one run per point at seed 1111, no error bars. Adjacent
+# gaps in ICa_rmse_norm are 0.040 / 0.060 / 0.079 / 0.488 against the +/-0.025
+# five-seed spread of UdeForecastICaRmseNorm at the centre point, so the
+# monotone trend is safe but the three low-end steps are only ~2-3 SD at n=1.
+#
+# Do NOT use this file's common_eval_* columns: populated on the
+# noise_level=0.02 row only and empty on the other four (DO-NOT-MACRO item 6).
+# The rollout column is saturated: forecast_rollout_horizon_ms = 70.0 on ALL
+# FIVE rows, so it discriminates nothing on this axis; if it is ever quoted it
+# needs emit: ge with censored_at: 70.0, exactly like UdeForecastRollout (G1).
+# ===========================================================================
+
+  - name: NoiseAblICaNormZero
+    source: ablation_noise.csv
+    filter: {noise_level: 0.0}
+    emit: value
+    column: forecast_ICa_rmse_norm
+    round: 3
+    # raw=0.01203219565215149  -> 0.012
+    note: >-
+      *** THE NOISELESS CONTROL the paper otherwise lacks. *** With no
+      observation noise at all the closure's normalised calcium error does not
+      vanish; it falls only to about a tenth of the baseline value
+      (NoiseAblICaNormTwoPct = 0.112), so part of the residual is the closure's
+      own approximation error and not the data's noise. Single seed (G13).
+      NOTE the symbolic distillation was NOT re-run at any noise level other
+      than the baseline, so this row says nothing directly about coefficient
+      recovery. Do not extend it to a_hat.
+
+  - name: NoiseAblICaNormOnePct
+    source: ablation_noise.csv
+    filter: {noise_level: 0.01}
+    emit: value
+    column: forecast_ICa_rmse_norm
+    round: 3
+    # raw=0.05166370788401191  -> 0.052
+    note: "noise_level = 0.01. Single seed (G13)."
+
+  - name: NoiseAblICaNormTwoPct
+    source: ablation_noise.csv
+    filter: {noise_level: 0.02}
+    emit: value
+    column: forecast_ICa_rmse_norm
+    round: 3
+    # raw=0.11229216448147902  -> 0.112
+    note: >-
+      The baseline centre point, NOT an extra run: the same seed-1111 row as
+      GcaAblICaNormTwo (identical value) whose five-seed mean is
+      UdeForecastICaRmseNorm = 0.140 +/- 0.025. Do not present 0.112 and 0.140
+      as two different results.
+
+  - name: NoiseAblICaNormFivePct
+    source: ablation_noise.csv
+    filter: {noise_level: 0.05}
+    emit: value
+    column: forecast_ICa_rmse_norm
+    round: 3
+    # raw=0.19111032266527364  -> 0.191
+    note: "noise_level = 0.05. Single seed (G13)."
+
+  - name: NoiseAblICaNormTenPct
+    source: ablation_noise.csv
+    filter: {noise_level: 0.1}
+    emit: value
+    column: forecast_ICa_rmse_norm
+    round: 3
+    # raw=0.6787962867909063  -> 0.679
+    note: >-
+      The largest level swept. The 0.05 -> 0.10 step (0.191 -> 0.679) is the only
+      gap far outside the centre-point seed spread; everything at or below the
+      baseline level is comparatively flat. Single seed (G13), so the shape of
+      the curve is indicative, not measured against a spread.
+
+  - name: NoiseAblVRmseZero
+    source: ablation_noise.csv
+    filter: {noise_level: 0.0}
+    emit: value
+    column: forecast_V_rmse
+    round: 3
+    # raw=0.04617636497295115  -> 0.046
+    note: >-
+      Forecast voltage error on noiseless data, for the Appendix C figure's top
+      panel. About five times better than the baseline 0.219 at the same seed.
+      Single seed (G13).
+
+  - name: NoiseAblVRmseTenPct
+    source: ablation_noise.csv
+    filter: {noise_level: 0.1}
+    emit: value
+    column: forecast_V_rmse
+    round: 3
+    # raw=1.0907001908106033  -> 1.091
+    note: >-
+      Forecast voltage error at the largest noise level swept. Pair with
+      NoiseAblVRmseZero: the voltage forecast degrades about 24x across the axis
+      while forecast_rollout_horizon_ms stays pinned at 70.0 on every row, i.e.
+      the UDE never leaves the 10 mV tube at any noise level tested. Single
+      seed (G13).
+
 # =============================================================================
 # DO NOT MACRO THESE — guarded or uninformative
 # -----------------------------------------------------------------------------
@@ -1629,10 +1891,10 @@ macros:
 #
 #   Iteration budgets (code):
 #     UDE Adam 5000 / BFGS 300, NODE Adam 3000 / BFGS 300
-#       — experiments_runner.jl:30-31
+#       — experiments_runner.jl:42-43
 #     Retrain Adam 20000 / BFGS 1000 — retrain_gca2_20k.jl:40-41
 #     Adam LR 1e-2 for both models.
-#     % numok: training budget, experiments_runner.jl:30
+#     % numok: training budget, experiments_runner.jl:42
 #
 #   Architecture (code, src/experiment.jl):
 #     UDE closure 2→16(tanh)→16(tanh)→1, 337 params, inputs [V/100, s].
@@ -1640,7 +1902,7 @@ macros:
 #     states ⊕ RAW t.
 #     The parameter counts are DERIVED, not printed anywhere — recompute and cite
 #     the layer spec, do not transcribe a count you have not re-derived.
-#     % numok: architecture, src/experiment.jl:136-140
+#     % numok: architecture, src/experiment.jl:164-168
 #
 #   Model constants (src/hh_core.jl):
 #     Cm=1.0, gNa=120.0, gK=36.0, gL=0.3, ENa=50.0, EK=−77.0, EL=−54.4,

@@ -13,6 +13,18 @@
 #  RUN:
 #    julia --project=. experiments_runner.jl              # full (~2-3 h)
 #    HH_SMOKE=1 julia --project=. experiments_runner.jl   # fast pipeline check
+#
+#  *** THE SMOKE RUN ISOLATES ITS OWN OUTPUT. ***  HH_SMOKE=1 reduces the
+#  iteration budgets, the ablation grids and the seed list (below), so its
+#  numbers are meaningless next to the paper's.  It therefore writes to
+#  results_smoke/ + figures_smoke/, NOT results/ + figures/ -- src/experiment.jl
+#  sets FIG_DIR/RESULTS_DIR from HH_SMOKE, and HH_RESULTS_DIR / HH_FIG_DIR
+#  override them.  Do NOT point them back at the released directories: line 61
+#  deletes the master table before rewriting it, and a smoke run once truncated
+#  results/metrics_all.csv from 696 rows to 321 and rewrote 63 other tracked
+#  files.  Consequence: a smoke run does NOT refresh results/ or figures/, and
+#  HH_REPLOT=1 HH_SMOKE=1 reads results_smoke/metrics_all.csv rather than the
+#  released table -- that combination now fails loudly instead of overwriting.
 # =============================================================================
 
 const ROOT = @__DIR__
@@ -387,8 +399,10 @@ function assert_outputs()
                    "fig7b_commoneval_ablation_window.png", "fig7c_ablation_gca.png",
                    "fig8_full_vs_voltage_metrics_bar.png"])
     missing = String[]
-    for c in csvs; isfile(joinpath(RESULTS_DIR, c)) || push!(missing, "results/$c"); end
-    for f in figs; isfile(joinpath(FIG_DIR, f))     || push!(missing, "figures/$f"); end
+    # basename() so the message names the tree actually written: "results/..." on
+    # a full run, "results_smoke/..." under HH_SMOKE.  Full-run text is unchanged.
+    for c in csvs; isfile(joinpath(RESULTS_DIR, c)) || push!(missing, "$(basename(RESULTS_DIR))/$c"); end
+    for f in figs; isfile(joinpath(FIG_DIR, f))     || push!(missing, "$(basename(FIG_DIR))/$f"); end
     if isempty(missing)
         println("\n✓ assert_outputs: all ", length(csvs), " CSVs and ", length(figs), " figures present.")
     else
@@ -455,4 +469,5 @@ for (model, obs) in (("NODE","full"), ("UDE","full"), ("UDE","voltage"))
     println(rpad("$model/$obs", 14), "  V_rmse=", rpad(fmt(v), 20),
             "gate_rmse=", rpad(fmt(g), 20), "rollout=", fmt(rh), " ms")
 end
-println("\n", SMOKE ? "[SMOKE run complete]" : "[FULL run complete]", "  metrics -> results/  figures -> figures/")
+println("\n", SMOKE ? "[SMOKE run complete]" : "[FULL run complete]",
+        "  metrics -> $(basename(RESULTS_DIR))/  figures -> $(basename(FIG_DIR))/")

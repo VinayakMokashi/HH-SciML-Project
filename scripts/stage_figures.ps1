@@ -4,13 +4,20 @@
 # which tell OPPOSITE stories) cannot silently resolve to the wrong file.
 #
 # _before / _after suffix == TRAINING BUDGET (Adam 5000/BFGS 300 vs 20000/1000),
-# NOT gCa/noise/window. Run from the repo root; Windows PowerShell 5.1:
+# NOT gCa/noise/window. Runnable from any directory; Windows PowerShell 5.1:
 #   powershell -ExecutionPolicy Bypass -File scripts\stage_figures.ps1
 #
 # ASCII ONLY. PowerShell 5.1 reads a .ps1 as ANSI unless it has a BOM, and this
 # file has none: the em-dash that used to sit in line 1 decoded to a smart quote
 # and was a live parser hazard (see HANDOFF Sec 9). Do not paste one back in.
-$r   = "d:\SciML\bootcamp\Research Project\HH-SciML-Project"
+#
+# The checkout root is DERIVED, never hard-coded. This file lives in scripts/,
+# so its parent directory is the repo. Same idiom as scripts\snapshot_handoff.ps1
+# and scripts\make_overleaf_zip.ps1. It used to be an absolute "d:\SciML\..."
+# path that existed on exactly one machine, which made the first Test-Path below
+# throw on every other checkout - and main.tex names this script (main.tex:29) as
+# the only producer of the disambiguated _before/_after figures it includes.
+$r   = Split-Path -Parent $PSScriptRoot
 $dst = "$r\paper\figures"
 New-Item -ItemType Directory -Force $dst | Out-Null
 
@@ -29,6 +36,7 @@ $map = [ordered]@{
   "figures\fig5_metrics_bar_train_vs_forecast.png"                         = "fig5_metrics_bar_train_vs_forecast.png"
   "figures\fig6_voltage_only_overview.png"                                 = "fig6_voltage_only_overview.png"
   "figures\fig6_voltage_only_calcium_parity.png"                           = "fig6_voltage_only_calcium_parity.png"
+  "figures\fig7_ablation_noise.png"                                        = "fig7_ablation_noise.png"
   "figures\fig7b_commoneval_ablation_window.png"                           = "fig7b_commoneval_ablation_window.png"
   "figures\fig7c_ablation_gca.png"                                         = "fig7c_ablation_gca.png"
   "figures\fig7c_ablation_gca_5seed.png"                                   = "fig7c_ablation_gca_5seed.png"
@@ -56,15 +64,31 @@ $map = [ordered]@{
 #  overwrite, not a no-op.
 # =============================================================================
 
-$seen = @{}
+# Existence is not freshness. Every check in this script used to be Test-Path, so
+# a stale paper\figures copy - or a Copy-Item that did not actually land - still
+# reported OK. During the HH_SMOKE incident every check passed while figures\ and
+# paper\figures had silently diverged. So hash BOTH ends of every mapped pair:
+# report the pairs that were stale, and throw if the copy did not take.
+$seen  = @{}
+$stale = @()
 foreach ($k in $map.Keys) {
   $v = $map[$k]
   if ($seen.ContainsKey($v)) { throw "destination collision: $v <- $k and $($seen[$v])" }
   $seen[$v] = $k
   if (-not (Test-Path "$r\$k")) { throw "missing source: $r\$k" }
+  $srcHash = (Get-FileHash "$r\$k" -Algorithm SHA256).Hash
+  if ((Test-Path "$dst\$v") -and
+      ((Get-FileHash "$dst\$v" -Algorithm SHA256).Hash -ne $srcHash)) { $stale += $v }
   Copy-Item "$r\$k" "$dst\$v" -Force
+  $dstHash = (Get-FileHash "$dst\$v" -Algorithm SHA256).Hash
+  if ($dstHash -ne $srcHash) {
+    throw "copy did not land: $dst\$v ($dstHash) does not match $r\$k ($srcHash)"
+  }
 }
 Write-Output "staged $($map.Count) figures -> $dst"
+if ($stale.Count -gt 0) {
+  Write-Output ("  refreshed " + $stale.Count + " stale copies: " + ($stale -join ", "))
+}
 
 # --- self-check: every image main.tex includes must now be present ----------
 #  This is what would have caught the fig11 regression above, and the missing

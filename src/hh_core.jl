@@ -35,7 +35,11 @@ const ENa  = 50.0     # sodium reversal potential
 const EK   = -77.0    # potassium reversal potential
 const EL   = -54.4    # leak reversal potential
 
-const gNaP = 0.5      # max persistent-sodium conductance (Golomb–Amitai 1997 range)
+const gNaP = 0.5      # max persistent-sodium conductance. OUR CHOICE, not a
+                      # transcribed value: same order as the persistent-sodium
+                      # conductance of Golomb-Amitai 1997, but that paper's
+                      # printed figure was never checked against the original.
+                      # Table 1 and App. A say "choice" for this reason.
 const ECa  = 120.0    # calcium reversal potential
 const Iapp = 10.0     # uA/cm^2 : drives repetitive spiking
 

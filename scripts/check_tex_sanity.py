@@ -24,6 +24,19 @@ CHECK 2 -- a comment marker mid-line (severity: bug)
     words AFTER a filename. That is the exact shape of the one that shipped, and it
     does not fire on the many legitimate annotations in the preamble.
 
+CHECK 3 -- a raw non-ASCII character in LIVE text (severity: convention + render)
+    main.tex is an ASCII source that writes em dashes as "---". A pasted U+2014
+    compiles, but renders differently from every other dash in the paper and
+    breaks the ASCII-only convention the .ps1 helpers depend on (see the header
+    of scripts/stage_figures.ps1, where an em dash was a live parser hazard).
+    CHECK 1 could never see it: BAD_BYTES stopped at 0x1F and never looked above
+    0x7F, so this script printed "no control characters" with a live em dash
+    sitting at main.tex:1316.
+    Text after an unescaped "%" is EXEMPT. The preamble's explanatory notes and
+    metrics.tex's generated "% note:" lines legitimately carry em dashes and +/-
+    signs -- 123 such lines in metrics.tex alone -- and none of it reaches the
+    page. Only live text is flagged.
+
 Exit status 1 if anything is found, so it can join the verification pipeline.
 
 Usage:
@@ -40,8 +53,9 @@ DEFAULT = [ROOT / "paper" / "main.tex",
            ROOT / "paper" / "generated" / "metrics.tex",
            ROOT / "paper" / "references.bib"]
 
-# Tab (0x09), LF (0x0A) and CR (0x0D) are legitimate; everything else below 0x20 is not.
-BAD_BYTES = set(range(0x00, 0x09)) | {0x0B, 0x0C} | set(range(0x0E, 0x20))
+# Tab (0x09), LF (0x0A) and CR (0x0D) are legitimate; everything else below 0x20
+# is not, and DEL (0x7F) never is either.
+BAD_BYTES = set(range(0x00, 0x09)) | {0x0B, 0x0C} | set(range(0x0E, 0x20)) | {0x7F}
 
 # The signature of the real defect, kept deliberately NARROW so it does not cry wolf
 # on the many legitimate annotations in the preamble. A genuine "% numok:" / "% claim:"
@@ -67,17 +81,40 @@ def check_control_bytes(path):
     return out
 
 
+def first_comment(raw):
+    """Index of the first unescaped '%' on the line, or None.
+
+    '%' is a comment in .tex. In .bib it is only a convention, but BibTeX ignores
+    between-entry text anyway, so treating it as a comment is safe there too.
+    Caveat: a '%' inside a .bib FIELD value would shorten the scanned region; no
+    entry in this file has one.
+    """
+    for m in re.finditer(r"%", raw):
+        if m.start() == 0 or raw[m.start() - 1] != "\\":
+            return m.start()
+    return None
+
+
+def check_non_ascii(path):
+    """CHECK 3: a character above 0x7F in LIVE (non-comment) text."""
+    out = []
+    for i, raw in enumerate(path.read_text(encoding="utf-8",
+                                           errors="replace").split("\n"), 1):
+        pos = first_comment(raw)
+        code = raw if pos is None else raw[:pos]
+        bad = sorted({c for c in code if ord(c) > 0x7F}, key=ord)
+        if bad:
+            names = ", ".join("U+%04X (%s)" % (ord(c), c) for c in bad)
+            out.append((i, "non-ASCII in live text: " + names, code.strip()[:100]))
+    return out
+
+
 def check_midline_comments(path):
     if path.suffix != ".tex":
         return []
     out = []
     for i, raw in enumerate(path.read_text(encoding="utf-8").split("\n"), 1):
-        # find the first unescaped %
-        pos = None
-        for m in re.finditer(r"%", raw):
-            if m.start() == 0 or raw[m.start() - 1] != "\\":
-                pos = m.start()
-                break
+        pos = first_comment(raw)
         if pos is None:
             continue
         before, after = raw[:pos], raw[pos + 1:].strip()
@@ -96,7 +133,8 @@ def main():
         if not p.exists():
             print("missing: %s" % p)
             continue
-        for line, kind, ctx in check_control_bytes(p) + check_midline_comments(p):
+        for line, kind, ctx in (check_control_bytes(p) + check_non_ascii(p)
+                                + check_midline_comments(p)):
             findings.append((p, line, kind, ctx))
 
     for p, line, kind, ctx in sorted(findings, key=lambda f: (str(f[0]), f[1])):
@@ -108,11 +146,13 @@ def main():
 
     print()
     if findings:
-        print("FAIL: %d finding(s). Both classes compile cleanly -- fix before shipping." % len(findings))
+        print("FAIL: %d finding(s). All three classes compile cleanly -- fix before shipping." % len(findings))
         print("  control byte  -> replace with the characters that were intended")
+        print("  non-ASCII     -> use the ASCII form (em dash is '---'); comments are exempt")
         print("  mid-line %%    -> move the comment to its own line, or to the true end of the line")
         return 1
-    print("OK: no control characters, no prose lost behind a mid-line comment.")
+    print("OK: no control characters, no non-ASCII in live text, "
+          "no prose lost behind a mid-line comment.")
     return 0
 
 

@@ -18,9 +18,15 @@ Thumbs.db
 __pycache__/
 *.pyc
 
-# Local-only working files (kept off GitHub on purpose):
-#   Main_Clean.jl   — full narrative incl. the Objective-3 (SINDy) attempt
-#   main.jl         — single-script narrative incl. Objective 3
+# Working files kept out of the current tree:
+#   Main_Clean.jl   — full narrative incl. the Objective-3 (SINDy) attempt.
+#                     *** NOT PRIVATE. *** It was committed in 809eaa4, carried
+#                     through 5bf470e and removed in 7e5652e, so it is readable
+#                     by anyone who opens this PUBLIC repo's history. This rule
+#                     only keeps it out of the working tree; treat its contents
+#                     as published. (Same caveat as HANDOFF.md below.)
+#   main.jl         — single-script narrative incl. Objective 3. Never committed
+#                     (`git log -- main.jl` is empty); this one really is local-only.
 Main_Clean.jl
 main.jl
 

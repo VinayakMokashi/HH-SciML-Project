@@ -12,7 +12,7 @@
 #
 #  Both sides are evaluated with the same construction the trainer used --
 #  make_ude_loss(:full, ...) over the same noisy data, same training indices,
-#  same solver and tolerances (src/experiment.jl:129-144, mirrored by
+#  same solver and tolerances (src/experiment.jl:157-172, mirrored by
 #  retrain_gca2_20k.jl:88-92) -- so before and after are directly comparable.
 #
 #  As a self-check the script also recomputes the AFTER loss and compares it with

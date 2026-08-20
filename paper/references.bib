@@ -68,12 +68,17 @@
   archivePrefix = {arXiv}
 }
 
+% 101 is the ARTICLE NUMBER, not the issue. It lived in `number` and typeset as
+% "11(101)". Moved to `pages`, which is this file's convention for article
+% numbers -- see elgazzar2025ude (19, 1677930), burghi2021feedback (123, 109297),
+% daly2015 (2(12), 150499) and fasel2022ensemblesindy (478(2260), 20210904).
+% The issue number is deliberately omitted rather than guessed.
 @article{philipps2025ude,
   author  = {Philipps, Maren and Schmid, Nina and Hasenauer, Jan},
   title   = {Current state and open problems in universal differential equations for systems biology},
   journal = {npj Systems Biology and Applications},
   volume  = {11},
-  number  = {101},
+  pages   = {101},
   year    = {2025},
   doi     = {10.1038/s41540-025-00550-w},
   note    = {Preprint version: bioRxiv 2024.11.29.626122, doi:10.1101/2024.11.29.626122}
@@ -399,6 +404,9 @@
 % NOTE: arXiv lists the fifth author as "Sreedat Panat"; this manuscript's byline
 % uses "Sreedath Panat" per the author's own correction. The bib entry reproduces
 % the published record as-is, which is correct for a citation.
+% VENUE NAME: MSML expands to "MATHEMATICAL and Scientific Machine Learning",
+% not "Mathematics and". This was wrong once (fixed 2026-08-20); do not revert it
+% back to "Mathematics" -- the acronym is the giveaway.
 @article{kainth2025pinodesr,
   author  = {Kainth, Kamalpreet Singh and Joshi, Prathamesh Dinesh and
              Dandekar, Raj Abhijit and Dandekar, Rajat and Panat, Sreedat},
@@ -410,7 +418,7 @@
   archivePrefix = {arXiv},
   primaryClass  = {cs.LG},
   doi     = {10.48550/arXiv.2511.11734},
-  note    = {Accepted at the Mathematics and Scientific Machine Learning (MSML) Conference 2025}
+  note    = {Accepted at the Mathematical and Scientific Machine Learning (MSML) Conference 2025}
 }
 
 @article{elgazzar2025ude,

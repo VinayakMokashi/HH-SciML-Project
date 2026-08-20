@@ -30,7 +30,7 @@ include(joinpath(ROOT, "src", "metrics.jl"))
 include(joinpath(ROOT, "src", "experiment.jl"))
 
 const B_GCA, B_NOISE, B_TWIN, REP_SEED = 2.0, 0.02, 30.0, 1111
-const NODE_ADAM, NODE_BFGS = 3000, 300      # experiments_runner.jl:31, published
+const NODE_ADAM, NODE_BFGS = 3000, 300      # experiments_runner.jl:43, published
 
 println("Regenerating fig2 (published NODE config: Adam $NODE_ADAM / BFGS $NODE_BFGS, +time input)")
 r = run_node_baseline(; gCa = B_GCA, noise_level = B_NOISE, t_train_end = B_TWIN,

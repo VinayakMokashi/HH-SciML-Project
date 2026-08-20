@@ -214,7 +214,7 @@
   },
   "UdeForecastGateRmse": {
     "macro": "valUdeForecastGateRmse",
-    "value": "0.0010 \\pm 0.0002",
+    "value": "0.00095 \\pm 0.00017",
     "raw": {
       "mean": 0.000951766817970978,
       "std": 0.00017026484222479465
@@ -230,7 +230,7 @@
   },
   "UdeForecastGateRmseMeanStd": {
     "macro": "valUdeForecastGateRmseMeanStd",
-    "value": "0.0010 \\pm 0.0002",
+    "value": "0.00095 \\pm 0.00017",
     "raw": {
       "mean": 0.000951766817970978,
       "std": 0.00017026484222479465
@@ -246,7 +246,7 @@
   },
   "UdeForecastGateRmseMean": {
     "macro": "valUdeForecastGateRmseMean",
-    "value": "0.0010",
+    "value": "0.00095",
     "raw": 0.000951766817970978,
     "source": "results/metrics_baseline_multiseed.csv",
     "filter": {
@@ -259,7 +259,7 @@
   },
   "UdeForecastGateRmseStd": {
     "macro": "valUdeForecastGateRmseStd",
-    "value": "0.0002",
+    "value": "0.00017",
     "raw": 0.00017026484222479465,
     "source": "results/metrics_baseline_multiseed.csv",
     "filter": {
@@ -1318,6 +1318,52 @@
     },
     "n": 5
   },
+  "RetrainTrainVRmse": {
+    "macro": "valRetrainTrainVRmse",
+    "value": "0.243 \\pm 0.054",
+    "raw": {
+      "mean": 0.2431717214972738,
+      "std": 0.05363575212775939
+    },
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainTrainVRmseMeanStd": {
+    "macro": "valRetrainTrainVRmseMeanStd",
+    "value": "0.243 \\pm 0.054",
+    "raw": {
+      "mean": 0.2431717214972738,
+      "std": 0.05363575212775939
+    },
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainTrainVRmseMean": {
+    "macro": "valRetrainTrainVRmseMean",
+    "value": "0.243",
+    "raw": 0.2431717214972738,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainTrainVRmseStd": {
+    "macro": "valRetrainTrainVRmseStd",
+    "value": "0.054",
+    "raw": 0.05363575212775939,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
+  "RetrainTrainVRmseN": {
+    "macro": "valRetrainTrainVRmseN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/retrain_gca2_20k/metrics_retrain.csv",
+    "filter": {},
+    "n": 5
+  },
   "RetrainForecastVRmse": {
     "macro": "valRetrainForecastVRmse",
     "value": "0.756 \\pm 0.411",
@@ -1935,6 +1981,62 @@
     },
     "n": 5
   },
+  "ParamFitSseFullTwo": {
+    "macro": "valParamFitSseFullTwo",
+    "value": "39.33 \\pm 1.26",
+    "raw": {
+      "mean": 39.329575920413916,
+      "std": 1.258481405693533
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitSseFullTwoMeanStd": {
+    "macro": "valParamFitSseFullTwoMeanStd",
+    "value": "39.33 \\pm 1.26",
+    "raw": {
+      "mean": 39.329575920413916,
+      "std": 1.258481405693533
+    },
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitSseFullTwoMean": {
+    "macro": "valParamFitSseFullTwoMean",
+    "value": "39.33",
+    "raw": 39.329575920413916,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitSseFullTwoStd": {
+    "macro": "valParamFitSseFullTwoStd",
+    "value": "1.26",
+    "raw": 1.258481405693533,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
+  "ParamFitSseFullTwoN": {
+    "macro": "valParamFitSseFullTwoN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/parametric_fit.csv",
+    "filter": {
+      "gCa_true": 2.0
+    },
+    "n": 5
+  },
   "ParamFitForecastVRmseTwo": {
     "macro": "valParamFitForecastVRmseTwo",
     "value": "0.123 \\pm 0.032",
@@ -2383,6 +2485,144 @@
     "source": "results/identifiability/symbolic_domain_comparison.csv",
     "filter": {
       "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnTrajTrain": {
+    "macro": "valSymbolicRTwoNnTrajTrain",
+    "value": "0.985 \\pm 0.009",
+    "raw": {
+      "mean": 0.9846704401928476,
+      "std": 0.009245772123488698
+    },
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnTrajTrainMeanStd": {
+    "macro": "valSymbolicRTwoNnTrajTrainMeanStd",
+    "value": "0.985 \\pm 0.009",
+    "raw": {
+      "mean": 0.9846704401928476,
+      "std": 0.009245772123488698
+    },
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnTrajTrainMean": {
+    "macro": "valSymbolicRTwoNnTrajTrainMean",
+    "value": "0.985",
+    "raw": 0.9846704401928476,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnTrajTrainStd": {
+    "macro": "valSymbolicRTwoNnTrajTrainStd",
+    "value": "0.009",
+    "raw": 0.009245772123488698,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnTrajTrainN": {
+    "macro": "valSymbolicRTwoNnTrajTrainN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnRangeTrajTrain": {
+    "macro": "valSymbolicRTwoNnRangeTrajTrain",
+    "value": "0.975--0.997",
+    "raw": {
+      "min": 0.9746437300460936,
+      "max": 0.9965494297485312
+    },
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "traj-train"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnHull": {
+    "macro": "valSymbolicRTwoNnHull",
+    "value": "0.936 \\pm 0.075",
+    "raw": {
+      "mean": 0.9360419553063289,
+      "std": 0.07478302295667123
+    },
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "hull"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnHullMeanStd": {
+    "macro": "valSymbolicRTwoNnHullMeanStd",
+    "value": "0.936 \\pm 0.075",
+    "raw": {
+      "mean": 0.9360419553063289,
+      "std": 0.07478302295667123
+    },
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "hull"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnHullMean": {
+    "macro": "valSymbolicRTwoNnHullMean",
+    "value": "0.936",
+    "raw": 0.9360419553063289,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "hull"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnHullStd": {
+    "macro": "valSymbolicRTwoNnHullStd",
+    "value": "0.075",
+    "raw": 0.07478302295667123,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "hull"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnHullN": {
+    "macro": "valSymbolicRTwoNnHullN",
+    "value": "5",
+    "raw": 5,
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "hull"
+    },
+    "n": 5
+  },
+  "SymbolicRTwoNnRangeHull": {
+    "macro": "valSymbolicRTwoNnRangeHull",
+    "value": "0.816--0.991",
+    "raw": {
+      "min": 0.8162285039553707,
+      "max": 0.9909360950115775
+    },
+    "source": "results/identifiability/symbolic_domain_comparison.csv",
+    "filter": {
+      "domain": "hull"
     },
     "n": 5
   },
@@ -2841,6 +3081,17 @@
     "filter": {
       "key": "parity_auto",
       "metric": "V_rmse"
+    },
+    "n": 1
+  },
+  "NodeParityAutoGateRmseMedian": {
+    "macro": "valNodeParityAutoGateRmseMedian",
+    "value": "0.101",
+    "raw": 0.10051358864421904,
+    "source": "results/node_parity/node_parity_summary.csv",
+    "filter": {
+      "key": "parity_auto",
+      "metric": "gate_rmse_mean"
     },
     "n": 1
   },
@@ -3437,6 +3688,76 @@
     "filter": {
       "key": "published_time",
       "metric": "V_rmse"
+    },
+    "n": 1
+  },
+  "NoiseAblICaNormZero": {
+    "macro": "valNoiseAblICaNormZero",
+    "value": "0.012",
+    "raw": 0.01203219565215149,
+    "source": "results/ablation_noise.csv",
+    "filter": {
+      "noise_level": 0.0
+    },
+    "n": 1
+  },
+  "NoiseAblICaNormOnePct": {
+    "macro": "valNoiseAblICaNormOnePct",
+    "value": "0.052",
+    "raw": 0.05166370788401191,
+    "source": "results/ablation_noise.csv",
+    "filter": {
+      "noise_level": 0.01
+    },
+    "n": 1
+  },
+  "NoiseAblICaNormTwoPct": {
+    "macro": "valNoiseAblICaNormTwoPct",
+    "value": "0.112",
+    "raw": 0.11229216448147902,
+    "source": "results/ablation_noise.csv",
+    "filter": {
+      "noise_level": 0.02
+    },
+    "n": 1
+  },
+  "NoiseAblICaNormFivePct": {
+    "macro": "valNoiseAblICaNormFivePct",
+    "value": "0.191",
+    "raw": 0.19111032266527364,
+    "source": "results/ablation_noise.csv",
+    "filter": {
+      "noise_level": 0.05
+    },
+    "n": 1
+  },
+  "NoiseAblICaNormTenPct": {
+    "macro": "valNoiseAblICaNormTenPct",
+    "value": "0.679",
+    "raw": 0.6787962867909063,
+    "source": "results/ablation_noise.csv",
+    "filter": {
+      "noise_level": 0.1
+    },
+    "n": 1
+  },
+  "NoiseAblVRmseZero": {
+    "macro": "valNoiseAblVRmseZero",
+    "value": "0.046",
+    "raw": 0.04617636497295115,
+    "source": "results/ablation_noise.csv",
+    "filter": {
+      "noise_level": 0.0
+    },
+    "n": 1
+  },
+  "NoiseAblVRmseTenPct": {
+    "macro": "valNoiseAblVRmseTenPct",
+    "value": "1.091",
+    "raw": 1.0907001908106033,
+    "source": "results/ablation_noise.csv",
+    "filter": {
+      "noise_level": 0.1
     },
     "n": 1
   }

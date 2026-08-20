@@ -311,7 +311,7 @@ than full-state."*
 
 The equivalence framing is also **the stronger and more interesting result**: the physics prior
 reconstructs five gate trajectories that were never in the loss (`make_ude_loss` selects row 1 only,
-`src/experiment.jl:129-144`). Ranking the two settings throws that away to assert something you
+`src/experiment.jl:157-172`). Ranking the two settings throws that away to assert something you
 cannot defend.
 
 **The evidence.** `results/metrics_baseline_multiseed.csv`, filter `model==UDE ∧ window==forecast`:
@@ -347,7 +347,7 @@ achieve …"* — a natural sentence to write, since the paper has both a common
 full-vs-voltage comparison.
 
 **Why it is wrong.** The rows do not exist. `common_eval_start` is passed **only** by the UDE
-full-state baseline and the window ablation (`experiments_runner.jl:98-103` calls `run_experiment`
+full-state baseline and the window ablation (`experiments_runner.jl:110-115` calls `run_experiment`
 for the voltage-only runs **without** it; likewise the noise ablation at 114-116 and the gCa ablation
 at 131-133, and the NODE baseline never gets it). Verified: grouping every `window=='common_eval'`
 row in `metrics_all.csv` by `(model, observed)` returns exactly **one** group — `UDE/full`, 117 rows.
@@ -357,7 +357,7 @@ the base is closed (mentor: no further experiments).
 **The evidence.** `results/metrics_all.csv`, filter `window=='common_eval'` → 117 rows, all
 `model==UDE ∧ observed=='full'` (= 9 `(t_train_end, seed)` cells × 13 metrics: `t_train_end ∈
 {15,20,30,40,50}` at seed 1111, plus `t_train_end=30` at all 5 seeds).
-Code: `experiments_runner.jl:98-103`; `common_eval_indices`, `src/hh_core.jl:85`.
+Code: `experiments_runner.jl:110-115`; `common_eval_indices`, `src/hh_core.jl:85`.
 
 **Honest rewrite.** Say nothing. If a reviewer asks, the Limitations sentence is:
 > The shared evaluation window was instrumented only for the full-state UDE and the training-window
@@ -387,7 +387,7 @@ family that was instrumented for it.
 
 **The evidence.** `results/ablation_noise.csv`: 10 `common_eval_*` columns empty on the
 `noise_level ∈ {0.0, 0.01, 0.05, 0.1}` rows. `results/ablation_gca.csv`: same, empty on
-`gCa ∈ {0.4, 1.0, 4.0}`. Writer: `write_ablation_csv`, `experiments_runner.jl:206-219`.
+`gCa ∈ {0.4, 1.0, 4.0}`. Writer: `write_ablation_csv`, `experiments_runner.jl:218-231`.
 
 **Honest rewrite.** Use the **forecast** window for the noise and gCa ablations and say so — it is
 legitimate there, because neither axis shifts the training window, so the forecast interval
@@ -492,15 +492,15 @@ window: `forecast_idx = t > t_train_end` (`make_split`). So the `t_train=15` poi
 different dynamical content**. Every cross-window difference in that figure mixes the model's
 accuracy with the window's difficulty. The confound is structural, not a nuance.
 
-`figures/fig7b_commoneval_ablation_window.png` (written `experiments_runner.jl:314-316` with
+`figures/fig7b_commoneval_ablation_window.png` (written `experiments_runner.jl:326-328` with
 `window="common_eval"`) scores all five on the shared t > 50 ms interval. That is the only
 apples-to-apples version, and it is the one the mentor asked for.
 
 Both files exist, differ by 12 characters in the filename, and look nearly identical. Getting this
 wrong is a `\includegraphics` typo with a scientific consequence.
 
-**The evidence.** Confounded: `experiments_runner.jl:310-311` → `fig7b_ablation_window.png`,
-`window="forecast"` (default). Correct: `experiments_runner.jl:314-316` →
+**The evidence.** Confounded: `experiments_runner.jl:322-323` → `fig7b_ablation_window.png`,
+`window="forecast"` (default). Correct: `experiments_runner.jl:326-328` →
 `fig7b_commoneval_ablation_window.png`, `window="common_eval"`. Rationale in code:
 `src/hh_core.jl:81-84` ("the forecast window otherwise shifts with the training window, so its
 metrics are not directly comparable across runs"). The two series differ materially — e.g. at
@@ -530,7 +530,7 @@ suggesting the model overfits the extended window"* — or, worse, *"there is an
 window near 20–30 ms."*
 
 **Why it is wrong.** **Every window trains for the same fixed budget** — Adam 5000 / BFGS 300
-(`experiments_runner.jl:30`) — regardless of how many data points it must fit. At `t_train_end=15`
+(`experiments_runner.jl:42`) — regardless of how many data points it must fit. At `t_train_end=15`
 the loss covers ~77 points; at 50 ms, ~256. The longer windows are therefore **under-optimised**, not
 intrinsically harder. The upward trend at 40→50 ms measures the **iteration budget**, not the
 dynamics. This is a standing project finding (memory: `window-ablation-nonmonotonicity-is-artifact`).
@@ -560,7 +560,7 @@ all scored on t > 50 ms), single seed 1111:
 
 (`common_eval_ICa_rmse_norm` is **not even monotone in sign** — 0.229 → 0.247 → 0.115 → 0.250 → 0.111.
 It supports no trend at all; do not plot a trend line through it.) Budget:
-`experiments_runner.jl:30`. Seed spread reference: `metrics_baseline_multiseed.csv`, UDE/full
+`experiments_runner.jl:42`. Seed spread reference: `metrics_baseline_multiseed.csv`, UDE/full
 forecast `V_rmse std = 0.028376`.
 
 **Honest rewrite.**
@@ -589,7 +589,7 @@ claim citing 40 or 50 ms.
 sentence that does not say "single seed".
 
 **Why it is wrong.** `axis_series` and `write_ablation_csv` both pin `df.seed .== B_SEED`
-(`experiments_runner.jl:150-160`, `206-216`) — **necessarily**, or the `t_train_end` axis would pick
+(`experiments_runner.jl:162-172`, `206-216`) — **necessarily**, or the `t_train_end` axis would pick
 up 5 duplicate points at 30 ms from the multi-seed baseline. Consequence: **every point on every
 ablation axis is one run at seed 1111, with no error bar.** The grid is a star design (one axis at a
 time about a shared centre), not a crossed factorial; only `seed` is crossed, and only at the centre.
@@ -617,7 +617,7 @@ ablations, exactly **two** gaps are safely real: `gCa 0.4→1.0` and `t_train=15
 Seed spread at the centre: `metrics_baseline_multiseed.csv`, `model==UDE ∧ observed==full ∧
 window==forecast ∧ metric==ICa_rmse_norm` → `0.140341 ± 0.024584`, n=5. (Note the centre-point
 values differ legitimately: `0.112292` is seed 1111 alone; `0.140341` is the 5-seed mean.)
-Seed pinning: `experiments_runner.jl:147-160`.
+Seed pinning: `experiments_runner.jl:159-172`.
 
 **Honest rewrite.**
 > All ablations are single runs at the pre-registered baseline seed (1111); the sweeps carry no error
@@ -837,7 +837,7 @@ Any draft that says "not identifiable from a single trajectory" is reintroducing
 > current, but **not its coefficients: read out through the neural closure**, the calcium conductance
 > is not identifiable (a = 1.60 ± 0.90 against a true 2.0). The limit is the closure and not the
 > data: a two-parameter fit to the *same* trajectory recovers the conductance to about six per cent
-> (2.092 ± 0.130; profile-likelihood 95% interval [1.63, 2.13] on the representative seed). Two
+> (2.092 ± 0.130; profile-likelihood 95% interval [1.6065, 2.1477] on the representative seed). Two
 > further controls foreclose the optimiser and the regression: quadrupling the training budget makes
 > every recovered quantity worse and noisier while the loss converges (BFGS succeeds on all seeds,
 > final loss 29.7 ± 2.7) — different closures fit the same voltage equally well — and fitting the
@@ -847,7 +847,7 @@ Every claim of non-identifiability in the paper carries `scope:` in `claims.yaml
 `"single trajectory, Iapp=10.0 constant, one IC, 100 ms, 512 samples, n=5 seeds (init+noise jointly)"`
 and the matching qualifier in prose. Also: describe the seed spread as **"over seeds, each seed
 redrawing both the network initialisation and the noise realisation"** — never as "over random
-inits" (the runner's own comment at `experiments_runner.jl:41-42` says "several random inits" and is
+inits" (the runner's own comment at `experiments_runner.jl:53-54` says "several random inits" and is
 inaccurate; the two variance sources are inseparable in these runs).
 
 **Grep before submit:** `not identifiable` / `non-identifiab` without `single trajectory` within
@@ -868,7 +868,7 @@ flatters the baseline, which is the direction that costs you a reviewer.)*
 
 **Why it is wrong.** That row has **`n_seeds = 2`**. `spike_time_error` returns `NaN` when no
 predicted spike matches any true spike within the 2 ms tolerance, and `agg()` does
-`filter(isfinite, ...)` before averaging (`experiments_runner.jl:185`), so **the seeds that failed
+`filter(isfinite, ...)` before averaging (`experiments_runner.jl:197`), so **the seeds that failed
 completely are silently deleted from both the mean and the count**. Verified per-seed:
 `NaN, 0.978474, NaN, 1.565558, NaN` — **three of five seeds produced no matchable spike at all**, and
 the "1.27 ms" is the average of the two that did.
@@ -883,7 +883,7 @@ the `n_seeds` column is sitting right there in the CSV to convict you.
 `n_seeds ≠ 5`. Per-seed, `results/metrics_all.csv` filter `model==NODE ∧ window==forecast ∧
 metric==spike_mean_abs_dev_ms ∧ @base`: seeds 1111/3333/5555 = `NaN`; 2222 = `0.978474`;
 4444 = `1.565558`. Matching: `src/metrics.jl` `spike_time_error`, `match_tol_ms = 2.0`, greedy
-nearest-unused. Aggregation: `experiments_runner.jl:185`.
+nearest-unused. Aggregation: `experiments_runner.jl:197`.
 
 **Honest rewrite.** Preferred: **drop the metric for the NODE** and say why.
 > Spike-timing error is undefined for the Neural ODE: three of five seeds produce no spike matchable

@@ -74,7 +74,7 @@ end
 
 # -----------------------------------------------------------------------------
 #  One NODE training.  `use_time` selects the variant; everything else matches
-#  run_node_baseline exactly (src/experiment.jl:394-433).
+#  run_node_baseline exactly (src/experiment.jl:438-477).
 # -----------------------------------------------------------------------------
 function run_node_variant(; seed, use_time::Bool, adam_iters, bfgs_iters,
                             gCa = B_GCA, noise_level = B_NOISE, t_train_end = B_TWIN)

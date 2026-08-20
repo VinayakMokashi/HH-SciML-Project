@@ -271,15 +271,26 @@ let
     lo = minimum(vcat(r0.ICa_true, r0.ICa_cond, r0.ICa_nn))
     hi = maximum(vcat(r0.ICa_true, r0.ICa_cond, r0.ICa_nn))
     pad = 0.05 * (hi - lo); lims = (lo - pad, hi + pad)
-    p = scatter(r0.ICa_true, r0.ICa_nn, ms = 2.5, alpha = 0.3, color = :darkorange,
+    # Sized for print, not for the screen. This panel used the Plots default
+    # 600x400 canvas and default ~11 pt fonts; placed at 0.44\textwidth that put
+    # its axis text at roughly 3.8 pt against 10 pt body text, and 600 px across
+    # 2.9 in is 210 DPI. A font f on a canvas W px wide, printed at a fraction p
+    # of a 6.5 in text width, lands at f * p * 6.5 * 72 / W pt: at W = 1250 and
+    # p = 0.62 that is f * 0.232, so 30 pt ticks print at 7.0 pt and the canvas
+    # is 310 DPI. The parity plot keeps aspect_ratio = :equal, so the canvas is
+    # square and the margins have to grow with the fonts.
+    p = scatter(r0.ICa_true, r0.ICa_nn, ms = 5, alpha = 0.3, color = :darkorange,
                 label = "neural U(V,s)", xlabel = "true I_Ca (μA/cm²)",
                 ylabel = "recovered I_Ca (μA/cm²)", legend = :bottomright,
-                title = "Calcium-current recovery (gCa=2.0, seed $(REP_SEED))",
+                title = "Calcium-current recovery, seed $(REP_SEED)",
                 xlims = lims, ylims = lims, aspect_ratio = :equal,
-                left_margin = 4mm, bottom_margin = 4mm)
-    scatter!(p, r0.ICa_true, r0.ICa_cond, ms = 2.5, alpha = 0.5, color = :seagreen,
+                size = (1250, 1250), titlefontsize = 30, guidefontsize = 30,
+                tickfontsize = 29, legendfontsize = 25,
+                left_margin = 14mm, bottom_margin = 12mm,
+                right_margin = 8mm, top_margin = 5mm)
+    scatter!(p, r0.ICa_true, r0.ICa_cond, ms = 5, alpha = 0.5, color = :seagreen,
              label = "symbolic s²(aV+b)")
-    plot!(p, [lims...], [lims...], color = :black, ls = :dash, lw = 2, label = "y = x")
+    plot!(p, [lims...], [lims...], color = :black, ls = :dash, lw = 3, label = "y = x")
     savefig(p, joinpath(FIG_DIR, "fig9_calcium_symbolic_parity.png"))
 end
 

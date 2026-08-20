@@ -6,8 +6,8 @@
 #  completely differently and only one of them fits the usual case:
 #
 #    overleaf_upload/      <- DRAG THIS into an EXISTING project's file tree.
-#                             Open the folder, select all four items (main.tex,
-#                             references.bib, figures, generated) and drag them
+#                             Open the folder, select all five items (main.tex,
+#                             references.bib, arxiv.sty, figures, generated) and drag them
 #                             onto the file tree. Overleaf merges the folders and
 #                             asks before overwriting. Keeps the project URL and
 #                             its collaborators.
@@ -98,6 +98,33 @@ if ($missing.Count -gt 0) {
            (($missing | ForEach-Object { $_.Entry }) -join ", "))
 }
 
+# --- freshness, not just existence ------------------------------------------
+#  Test-Path cannot tell a current figure from one staged three runs ago. During
+#  the HH_SMOKE incident every existence check here reported OK while figures\
+#  and paper\figures had silently diverged, and this script would have shipped
+#  the stale side. So compare CONTENT for every planned figure that also exists
+#  at the repo root under the same name: the identity-mapped rows of
+#  scripts\stage_figures.ps1, plus the fig11 panels that
+#  figure_coeff_recovery_panels.jl writes to both places.
+#
+#  DELIBERATELY NOT COVERED HERE: the six RENAMED pairs (fig9/fig10/fig12
+#  _before/_after) have no same-named file under figures\, so there is nothing
+#  at this level to compare them against. scripts\stage_figures.ps1 owns that
+#  map and hashes those pairs at copy time - run it before this script.
+$stale = @()
+foreach ($p in $plan) {
+    if ($p.Entry -notlike "figures/*") { continue }
+    $rootCopy = Join-Path $repo (Join-Path "figures" (Split-Path -Leaf $p.Src))
+    if (-not (Test-Path $rootCopy)) { continue }
+    if ((Get-FileHash $p.Src -Algorithm SHA256).Hash -ne
+        (Get-FileHash $rootCopy -Algorithm SHA256).Hash) { $stale += $p.Entry }
+}
+if ($stale.Count -gt 0) {
+    throw ("paper\figures is STALE relative to figures\ for: " + ($stale -join ", ") +
+           " -- re-run scripts\stage_figures.ps1 (and figure_coeff_recovery_panels.jl " +
+           "for the fig11 panels) before building the bundle.")
+}
+
 # --- write the archive ------------------------------------------------------
 if (Test-Path $zip) { Remove-Item $zip -Force }
 Add-Type -AssemblyName System.IO.Compression.FileSystem
@@ -138,6 +165,16 @@ foreach ($p in $plan) {
 $staged = @(Get-ChildItem $dir -Recurse -File).Count
 if ($staged -ne $plan.Count) {
     throw ("staged $staged files but planned " + $plan.Count)
+}
+# Count is not content. The line above proves N files exist, not that they are
+# the right N bytes; verify each against its source so a copy that half-landed
+# cannot be handed over as "verified" in the message below.
+foreach ($p in $plan) {
+    $landed = Join-Path $dir ($p.Entry -replace "/", "\")
+    if ((Get-FileHash $p.Src -Algorithm SHA256).Hash -ne
+        (Get-FileHash $landed -Algorithm SHA256).Hash) {
+        throw ("staged copy differs from its source: " + $p.Entry)
+    }
 }
 
 Write-Host ""

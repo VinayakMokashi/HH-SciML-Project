@@ -39,10 +39,38 @@ default(titlefontsize = 14, guidefontsize = 13, tickfontsize = 11,
         legendfontsize = 10, foreground_color_legend = nothing)
 
 const PROJECT_DIR = dirname(@__DIR__)
-const FIG_DIR     = joinpath(PROJECT_DIR, "figures")
-const RESULTS_DIR = joinpath(PROJECT_DIR, "results")
+
+# --- Output isolation: a dry run must not be able to touch released artifacts -
+#  HH_SMOKE=1 cuts the iteration budgets, the ablation grids AND the seed list
+#  (experiments_runner.jl:42-46,:45), so everything a smoke run produces is junk
+#  next to the paper.  Until this change it wrote that junk straight into
+#  results/ and figures/, and experiments_runner.jl:73 deletes METRICS_CSV
+#  first: one accidental smoke run truncated the released results/metrics_all.csv
+#  from 696 rows to 321 and rewrote 63 other tracked files.
+#
+#  Under HH_SMOKE the entire output tree moves to results_smoke/ + figures_smoke/.
+#  This is the same isolation objective3_symbolic_retrain.jl:38-45 already applies
+#  to its own run, and for the same stated reason: so that the canonical results/
+#  and figures/ "are never overwritten".
+#
+#  HH_RESULTS_DIR / HH_FIG_DIR override either path explicitly; a relative value
+#  is resolved against PROJECT_DIR.  With none of the three variables set the
+#  paths are exactly the expressions they replaced, so a FULL run still writes
+#  PROJECT_DIR/figures and PROJECT_DIR/results unchanged.
+function _outdir(envvar::AbstractString, default::AbstractString)
+    v = get(ENV, envvar, "")
+    isempty(v) && return joinpath(PROJECT_DIR, default)
+    return isabspath(v) ? v : joinpath(PROJECT_DIR, v)
+end
+
+const SMOKE_OUT   = get(ENV, "HH_SMOKE", "0") == "1"
+const FIG_DIR     = _outdir("HH_FIG_DIR",     SMOKE_OUT ? "figures_smoke" : "figures")
+const RESULTS_DIR = _outdir("HH_RESULTS_DIR", SMOKE_OUT ? "results_smoke" : "results")
 const PARAMS_DIR  = joinpath(RESULTS_DIR, "params")
 for d in (FIG_DIR, RESULTS_DIR, PARAMS_DIR); mkpath(d); end
+if SMOKE_OUT
+    @warn "HH_SMOKE=1 -- outputs isolated from the released tree." FIG_DIR RESULTS_DIR
+end
 
 const ADJOINT      = InterpolatingAdjoint(autojacvec = ReverseDiffVJP(true))
 const METRICS_CSV  = joinpath(RESULTS_DIR, "metrics_all.csv")

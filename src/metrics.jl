@@ -77,11 +77,24 @@ end
 # --- Rollout horizon ---------------------------------------------------------
 #  Elapsed time from `t_start` until |Vpred - Vtrue| first exceeds `thresh_mv`
 #  and STAYS above it for at least `sustained_ms` (single-sample blips ignored).
-#  Non-finite error counts as a breach.  Never breaching -> capped at `cap_ms`.
+#  Non-finite error counts as a breach.
+#
+#  RIGHT-CENSORING.  A run that never breaches is censored, and it is censored at
+#  whichever comes first: the `cap_ms` ceiling, or the end of the trajectory we
+#  actually have.  The second bound used to be missing, and it mattered: on the
+#  common-evaluation window `t_start` is ~50.1 ms with the trace ending at 100 ms,
+#  so only ~49.9 ms of data exists, yet every such run reported the full 70 ms cap
+#  -- a horizon 40% longer than the window it was measured in.  `avail` below is
+#  that second bound.  Both exits are clamped to it, so the returned value is
+#  always a duration the data could actually support, and a value equal to
+#  `min(cap_ms, avail)` still means "never breached" (report it as ">=", per the
+#  censoring guard).
 function rollout_horizon(Vp, Vt, t; thresh_mv = 10.0, t_start = 30.0,
                          sustained_ms = 1.0, cap_ms = 70.0)
     idx = findall(ti -> ti >= t_start, t)
     isempty(idx) && return 0.0
+    avail = max(0.0, t[end] - t_start)
+    ceil_ms = min(cap_ms, avail)
     dt   = length(t) > 1 ? (t[end] - t[1]) / (length(t) - 1) : 1.0
     nsus = max(1, round(Int, sustained_ms / dt))
     run  = 0
@@ -91,13 +104,13 @@ function rollout_horizon(Vp, Vt, t; thresh_mv = 10.0, t_start = 30.0,
             run += 1
             if run >= nsus
                 t_breach = t[i - (nsus - 1)]
-                return min(cap_ms, max(0.0, t_breach - t_start))
+                return min(ceil_ms, max(0.0, t_breach - t_start))
             end
         else
             run = 0
         end
     end
-    return cap_ms
+    return ceil_ms
 end
 
 # --- helper: build one tidy row ---------------------------------------------

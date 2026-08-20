@@ -4,7 +4,7 @@ Every entry's DOI is resolved against **Crossref** (articles and proceedings) or
 - Entries: **38** (verified 36, needs review 2, unresolved 0)
 
 Status meanings:
-- **VERIFIED** — every resolved record agrees with the bib entry on title, first author and year.
+- **VERIFIED** — every resolved record agrees with the bib entry on title (at least 75% word overlap after normalisation), first-author surname (substring match in either direction) and year (within +/-1). Volume, issue and page numbers are NOT compared, and an empty surname or year in the .bib passes automatically.
 - **REVIEW** — the record resolved but at least one field disagrees. Usually LaTeX braces or punctuation in the title; read the note and confirm by eye.
 - **UNRESOLVED** — no DOI and no arXiv id to check against, or the registry had no record. These need a manual link.
 - Entries with incomplete metadata: **0**

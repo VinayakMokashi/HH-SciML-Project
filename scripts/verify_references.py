@@ -326,7 +326,11 @@ def main():
                f"(verified {n_ver}, needs review {n_rev}, unresolved {n_unr})\n")
     out.append("\nStatus meanings:\n")
     out.append("- **VERIFIED** — every resolved record agrees with the bib entry "
-               "on title, first author and year.\n")
+               "on title (at least 75% word overlap after normalisation), "
+               "first-author surname (substring match in either direction) and "
+               "year (within +/-1). Volume, issue and page numbers are NOT "
+               "compared, and an empty surname or year in the .bib passes "
+               "automatically.\n")
     out.append("- **REVIEW** — the record resolved but at least one field "
                "disagrees. Usually LaTeX braces or punctuation in the title; "
                "read the note and confirm by eye.\n")

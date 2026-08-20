@@ -46,7 +46,17 @@ mkpath(FIG_DIR)
 const A_TRUE, B_TRUE, EREV_TRUE = 2.0, -240.0, 120.0
 
 # Fonts sized for the print reduction, not the canvas (see header note 2).
-const FS = (titlefontsize = 19, guidefontsize = 18, tickfontsize = 17)
+#
+# The arithmetic that governs this: a font of size f on a canvas W px wide,
+# placed at a fraction p of a 6.5 in text width, prints at f * p * 6.5 * 72 / W
+# pt. The old pairing (f = 17, W = 1500, p ~ 0.54) gives 2.9 pt against 10 pt
+# body text -- the "sized for the reduction" note above was written before that
+# was measured, and it was not nearly enough. Both figures are now placed at FULL
+# text width, and W = 1950 puts them at 300 DPI there, so f = 28 prints at 6.7 pt.
+# Margins are scaled with the fonts: raising one without the other clips the
+# y-axis labels, which has bitten this project before.
+const CANVAS_W = 1950
+const FS = (titlefontsize = 30, guidefontsize = 29, tickfontsize = 28)
 
 "Per-seed mean/SD of the conductance-form coefficients at the main setting."
 function coeffs(csv)
@@ -66,41 +76,49 @@ const B_BOT    = min(B_TRUE, bef.b_m - bef.b_s, aft.b_m - aft.b_s) * 1.15
 const EREV_TOP = max(EREV_TRUE, bef.erev, aft.erev) * 1.18
 
 function panel_set(c, supertitle, outfile)
-    common = (; legend = false, bar_width = 0.6, left_margin = 12mm,
-                bottom_margin = 7mm, top_margin = 4mm, FS...)
+    common = (; legend = false, bar_width = 0.6, left_margin = 27mm,
+                bottom_margin = 13mm, top_margin = 5mm, right_margin = 12mm, FS...)
 
+    # Panel titles are kept to the symbol alone. At these font sizes the old
+    # parenthetical ("per-seed mean±std") ran into the neighbouring panel's
+    # title; what the bars and whiskers are is stated once in the caption.
     p1 = bar(["true", "recovered"], [A_TRUE, c.a_m]; yerror = [0.0, c.a_s],
              color = [:gray, :seagreen], ylims = (0, A_TOP),
-             title = "a = gCa  (per-seed mean±std)", ylabel = "conductance", common...)
+             title = "a = gCa", ylabel = "conductance", common...)
 
     p2 = bar(["true", "recovered"], [B_TRUE, c.b_m]; yerror = [0.0, c.b_s],
              color = [:gray, :seagreen], ylims = (B_BOT, 15),
-             title = "b = -gCa*ECa  (per-seed mean±std)", ylabel = "coefficient", common...)
+             title = "b = -gCa*ECa", ylabel = "coefficient", common...)
 
     p3 = bar(["true", "recovered"], [EREV_TRUE, c.erev];
              color = [:gray, :steelblue], ylims = (0, EREV_TOP),
-             title = "Erev = -b/a  (ensemble)",
+             title = "Erev = -b/a",
              ylabel = "reversal potential (mV)", common...)
 
     # plot_titlevspan must be widened by hand: the default band is sized for a
     # one-line supertitle and a two-line one lands on the subplot titles.
-    fig = plot(p1, p2, p3; layout = (1, 3), size = (1500, 700),
-               plot_title = supertitle, plot_titlefontsize = 21,
-               plot_titlevspan = 0.16)
+    fig = plot(p1, p2, p3; layout = (1, 3), size = (CANVAS_W, 900),
+               plot_title = supertitle, plot_titlefontsize = 32,
+               plot_titlevspan = 0.17)
     out = joinpath(FIG_DIR, outfile)
     savefig(fig, out)
     cp(out, joinpath(PAPER_DIR, outfile); force = true)   # stage for the manuscript
     return out
 end
 
+# The optimiser is BFGS, not L-BFGS: src/experiment.jl calls
+# OptimizationOptimJL.BFGS(initial_stepnorm = 0.01), and `grep -rn LBFGS
+# --include=*.jl .` returns nothing. These two supertitles said "L-BFGS" while
+# the manuscript was corrected around them, which is exactly how a figure ends
+# up contradicting its own paper. Do not put it back.
 o1 = panel_set(bef,
-    "Recovered calcium parameters vs truth  —  hull domain, gCa=2.0, $(bef.n) seeds\n" *
-    "baseline training (Adam 5000 / L-BFGS 300)",
+    "Recovered calcium parameters vs truth — hull domain, gCa=2.0, $(bef.n) seeds\n" *
+    "baseline training (Adam 5000 / BFGS 300)",
     "fig11_coeff_recovery_before.png")
 
 o2 = panel_set(aft,
-    "Recovered calcium parameters vs truth  —  hull domain, gCa=2.0, $(aft.n) seeds\n" *
-    "aggressive retrain (Adam 20000 / L-BFGS 1000)",
+    "Recovered calcium parameters vs truth — hull domain, gCa=2.0, $(aft.n) seeds\n" *
+    "aggressive retrain (Adam 20000 / BFGS 1000)",
     "fig11_coeff_recovery_after.png")
 
 @printf("\nwrote %s\n      %s\n", o1, o2)

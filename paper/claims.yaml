@@ -80,7 +80,7 @@
 #     The former filters observed:full. physics-prior-reconstructs-unobserved-gates is ABOUT the
 #     voltage-only runs, so using the full-state gate error would make the claim's own subject wrong.
 # Macro names are LaTeX control sequences: letters only. That is why the gCa sweep uses
-# `PointFour` not `0.4`, and why seed 1111 is `RepSeed` (REP_SEED, experiments_runner.jl:46).
+# `PointFour` not `0.4`, and why seed 1111 is `RepSeed` (REP_SEED, experiments_runner.jl:58).
 #
 # FIGURE NAMING HAZARD — AND THE INVOCATION IT FORCES
 # `figures/fig9..fig12` and `results/retrain_gca2_20k/figures/fig9..fig12` are FOUR pairs of
@@ -225,8 +225,8 @@ claims:
       - macro: UdeForecastVRmse
       - figure: figures/fig3_ude_overview.png
     scope: >-
-      REP_SEED=1111 = B_SEED, the pre-registered baseline seed (experiments_runner.jl:46). The guardrail
-      (experiments_runner.jl:405-441) takes UDE/full forecast V_rmse across the 5 seeds and passes only if
+      REP_SEED=1111 = B_SEED, the pre-registered baseline seed (experiments_runner.jl:58). The guardrail
+      (experiments_runner.jl:417-453) takes UDE/full forecast V_rmse across the 5 seeds and passes only if
       REP_SEED is the median-closest seed OR falls inside the IQR [q1,q3]; otherwise it prints the exact
       regenerate_ude_figs(...) command to rebuild the panels from the median-closest seed's saved params.
       This is a pre-registered choice with a post-hoc representativeness check, not a selection procedure.
@@ -346,7 +346,7 @@ claims:
     # Original tombstone note, kept for the record:
     # ===== NO EVIDENCE EXISTS AND NONE CAN BE EXTRACTED. =====
     # run_experiment is called WITHOUT common_eval_start for the voltage-only runs
-    # (experiments_runner.jl:98-103), so metrics_all.csv contains zero common_eval rows for
+    # (experiments_runner.jl:110-115), so metrics_all.csv contains zero common_eval rows for
     # observed=voltage — only the UDE/full baseline and the window ablation emit that window at all.
     # This claim is in the ledger, with empty evidence and this comment, for one reason: it is the
     # obvious next thing a reader (or a co-author, or the drafting model) will try to write, and the
@@ -366,7 +366,7 @@ claims:
       - macro: UdeForecastICaRmse
       - figure: figures/fig3_ude_calcium_parity.png
     scope: >-
-      applies to every UDE run. ICa_nn is evaluated at data_clean's (V,s) (src/experiment.jl:363-365);
+      applies to every UDE run. ICa_nn is evaluated at data_clean's (V,s) (src/experiment.jl:391-393);
       V_rmse comes from the free 100 ms rollout from u0. ICa_rmse / ICa_rmse_norm exist for model=UDE
       only — the NODE has no calcium closure and emits no such rows.
     status: supported
@@ -383,13 +383,17 @@ claims:
   - id: symbolic-form-recovered
     statement: >-
       The learned neural closure is well approximated by the expected biophysical conductance form:
-      when the form s^2(aV+b) is SUPPLIED to a constrained fit, it reproduces the true calcium current
-      with high R^2 against the analytic ground truth. This is agreement with an assumed form, not
-      discovery of it — unconstrained symbolic regression over an open library does not recover the
-      form reliably (see sindy-does-not-sparsify).
+      when the form s^2(aV+b) is SUPPLIED to a constrained fit, the fitted curve tracks the CLOSURE's
+      own output with R^2 = 0.985 +/- 0.009 on the supervised trajectory (lower and far more
+      seed-dependent on the convex hull, 0.936 +/- 0.075, worst seed 0.816), and the same curve
+      reproduces the true calcium current with high R^2 against the analytic ground truth. This is
+      agreement with an assumed form, not discovery of it — unconstrained symbolic regression over an
+      open library does not recover the form reliably (see sindy-does-not-sparsify).
     section: results.symbolic-recovery
     kind: empirical
     evidence:
+      - macro: SymbolicRTwoNnTrajTrain
+      - macro: SymbolicRTwoNnHull
       - macro: SymbolicRTwoCondTrue
       - macro: SymbolicRTwoTrajTrain
       - figure: figures/fig9_calcium_symbolic_parity.png
@@ -401,6 +405,13 @@ claims:
       r2_cond_true is then scored on the 512-point trajectory. The gate power s^2 and the linear
       driving force are HARD-CODED by the estimator — this is a recovery test within the true model
       class, not a discovery test. See sindy-does-not-sparsify for the open-library result.
+      The SymbolicRTwoNn* pair is a DIFFERENT column of a DIFFERENT file: the domain-robustness
+      refit (scripts/symbolic_domain_comparison.py, results/identifiability/symbolic_domain_comparison.csv)
+      runs the same 2-column no-intercept OLS on the supervised trajectory (n=154 points) and on the
+      hull grid and scores it against the NETWORK's own output on that same domain, column
+      r2_vs_nn_on_domain, not against the analytic current. Only that column measures how well the
+      two-term form describes the closure; r2_vs_true_on_domain and r2_cond_true measure how well it
+      describes the truth, which is a different question and the one the earlier draft answered.
     guard: r2-ens-is-uninformative
     status: supported
     # ===== REWORDED 2026-08-07 (review point 2). The mentor's objection is correct and conceded:
@@ -613,7 +624,10 @@ claims:
     statement: >-
       Quadrupling the optimization budget does not close the coefficient gap: every recovery quantity
       gets worse and noisier, while the optimizer demonstrably converges — so the gap is a property of
-      the data, not of under-training.
+      the CLOSURE, not of under-training and not of the data. (The single trajectory does determine
+      the conductance to about 6% - see parametric-fit-identifies-conductance, gCa 2.092 +/- 0.130
+      against a true 2.0. The retired reading, "the data cannot determine it", must not be restored
+      here.)
     section: results.identifiability
     kind: empirical
     evidence:
@@ -798,6 +812,41 @@ claims:
     # Note also: at t_train_end=50 the common_eval and forecast columns are byte-identical by construction
     # (both select t>50). That point is not an independent check.
 
+  - id: noise-ablation-degrades-gracefully
+    statement: >-
+      Recovery of the hidden calcium current degrades smoothly with observation noise and does not
+      become exact when the noise is removed: the normalised calcium error rises monotonically across
+      the swept noise levels and is still non-zero on noiseless data.
+    section: results.ablations
+    kind: empirical
+    evidence:
+      - macro: NoiseAblICaNormZero
+      - macro: NoiseAblICaNormTwoPct
+      - macro: NoiseAblICaNormTenPct
+      - macro: NoiseAblVRmseZero
+      - macro: NoiseAblVRmseTenPct
+      - figure: figures/fig7_ablation_noise.png
+    scope: >-
+      single trajectory, gCa=2.0, t_train_end=30 ms, full-state UDE, forecast window, n=1 SEED (1111),
+      no error bars, no statistical test. noise_level in {0.0, 0.01, 0.02, 0.05, 0.10}; the 0.02 row is
+      the SHARED BASELINE centre point inherited from the headline run, not a fifth ablation run.
+      forecast_ICa_rmse_norm = 0.012 / 0.052 / 0.112 / 0.191 / 0.679 and forecast_V_rmse = 0.046 /
+      0.219 / 0.219 / 0.329 / 1.091 [read from results/ablation_noise.csv]. Adjacent ICa gaps are
+      0.040 / 0.060 / 0.079 / 0.488 against the +/-0.025 five-seed spread at the centre point, so the
+      end-to-end trend is safe and the low-end steps are only ~2-3 SD at n=1. forecast_rollout_horizon_ms
+      is 70.0 (the cap) on all five rows, so that metric is saturated and discriminates nothing here.
+      The symbolic distillation was NOT re-run at any noise level other than the baseline, so this
+      claim says nothing about coefficient recovery.
+    status: supported
+    # ===== ADDED 2026-08-20. The sweep existed at experiments_runner.jl:124-131, its CSV at
+    # results/ablation_noise.csv and its figure at figures/fig7_ablation_noise.png from the first run,
+    # and not one sentence of the paper mentioned it. The ZERO-NOISE point is the noiseless control the
+    # rest of the paper implies and never states; do not let it be dropped again.
+    # TRAP: fig7_ablation_noise.png has THREE panels (V RMSE, gate RMSE, rollout horizon) and does NOT
+    # plot the calcium error -- ablation_fig() is called without extra_metric at experiments_runner.jl:325
+    # (only the gCa call at :322-324 passes extra_metric="ICa_rmse_norm"). Any caption saying the figure
+    # shows calcium identifiability is false.
+
   # =========================================================================
   # DISCUSSION
   # =========================================================================
@@ -882,7 +931,7 @@ claims:
     # ===== RETIRED 2026-08-07. FALSIFIED BY OUR OWN CONTROL, which is the best possible reason.
     # The claim presumed the single trajectory was the binding constraint. It is not: a direct
     # two-parameter fit of (gCa, ECa) to that SAME trajectory recovers the conductance to 2.09 +/- 0.13
-    # against a true 2.0, with a profile-likelihood 95% CI of [1.63, 2.13] and a Gauss-Newton relative
+    # against a true 2.0, with a profile-likelihood 95% CI of [1.6065, 2.1477] and a Gauss-Newton relative
     # standard error of 6.7%. One trajectory is sufficient to identify the conductance.
     # The binding limitation is the FLEXIBILITY OF THE CLOSURE. Superseded by
     # closure-induced-nonidentifiability (the mechanism) and parametric-fit-identifies-conductance
@@ -914,6 +963,11 @@ claims:
       spread 6.2%, profile-likelihood 95% CI [1.63, 2.13], asymptotic relative SE 6.7%. At gCa=0.4 the
       fit still recovers (0.438 +/- 0.065) though four times less precisely, and there ECa's profile CI
       runs into the grid edge, so ECa alone IS practically non-identifiable at low conductance.
+      *** THE CLOSURE COLUMN OF Table tab:parametric IS NOT n=5 THROUGHOUT. *** At gCa=0.4 it is a
+      SINGLE seed (1111): SymbolicAHatTrajTrainPointFour = -0.061 on the supervised trajectory, and its
+      convex-hull reading of the same run is SymbolicAHatNegControl = -0.372. The symbolic pipeline was
+      repeated over five seeds only at gCa=2.0, so that cell carries no spread; the caption marks it
+      with a dagger and the n=5 in the caption is qualified accordingly.
     status: supported
     # ===== THE PAPER'S POSITIVE CONTROL. The old draft conceded in Limitations that it had none. =====
     # MANDATORY CAVEAT, must appear wherever this claim is used: a 2-parameter model handed the true
@@ -945,6 +999,18 @@ claims:
       We do not claim this holds for every closure, every architecture, or every system; we claim it
       happened here, under a controlled comparison in which the data were held fixed. Whether smaller
       or more constrained closures interpolate between the two regimes is untested.
+      CONFOUND, must stay stated wherever this claim is used: the DATA are held fixed but the
+      REPRESENTATION is not the only thing that changes between the two arms. The parametric arm
+      minimises the noise-weighted chi-square (identifiability_parametric.jl:117) by multi-start
+      Nelder-Mead (identifiability_parametric.jl:129,137); the UDE minimises the unweighted
+      native-units SSE (src/experiment.jl:185), which is 99.97% voltage, by Adam + BFGS under a
+      continuous adjoint (src/experiment.jl:126,133). Objective and optimiser co-vary with the
+      representation, so the ~7x ratio may NOT be read as a pure representation effect and no
+      decomposition of it may be reported. What the confound does NOT touch is the one-directional
+      inference this claim actually rests on: some estimator recovers gCa to 6% from this single
+      trajectory, therefore the information IS in the data and the closure's scatter cannot be
+      blamed on the data. No committed CSV in results/ measures the parametric fit under the UDE's
+      own unweighted objective, so any such number is unreportable under Law I until one exists.
     status: supported
     # ===== THE THESIS OF THE REVISED PAPER. This is the parametric-vs-functional identifiability
     # distinction of Loman/Browning/Baker (arXiv 2606.30289) measured empirically: parametric
@@ -984,7 +1050,10 @@ claims:
     statement: >-
       Quadrupling the optimisation budget measurably improved the training objective while making every
       recovery quantity worse — the signature of optimisation along a direction the data do not
-      constrain.
+      constrain in the CLOSURE's parameter space, and along which further descent measurably degrades
+      agreement with the true trajectory inside the training window itself. The single trajectory does
+      determine the conductance (see parametric-fit-identifies-conductance); what the voltage leaves
+      open is a direction of the 337-parameter closure, not the conductance itself.
     section: results.retrain
     kind: empirical
     evidence:
@@ -992,6 +1061,8 @@ claims:
       - macro: TrainLossAfter
       - macro: RetrainAHat
       - macro: RetrainRTwoCondTrue
+      - macro: UdeTrainVRmse
+      - macro: RetrainTrainVRmse
     scope: >-
       gCa=2.0 full-state, n=5 seeds, identical model/data/seeds/solver/tolerances/loss; only the
       iteration budget differs (Adam 5000/BFGS 300 -> 20000/1000). Training loss 35.71 +/- 1.81 ->
@@ -999,6 +1070,18 @@ claims:
       and is recovered by rebuilding the exact objective and evaluating it at the saved parameters;
       the method is validated by recomputing the AFTER loss and matching the recorded value to a
       relative difference of 0.
+      NO VALIDATION SPLIT AND NO EARLY-STOPPING CRITERION EXIST ANYWHERE IN THE CODEBASE:
+      train_two_stage (src/experiment.jl:111-125) runs a fixed Adam-then-BFGS budget and its callback
+      always returns false, and make_ude_loss (src/experiment.jl:172-187) scores only
+      data_noisy[:, train_idx]; there is no regularisation term either. The control is therefore
+      evidence about the OPTIMISER, not about generalisation: it cannot separate motion along a flat
+      direction from over-fitting the noise realisation. Both readings give the same practical
+      conclusion (training longer is not the repair), and the paper must not present the extra
+      iterations as innocuous. Train-window V RMSE against the CLEAN trajectory rose
+      0.148 +/- 0.045 -> 0.243 +/- 0.054 (UdeTrainVRmse -> RetrainTrainVRmse) while the objective
+      fell. metrics_retrain.csv has NO V_rmse_vs_noisy column, so the retrain has no noise-floor twin
+      of UdeTrainVRmseVsNoisy: no "below the noise floor" claim about the retrain is citable, and the
+      objective evaluated at the true (gCa, ECa) is in no committed CSV at all -- do not quote one.
     status: supported
     # ===== ADDED 2026-08-07 (review point 1, final sentence: "the original and retrained runs should
     # also report directly comparable training losses"). This STRENGTHENS the retrain control.
@@ -1034,8 +1117,10 @@ claims:
     # INTERIOR is never visited, so hull values are extrapolation dressed as interpolation. Conceded
     # in full — and the conclusion is unchanged, which is why conceding costs nothing.
     # ALSO CORRECTS A MIS-STATED JUSTIFICATION in the earlier draft. "Fitting on the trajectory alone
-    # fails because the limit cycle is near-collinear" is true of the SIX-term SINDy library (cond
-    # ~25k on the trajectory vs ~14k on the hull) but FALSE of the two-term conductance form (cond
+    # fails because the limit cycle is near-collinear" is UNMEASURED for the SIX-term SINDy library
+    # (nothing in the repo computes a six-column condition number; symbolic_domain_comparison.py:107
+    # does the 2x2 Gram only, so the "~25k trajectory / ~14k hull" figures asserted here until
+    # 2026-08-20 had no source and were removed) and FALSE of the two-term conductance form (cond
     # 102.4 vs 69.9 — both benign, and the trajectory fit is if anything slightly better). Move the
     # headline conductance result onto the supervised trajectory; keep the hull only for SINDy.
 
