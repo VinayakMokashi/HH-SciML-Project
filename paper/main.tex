@@ -330,8 +330,9 @@ and at most a further twofold is attributable to the representation.
   % claim: node-failure-is-architecture-not-budget
   \textbf{A reproducible advanced-HH SciML benchmark, with a baseline that is
   actually defensible.} Embedding the known physics and learning only the calcium
-  current buys both accuracy and reliability: the UDE holds the \Ttube\,mV error
-  tube for the entire \Rcap\,ms remainder on every seed, where a black-box neural
+  current buys both accuracy and reliability: the UDE never leaves the \Ttube\,mV
+  error tube on any seed, so its rollout horizon is right-censored at the
+  metric's ceiling ($\valUdeForecastRollout$\,ms), where a black-box neural
   ODE given the same budget and an autonomous architecture manages
   $\valNodeParityAutoRolloutMeanStd$\,ms. We reach that comparison by first
   repairing the baseline. Matching its optimisation budget to the UDE's changes
@@ -1930,11 +1931,13 @@ cannot be separated from these runs.
 \section{Conclusion}
 \label{sec:conclusion}
 
-Embedding known physics and learning one hidden ionic current makes a \Rcap\,ms
-extrapolation both accurate and dependable, and restricting the loss to the
-voltage row costs little because that row already dominates the full-state
-objective. It yields a closure that agrees closely with the true calcium
-current's shape.
+Embedding known physics and learning one hidden ionic current makes extrapolation
+across the whole remainder of the \Tfull\,ms trajectory both accurate and
+dependable: the voltage never leaves the \Ttube\,mV tube on any seed, so the
+rollout horizon is right-censored ($\valUdeForecastRollout$\,ms) rather than
+measured. Restricting the loss to the voltage row costs little, because that row
+already dominates the full-state objective. It yields a closure that agrees
+closely with the true calcium current's shape.
 It does not yield the current's conductance. The reason is not the one that would
 be assumed: the single noisy trajectory determines that conductance to about six
 per cent, as a direct parametric fit on the very same data shows. It is the
@@ -2166,8 +2169,10 @@ released as set out in the Data and Code Availability section.
   \emph{not} plot the calcium-current error;
   those values are quoted in Sec.~\ref{sec:results-ablations} from the same
   results file. One run per point at the pre-registered baseline seed, so there
-  are no error bars and no adjacent difference here can be judged against a
-  spread.}
+  are no error bars. Unlike the window sweep, this axis cannot borrow the
+  five-seed spread at its centre point as a yardstick, because the noise level is
+  the very quantity that sets seed-to-seed variation; we therefore read the
+  end-to-end trend here and not the individual steps.}
   \label{fig:noise}
 \end{figure}
 

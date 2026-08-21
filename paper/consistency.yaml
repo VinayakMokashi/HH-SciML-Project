@@ -43,7 +43,7 @@ groups:
       representation AND optimiser together. Every site that quotes the
       representation's share must mark it as a bound, never as a measured value.
       Round 5 blocker: the abstract said "is" while Limitations said "at most".
-    files: [paper/main.tex, README.md]
+    files: [paper/main.tex, paper/sim2science/main.tex, README.md]
     probe: '(twofold|factor of about two|two-fifths)[^.]{0,200}?representation|representation[^.]{0,200}?(twofold|factor of about two|two-fifths)'
     require: '(at most|bounds|bounding|upper bound|no more than|remainder bounds)'
     forbid: >-
@@ -58,7 +58,7 @@ groups:
       conductance is not identifiable from a single trajectory, or that the data
       are at fault -- must never reappear. It came back twice: once at
       main.tex:623 in the gCa=0.4 justification, once in the Introduction.
-    files: [paper/main.tex, README.md, paper/claims.yaml]
+    files: [paper/main.tex, paper/sim2science/main.tex, README.md, paper/claims.yaml]
     probe: null
     forbid: >-
       (not identifiable from a single trajectory|
@@ -71,7 +71,7 @@ groups:
       src/experiment.jl calls OptimizationOptimJL.BFGS. There is no LBFGS
       anywhere in the codebase. "L-BFGS" appeared ten times in the prose and
       twice inside figure supertitles, where it survived a round of prose fixes.
-    files: [paper/main.tex, README.md, paper/claims.yaml, figure_coeff_recovery_panels.jl]
+    files: [paper/main.tex, paper/sim2science/main.tex, README.md, paper/claims.yaml, figure_coeff_recovery_panels.jl]
     probe: null
     forbid: 'L-BFGS'
 
@@ -80,7 +80,7 @@ groups:
       There are five gates (m, h, n, p, s) and six STATE ODEs, the sixth being
       the voltage equation. "six gate ODEs" appeared in Figure 1 and its caption.
       "six states" is correct and must not be caught by this rule.
-    files: [paper/main.tex]
+    files: [paper/main.tex, paper/sim2science/main.tex]
     probe: null
     forbid: 'six gate'
 
@@ -90,7 +90,7 @@ groups:
       [1.6065, 2.1477], not the raw 0.0625-grid bracket [1.63, 2.13]. The old
       bracket pushed seed 3333 outside the band and licensed "every one of the
       five falls outside", which is a statement about scan resolution.
-    files: [paper/main.tex, paper/claims.yaml, figure_identifiability.jl]
+    files: [paper/main.tex, paper/sim2science/main.tex, paper/claims.yaml, figure_identifiability.jl]
     probe: null
     forbid: >-
       (1\.63,\s*2\.13|
@@ -103,7 +103,7 @@ groups:
       Four of the five traj-train closure estimates fall outside the interpolated
       interval; seed 3333 at 1.6069 is inside by 0.0004. Any site restating the
       count must say four, not five.
-    files: [paper/main.tex]
+    files: [paper/main.tex, paper/sim2science/main.tex]
     probe: '(conductances|closure estimates)[^.]{0,200}?(outside|inside)[^.]{0,80}?(that )?interval'
     require: '([Ff]our|4 of 5|lower edge)'
     min_sites: 1
@@ -114,7 +114,7 @@ groups:
       differ by ~6x at gCa=0.4. Four separate defects came from quoting one
       without saying which. Any line carrying a hull-only macro must say "hull"
       on that line or within its caption.
-    files: [paper/main.tex]
+    files: [paper/main.tex, paper/sim2science/main.tex]
     probe: 'valSymbolicAHatNegControl|valSymbolicAHatMeanStd|valSymbolicAHatRange[^T]|valGcaFourRetrainAHat'
     require: '(hull|convex)'
     window: 70   # a table row can sit far below its caption
@@ -126,7 +126,7 @@ groups:
       conductance, the closure's failure is not the data's fault. A 2-parameter
       model given the true form is EXPECTED to beat a 337-parameter closure, so
       the paper must never present the two as equally good fits that disagree.
-    files: [paper/main.tex, README.md]
+    files: [paper/main.tex, paper/sim2science/main.tex, README.md]
     probe: null
     forbid: '(two equally good fits|equally good fits disagree|both fit equally well)'
     # The paper legitimately DENIES this phrasing; only an affirmative use is a defect.
@@ -138,7 +138,7 @@ groups:
       forbids quoting a mean +/- SD for it, and forbids presenting the cap as a
       measurement. The common-eval window is ~49.9 ms, so a 70 ms cap there is
       unreachable.
-    files: [paper/main.tex]
+    files: [paper/main.tex, paper/sim2science/main.tex]
     probe: 'valUdeForecastRollout|valUdeVoltageForecastRollout'
 
     require: '(censor|cap|saturat|>=|\\ge|never (leaves|breach))'
@@ -150,18 +150,97 @@ groups:
       Mentor review point 2. The conductance form s^2(aV+b) is SUPPLIED to the
       estimator, not discovered by it. Any sentence claiming functional-form
       recovery must carry that qualification.
-    files: [paper/main.tex, README.md]
-    probe: null
+      The forbid half of this rule cannot see the opposite failure: the paper
+      losing its affirmative statement of the qualification. The probe covers
+      that. Every site reporting what the distilled CLOSURE achieves must name
+      the constraint that made the distillation possible, because the result is
+      conditional on it.
+      Scope, deliberately narrow: "the distilled closure", not "distilled"
+      generally. The mentor's ask was about overclaiming DISCOVERY, so the rule
+      fires on sites asserting agreement and not on back-references ("the
+      distilled form becomes a worse predictor", main.tex:1697) or on reports of
+      the supplied form FAILING, which cannot be misread as discovery. Widen this
+      probe only with a site in hand that the narrow one misses.
+    files: [paper/main.tex, paper/sim2science/main.tex, README.md]
+    probe: 'the distilled\s+closure\b'
+    require: '(given the conductance form|constrained to|supplied|imposed|structure-informed|assumed form)'
+    window: 12
+    min_sites: 2
     forbid: >-
       (discovers the functional form|
        recovers the functional form|
        functional-form recovery)
 
+  - id: loss-share-names-its-conditions
+    why: >-
+      The 99.97 % voltage share is a property of the UNWEIGHTED, native-units
+      objective evaluated AT THE NOISE FLOOR, and the paper states it in seven
+      places. Drop "unweighted" and the number is simply false: eq:chisq divides
+      every channel by its own noise scale and weighs the six comparably. Drop
+      "at the noise floor" and it becomes an unconditional claim about the
+      objective that was never computed -- the share is derived from each
+      channel's noise magnitude, not from the loss at an arbitrary point in
+      training. Seven sites for one number is exactly the fan-out that produced
+      the round-5 blocker.
+    files: [paper/main.tex, paper/sim2science/main.tex, paper/claims.yaml]
+    probe: '\\LossShareV\\,\\%|99\.97\s*%'
+    require: '(unweighted|noise floor|native units|no channel weights|no normalisation)'
+    window: 20
+    min_sites: 7
+
+  - id: rollout-cap-is-not-a-window-length
+    why: >-
+      \Rcap is the METRIC's ceiling (cap_ms = 70.0, src/metrics.jl:93), not the
+      length of the forecast window. The two coincide only at t_train_end = 30.
+      The window ablation at 40 ms leaves a 60 ms remainder and the corrected
+      metric returns 59.883, so a sentence using \Rcap to mean "the remainder"
+      prints a window length from a macro that does not track it. Guard G1
+      separately forbids presenting the cap as a measured duration: a horizon
+      equal to the bound means "never breached" and is reported with >=. So
+      every site that prints \Rcap must be talking about the cap, and must carry
+      censoring language. Note the require cannot be satisfied by the macro name
+      itself -- \bcap\b does not match inside \Rcap.
+    files: [paper/main.tex, paper/sim2science/main.tex]
+    probe: '\\Rcap\\,ms'
+    require: '(censor|saturat|\bcap\b|never (leaves|breaches|breach|left)|unreachable|never reach|\\ge|>=)'
+    window: 8
+    min_sites: 6
+
+  - id: node-failure-attributed-to-architecture
+    why: >-
+      The neural ODE's blow-up is architectural, not a budget shortfall, and that
+      attribution is licensed only because the budget control was RUN: matching
+      the UDE's Adam/BFGS iterations changes nothing, while removing the raw time
+      input at that same budget improves the horizon by more than an order of
+      magnitude. A site that asserts the architectural attribution without naming
+      the budget control is an unsupported assertion, and round 2 already found
+      one clause attributing the failure to a mechanism the recorded training
+      errors contradict. Asserted in the contributions bullet, the Results
+      paragraph and the Table 2 caption.
+    files: [paper/main.tex, paper/sim2science/main.tex]
+    probe: '(failure is architectural|attributes the failure|artifact of an architecture|failure of the original baseline)'
+    require: '(budget|iterations|\\AdamUde|\\AdamNode)'
+    window: 12
+    min_sites: 3
+
+  - id: seed-count-is-five-everywhere
+    why: >-
+      n = 5 reaches print two ways: \valUdeForecastVRmseN, which is traced to the
+      CSVs, and the word "five", which is not -- check_numbers is line-based and
+      digit-based, so a spelled-out count is invisible to it. If the seed set ever
+      changed, every macro site would update and every prose site would silently
+      go on saying five. This group pins the count by refusing any other number of
+      seeds anywhere in the manuscript. "Four of the five seeds" is not caught:
+      the words are not adjacent.
+    files: [paper/main.tex, paper/sim2science/main.tex]
+    probe: null
+    forbid: '\b(one|two|three|four|six|seven|eight|nine|ten|[0-9]+) seeds\b'
+
   - id: ablations-declare-single-seed
     why: >-
       Guard G13. Every ablation point except the conductance sweep is one run at
       seed 1111 with no error bar. Any ablation sentence must say so.
-    files: [paper/main.tex]
+    files: [paper/main.tex, paper/sim2science/main.tex]
     probe: '(window|noise)[- ]ablation'
     only_if: 'val[A-Z]'
     require: '(single seed|one run|single-seed|no error bars|n\s*=\s*1)'

@@ -119,6 +119,7 @@ the full (non-smoke) configuration.
 | 9 | `julia --project=. recover_voltage_only_commoneval.jl` | `results/identifiability/voltage_only_commoneval.csv` | step 1 (no retraining) | minutes |
 | 10 | `python scripts/symbolic_domain_comparison.py` | `results/identifiability/symbolic_domain_comparison.csv` | step 1 (`results/calcium/probe_*.csv`) | seconds |
 | 11 | `RETRAIN_GCA=0.4 RETRAIN_SEEDS=1111 RETRAIN_OUT=retrain_gca04_20k julia --project=. retrain_gca2_20k.jl` then `python scripts/gca04_retrain_control.py` | `results/retrain_gca04_20k/`, `results/identifiability/gca04_retrain_control.csv` | step 1 | one long training |
+| 12 | `julia --project=. recover_rollout_censoring.jl` | `results/identifiability/rollout_censoring.csv` | step 1 (reads saved parameters; no retraining) | minutes |
 
 ### Plotting-only steps (nothing is refit)
 
@@ -127,7 +128,21 @@ the full (non-smoke) configuration.
 | `julia --project=. figure_identifiability.jl` | `figures/fig13_parametric_identifiability.png` | `results/identifiability/{loss_surface_gca2.0.csv,profile_gca_gca2.0.csv,parametric_fit.csv,symbolic_domain_comparison.csv}` |
 | `julia --project=. figure_gca_sweep_5seed.jl` | `figures/fig7c_ablation_gca_5seed.png` | `results/gca_sweep_5seed/gca_sweep_multiseed.csv` |
 | `julia --project=. figure_coeff_recovery_panels.jl` | `figures/fig11_coeff_recovery_{before,after}.png` **and stages both into `paper/figures/` itself** | `results/symbolic/symbolic_recovery_metrics.csv`, `results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv` |
+| `julia --project=. figure_commoneval_window.jl` | `figures/fig7b_commoneval_ablation_window.png` (the paper's Figure 8a) | `results/identifiability/rollout_censoring.csv` |
 | `julia --project=. regen_fig2.jl` | `figures/fig2_neural_ode_overview.png` alone | retrains the one published-configuration neural ODE; use when the `HH_REPLOT` pipeline hangs on its last step |
+
+> **Run `figure_commoneval_window.jl` AFTER `experiments_runner.jl`, never before.**
+> Two scripts write `fig7b_commoneval_ablation_window.png`, and only one of them
+> produces the panel the paper prints. `experiments_runner.jl` builds it from
+> `results/ablation_window.csv`, whose `common_eval_rollout_horizon_ms` column is
+> the **pre-censoring** constant 70.0; the common-evaluation window is only
+> 49.902 ms long, so that cap is unreachable there and the panel comes out as a
+> flat line at a value the metric can never measure. `figure_commoneval_window.jl`
+> rebuilds it from the corrected `rollout_censoring.csv`. The Figure 8a caption in
+> the paper explicitly says the bottom panel is plotted at the censoring bound
+> **rather than** at the 70 ms cap - so the runner's version contradicts the
+> caption, and running the documented pipeline overwrites the good panel with it.
+> The same applies to `HH_REPLOT=1`, which rebuilds the `fig7*` figures.
 
 ### Paper build
 
@@ -155,7 +170,7 @@ stages them. After copying, the script re-reads `main.tex` and fails if any
 | Variable | Read by | Effect |
 |---|---|---|
 | `HH_SMOKE=1` | `experiments_runner.jl`, `gca_sweep_5seed.jl`, `node_parity.jl`, `identifiability_parametric.jl`, `retrain_gca2_20k.jl` | tiny iteration budgets and reduced grids for a fast pipeline check. **Destructive: writes over the published `results/` and `figures/`. See the warning above.** |
-| `HH_REPLOT=1` | `experiments_runner.jl` | skip all training; rebuild the derived CSVs and summary figures from the existing `results/metrics_all.csv`. Its last step (`run_node_baseline`) is a known hang on this stack; every other figure is written before it, so kill the job once figure mtimes stop advancing and use `regen_fig2.jl` for that one panel. |
+| `HH_REPLOT=1` | `experiments_runner.jl` | skip all training; rebuild the derived CSVs and summary figures from the existing `results/metrics_all.csv`. Its last step (`run_node_baseline`) is a known hang on this stack; every other figure is written before it, so kill the job once figure mtimes stop advancing and use `regen_fig2.jl` for that one panel. It also rebuilds the `fig7*` ablation figures, which overwrites Figure 8a with the pre-censoring version - re-run `figure_commoneval_window.jl` afterwards (see the warning above). |
 | `IDENT_PARTS=1,2,3,4` | `identifiability_parametric.jl` | select which parts run: 1 parametric fit, 2 loss surface, 3 profile likelihoods, 4 conditioning. Default all four. |
 | `NODE_VARIANTS=autonomous,timeinput` | `node_parity.jl` | which neural-ODE variants to train. Each value set writes its own `run_log_<variants>.csv`, so two variant-restricted processes can run concurrently without clobbering the log. Default both. |
 | `NODE_SEEDS=1111,2222,3333,4444,5555` | `node_parity.jl` | seed list. Default all five. Overridden to a single seed under `HH_SMOKE`. |
@@ -200,7 +215,7 @@ name below is resolved against `paper/figures/` after staging.
 | Figure 6a - symbolic parity (baseline budget) | `fig9_symbolic_parity_before.png` (staged from `figures/fig9_calcium_symbolic_parity.png`) | `objective3_symbolic.jl` | `results/calcium/` probe and grid CSVs |
 | Figure 6b - coefficient recovery, hull domain, baseline budget | `fig11_coeff_recovery_before.png` | `figure_coeff_recovery_panels.jl` (stages itself) | `results/symbolic/symbolic_recovery_metrics.csv` |
 | Figure 7 - parametric identifiability, three panels | `fig13_parametric_identifiability.png` | `figure_identifiability.jl` | `results/identifiability/{loss_surface_gca2.0.csv,profile_gca_gca2.0.csv,parametric_fit.csv,symbolic_domain_comparison.csv}` |
-| Figure 8a - window ablation on the shared window | `fig7b_commoneval_ablation_window.png` | `experiments_runner.jl` | `results/metrics_all.csv` |
+| Figure 8a - window ablation on the shared window | `fig7b_commoneval_ablation_window.png` | `figure_commoneval_window.jl` (**not** `experiments_runner.jl` - see the warning below) | `results/identifiability/rollout_censoring.csv` |
 | Figure 8b - coefficient recovery, hull domain, aggressive budget | `fig11_coeff_recovery_after.png` | `figure_coeff_recovery_panels.jl` (stages itself) | `results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv` |
 | Noise ablation, appendix | `fig7_ablation_noise.png` | `experiments_runner.jl` | `results/ablation_noise.csv` |
 

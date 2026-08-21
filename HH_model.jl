@@ -284,7 +284,7 @@ tsteps_train      = tsteps[train_idx]
 # the file), so it must never overwrite the released figures the paper includes.
 # The previous value was an absolute raw"D:\SciML\..." path that existed on one
 # machine and pointed straight at figures/, where lines 413 and 544 below clobber
-# fig2_neural_ode_overview.png and fig3_ude_overview.png (main.tex:874,878).
+# fig2_neural_ode_overview.png and fig3_ude_overview.png (\includegraphics in main.tex).
 output_dir = joinpath(@__DIR__, "figures_narrative")
 
 # Create the directory if it doesn't already exist

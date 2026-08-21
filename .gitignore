@@ -62,3 +62,9 @@ overleaf_upload.zip
 
 # Drag-ready Overleaf bundle, rebuilt on demand alongside overleaf_upload.zip.
 overleaf_upload/
+
+# Double-blind Sim2Science submission bundle, rebuilt on demand by
+# scripts/make_sim2science_bundle.py. Derived: everything in it is tracked
+# under paper/, and the supplementary is generated from paper/main.tex.
+sim2science_upload/
+sim2science_upload.zip
