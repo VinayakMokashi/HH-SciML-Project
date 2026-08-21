@@ -445,7 +445,7 @@ structural and practical identifiability have precise definitions and diagnostic
 Hodgkin--Huxley models under voltage clamp --- where the potential is the imposed input and the membrane current the observable --- and prove that gating variables and conductances form
 identifiable \emph{combinations} there rather than being separately identifiable, and
 \citet{daly2015} reach a compatible conclusion by approximate Bayesian analysis.
-Our voltage is instead a free-running state and the only observable, so those theorems are an analogue of our setting rather than a statement about it. Our result is nonetheless continuous with this body of work and imports it into the SciML
+Our voltage is instead a free-running state rather than an experimenter-imposed input, so those theorems are an analogue of our setting rather than a statement about it. Our result is nonetheless continuous with this body of work and imports it into the SciML
 setting.
 
 \paragraph{SciML applied to neurons, and the gap.}
@@ -457,9 +457,11 @@ On the Hodgkin--Huxley system specifically, \citet{kainth2025pinodesr} report
 that standard neural ODEs and physics-informed variants forecast stiff
 oscillatory dynamics unreliably under realistic iteration budgets, and stabilise
 them by normalising physics residuals across state variables that evolve on
-disparate timescales. That diagnosis is directly relevant to us twice over: it
-independently corroborates the weakness of the black-box baseline we report in
-Sec.~\ref{sec:results-forecasting}, and the imbalance it corrects is the same one
+disparate timescales. That diagnosis is directly relevant to us twice over. It corroborates the
+weakness of the black-box baseline we report in
+Sec.~\ref{sec:results-forecasting} --- though that work shares four of this
+paper's five authors, so we note the agreement rather than lean on it as
+independent --- and the imbalance it corrects is the same one
 that makes our full-state and voltage-only conditions nearly identical
 (Sec.~\ref{sec:results-partial}). Where they rebalance the residual to make the
 learned vector field trainable, we hold the objective fixed and ask what the
@@ -473,11 +475,13 @@ database of several thousand models that includes several hundred
 calcium-channel models, and reducing a multicompartment cortical model to a
 single compartment with a learned axial current. They own the claim that one can
 put a network inside a Hodgkin--Huxley model and learn a hidden current, and we
-do not contest it. They are also clear-eyed about the difficulty we study:
-recovering gating dynamics from voltage alone is, in their words, inherently
-underconstrained, because for a multi-gate channel different combinations of
-steady-state and time-constant functions produce similar currents. Our
-contribution is not to point that out but to \emph{measure} it in a case where
+do not contest it. They are also clear-eyed about the general shape of the
+difficulty: recovering gating dynamics from voltage alone is, in their words,
+inherently underconstrained, because for a multi-gate channel different
+combinations of steady-state and time-constant functions produce similar
+currents. Our instance is narrower --- the gate kinetics are known physics here
+and only the algebraic calcium term is learned --- and our
+contribution is not to point the difficulty out but to \emph{measure} it in a case where
 ground truth is controlled: which hidden current is recoverable, from how much of
 a single trajectory, and whether an observed failure is optimisational or
 structural. Two differences of scope are worth naming plainly, since they mark
@@ -782,7 +786,8 @@ $\{1, V, s, Vs, s^2, Vs^2\}$, which contains the truth exactly, by standardised
 sequentially-thresholded least squares followed by ordinary-least-squares
 debiasing, in the manner of SINDy \citep{brunton2016sindy}. The constant term is
 held out of the standardised thresholding step and always enters the active set,
-so the sparsest model this estimator can return keeps five of the six terms. The second is a
+so the intercept is never eliminated and any sparsity the estimator reports is
+sparsity among the five remaining columns. The second is a
 structure-informed fit to the biophysical conductance form $s^2(aV+b)$, whose
 coefficients map directly to the physics: $a=g_{Ca}$, $b=-g_{Ca}E_{Ca}$, and the
 reversal potential is $-b/a$. As a wiring check we apply the identical
@@ -976,8 +981,7 @@ configuration lands between $\valNodePublishedVRmseMin$ and
 $\valNodePublishedVRmseMax$\,mV across seeds, the parity-budget one between
 $\valNodeParityTimeVRmseMin$ and $\valNodeParityTimeVRmseMax$\,mV. Whatever is
 wrong is not a shortage of optimisation, and more of it does not rescue the
-forecast, consistent with buying a tighter fit of the training window by clock
-index.
+forecast.
 
 Removing the time input at that same budget changes the picture entirely. The
 horizon goes to $\valNodeParityAutoRolloutMeanStd$\,ms, roughly forty-five times
@@ -1488,10 +1492,10 @@ twenty per cent, against six per cent under the likelihood. Descending a
 voltage-dominated objective, rather than representing the current with a network,
 therefore accounts for about a threefold inflation on its own. The closure's
 forty per cent sits a further twofold above \emph{that}. % claim: closure-induced-nonidentifiability
-The representation is not innocent, but it is responsible for roughly half of the
-gap on a log scale, not all of it, and we quote the twofold figure rather than
+The representation is not innocent, but it owns rather less than half of the gap
+on a log scale, not all of it, and we quote the twofold figure rather than
 the sixfold one wherever the two arms are compared. (The voltage-only objective
-returns the same estimate to three decimals, which is what
+returns the same estimate to the precision we report it, which is what
 \eqref{eq:loss} being \LossShareV\,\% voltage predicts.)
 
 We are careful about the inference this licenses, because the comparison is not
@@ -1714,10 +1718,11 @@ what a flat direction in the loss means, observed directly rather than inferred.
   $n=\valUdeForecastVRmseN$ seeds). ``Before'' is Adam \AdamUde/BFGS \BfgsUde;
   ``after'' is Adam \AdamRe/BFGS \BfgsRe, identical in model, data, seeds,
   solver, tolerances, and loss; only the iteration budget changed. Every entry is
-  mean $\pm$ 1 SD. The two symbolic rows ($\hat a$ and $R^2$) are on the
-  convex-hull domain in both columns, where the retrained closures were
-  distilled---which is why the before-column differs from the
-  supervised-trajectory values quoted in the text. The train, forecast and loss
+  mean $\pm$ 1 SD. Both symbolic rows are distilled on the convex-hull domain in
+  both columns, which is why the before-column differs from the
+  supervised-trajectory values quoted in the text. Note that the hull is the
+  \emph{fitting} domain: $\hat a$ is the hull-fit coefficient, while $R^2$ scores
+  that fitted form against the true current along the trajectory. The train, forecast and loss
   rows are trajectory measurements and have no fitting domain; both voltage rows
   are scored against the \emph{clean} trajectory, whereas the loss row scores the
   \emph{noisy} training target. Read the last row
@@ -1858,8 +1863,10 @@ estimates directly, and its scatter is the scatter of an estimator with a
 likelihood behind it; $\hat a$ is an ordinary-least-squares projection of an
 already-learned function onto a two-term basis, so its scatter compounds what the
 closure learned with what that projection discards. We therefore read the gap
-between them as an order-of-magnitude contrast, not as one error bar against
-another.
+between them as a contrast in kind, not as one error bar against another --- and
+not as a single effect either, since the matched-objective control of
+Sec.~\ref{sec:results-parametric} attributes roughly a threefold inflation to the
+objective and a further twofold to the representation.
 
 Three further limitations bound the claims. The training-window and noise
 ablations remain single-seed and carry no error bars; only the conductance sweep
@@ -1886,8 +1893,10 @@ cannot be separated from these runs.
 \label{sec:conclusion}
 
 Embedding known physics and learning one hidden ionic current makes a \Rcap\,ms
-extrapolation both accurate and dependable, even when only voltage is observed,
-and yields a closure that agrees closely with the true calcium current's shape.
+extrapolation both accurate and dependable, and restricting the loss to the
+voltage row costs little because that row already dominates the full-state
+objective. It yields a closure that agrees closely with the true calcium
+current's shape.
 It does not yield the current's conductance. The reason is not the one that would
 be assumed: the single noisy trajectory determines that conductance to about six
 per cent, as a direct parametric fit on the very same data shows. It is the
@@ -1895,6 +1904,11 @@ flexible closure that loses it, and a chain of controls leaves nothing else
 standing, since the regression is exonerated, the fitting domain is immaterial,
 the signal-amplitude sweep moves about eightfold end to end, and quadrupled
 optimisation lowers the training loss while worsening every recovered quantity.
+One thing besides the representation does differ between the two arms, and we
+measured it rather than assume it away: repeating the parametric fit under the
+closure's own voltage-dominated objective widens its spread to about twenty per
+cent, so roughly half the gap on a log scale is the objective and the
+representation owns a factor of about two.
 
 The practical consequence for scientific machine learning is a caution with a
 concrete remedy. A UDE coefficient is a physical estimate only when the data
@@ -1936,7 +1950,7 @@ on.
 %    TRUE END of every line that then carries a digit.  Such a comment placed
 %    MID-LINE silently deletes the rest of that line.
 %  - ANONYMITY: the target venue's review model has not been checked.  If it is
-%    double-blind, this section, the author block, the acknowledgement and the
+%    double-blind, this section, the author block and the
 %    PDF metadata must all be de-identified before submission and the archive
 %    replaced by an anonymised deposit.
 % -------------------------------------------------------------------------
@@ -2061,11 +2075,12 @@ released as set out in the Data and Code Availability section.
   \centering
   \includegraphics[width=\textwidth]{fig7b_commoneval_ablation_window.png}
   \caption{\textbf{Training-window ablation, scored on the shared unseen window
-  $t>\Tcommon$\,ms}, single seed. Only the shortest-window collapse clears seed
-  noise; the mild rise at the two longest windows is a fixed-iteration
-  under-optimisation artifact, not a property of window length (each window
-  trains for the same budget regardless of its number of points), and must be
-  read as such. The bottom panel is \emph{right-censored and saturated}: the
+  $t>\Tcommon$\,ms}, single seed. The shortest-window collapse is a
+  data-sufficiency effect. The rise at the two longest windows is several times
+  the five-seed spread at the centre point, so it is not noise --- but it is a
+  fixed-iteration under-optimisation artifact rather than a property of window
+  length (each window trains for the same budget regardless of how many points it
+  contains), and must be read as such. The bottom panel is \emph{right-censored and saturated}: the
   forecast never leaves the \Ttube\,mV tube in any window, and because this
   window is only about fifty milliseconds long the horizon cannot exceed that
   however well the model does. It is plotted at the censoring bound rather than
