@@ -9,11 +9,13 @@ Hodgkin-Huxley model with a neural closure forecasts held-out voltage accurately
 reproduces the shape of the hidden current, but does **not** recover its conductance.
 The reason is not a shortage of data: a direct two-parameter fit of `(gCa, ECa)` to the
 *same* single noisy trajectory recovers `gCa` to about six per cent. Parametric
-identifiability holds; functional identifiability fails. Both estimators scatter along
-the same `gCa`-`ECa` trade-off direction; the closure simply travels far enough along it
-to lose a conductance the data themselves pin down. Note that the two arms differ in
-objective and optimiser as well as in representation, which the paper states explicitly
-rather than attributing the whole gap to representation alone.
+identifiability holds; functional identifiability fails. The data confine the conductance
+to a short, bounded stretch of the `gCa`-`ECa` trade-off, and the estimates read off the
+closure scatter well beyond it. The two arms also differ in objective and optimiser, not
+only in representation: a matched-objective control attributes a roughly threefold
+inflation to the objective alone, and because it holds the optimiser fixed it bounds the
+representation's own contribution at about a further factor of two rather than measuring
+it.
 
 ---
 
@@ -74,35 +76,28 @@ directory.
 
 ---
 
-## WARNING: `HH_SMOKE=1` overwrites the published results
+## `HH_SMOKE=1` is isolated, but read this before using it
 
-`HH_SMOKE=1` is a *pipeline* check, not a sandbox. **There is no separate smoke output
-tree.** Smoke runs write to exactly the same canonical paths as a real run:
+`HH_SMOKE=1` is a *pipeline* check: tiny iteration budgets and reduced grids, so it
+exercises every code path in minutes and produces numbers that mean nothing.
 
-- `experiments_runner.jl` **deletes `results/metrics_all.csv`** at the start of every
-  non-`HH_REPLOT` run, including a smoke run, and then rewrites it, plus
-  `results/metrics_baseline.csv`, `results/metrics_baseline_multiseed.csv`,
-  `results/ablation_{noise,window,gca}.csv`, `results/calcium/*.csv`,
-  `results/params/*.jld` and roughly forty PNGs under `figures/`.
-- Smoke budgets are Adam 60 / BFGS 5 for the UDE and Adam 40 / BFGS 3 for the neural ODE,
-  against the published 5000 / 300 and 3000 / 300. The overwritten files are therefore
-  **meaningless but indistinguishable by filename** from the published ones.
-- `identifiability_parametric.jl` overwrites `results/identifiability/*.csv` with coarse
-  grids (11 x 11 loss surface instead of 101 x 101, 9-point profiles instead of 81).
-- `gca_sweep_5seed.jl` and `node_parity.jl` **append** to
-  `results/gca_sweep_5seed/metrics_gca_sweep.csv` and
-  `results/node_parity/metrics_node_parity.csv`. The summarize scripts dedupe keeping the
-  **last** row per key, so a smoke row appended last silently wins.
-- `retrain_gca2_20k.jl` under smoke overwrites `results/retrain_gca2_20k/` with 60/5 runs.
+**Its output is isolated.** `src/experiment.jl` redirects the whole output tree under
+smoke, so a smoke run writes to `results_smoke/` and `figures_smoke/` and cannot touch the
+published `results/` and `figures/`. This was not always true: before 2026-08-20 the paths
+were unconditional, and a smoke run truncated `results/metrics_all.csv` from 696 rows to
+321 and modified 63 other tracked files. If you are on an older checkout, assume the
+destructive behaviour.
 
-**Before any smoke run, make sure the working tree is clean**, and recover afterwards with:
+Two things the isolation does *not* cover:
 
-```
-git checkout -- results figures
-```
+- `gca_sweep_5seed.jl` and `node_parity.jl` write **append-only** CSVs. Their summarize
+  scripts dedupe keeping the **last** row per key, so a stray row appended last silently
+  wins. Re-run the matching `scripts/summarize_*.py` after any partial run.
+- `retrain_gca2_20k.jl` has its own switch, `RETRAIN_OUT`, which is what the `gCa = 0.4`
+  negative control uses to write to a separate tree.
 
-If you want an isolated smoke run, the only script that supports one is
-`retrain_gca2_20k.jl`, via `RETRAIN_OUT`.
+Whatever you run, check `git status` afterwards. Nothing under `results/` should change
+unless you meant it to.
 
 ---
 
@@ -207,8 +202,12 @@ name below is resolved against `paper/figures/` after staging.
 | Figure 7 - parametric identifiability, three panels | `fig13_parametric_identifiability.png` | `figure_identifiability.jl` | `results/identifiability/{loss_surface_gca2.0.csv,profile_gca_gca2.0.csv,parametric_fit.csv,symbolic_domain_comparison.csv}` |
 | Figure 8a - window ablation on the shared window | `fig7b_commoneval_ablation_window.png` | `experiments_runner.jl` | `results/metrics_all.csv` |
 | Figure 8b - coefficient recovery, hull domain, aggressive budget | `fig11_coeff_recovery_after.png` | `figure_coeff_recovery_panels.jl` (stages itself) | `results/retrain_gca2_20k/symbolic/symbolic_recovery_metrics.csv` |
+| Noise ablation, appendix | `fig7_ablation_noise.png` | `experiments_runner.jl` | `results/ablation_noise.csv` |
 
-`figures/` holds roughly forty-five images; the paper prints the ten above.
+`figures/` holds roughly forty-five images; the paper prints the eleven above.
+Figure numbering in this table follows an earlier layout; several subfigure pairs
+were later split into standalone figures, so treat the descriptions rather than
+the numbers as authoritative.
 `fig10` and `fig12` are produced by the symbolic pipeline but are not printed.
 
 **Domain caution.** Figures 6b and 8b are fitted on the **convex hull** of the closure's

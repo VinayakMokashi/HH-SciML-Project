@@ -779,8 +779,11 @@ claims:
   - id: window-needs-sufficient-length
     statement: >-
       A training window that covers too little of the dynamics degrades forecast accuracy roughly
-      sevenfold on the shared evaluation interval; beyond that threshold, the differences between
-      window lengths do not clear seed noise.
+      sevenfold on the shared evaluation interval. Beyond that threshold the 20 and 30 ms windows are
+      indistinguishable, but the 40 and 50 ms windows are measurably worse (4.7 and 6.5 pooled SD
+      against the centre-point spread) -- an under-optimisation artifact of the fixed iteration
+      budget, not a property of window length. Do NOT write that no difference beyond 15 ms clears
+      seed noise: the Fig 7b caption was corrected away from exactly that sentence on 2026-08-21.
     section: results.ablations
     kind: empirical
     evidence:
