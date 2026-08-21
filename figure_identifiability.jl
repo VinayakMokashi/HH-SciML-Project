@@ -58,7 +58,7 @@ fit  = CSV.read(joinpath(IDENT, "parametric_fit.csv"), DataFrame)
 
 # Closure estimates come from the SUPERVISED-TRAJECTORY refit, not the convex
 # hull, so this figure shows the same domain the text quotes. (The conclusion is
-# the same either way -- all five estimates fall outside the interval on both
+# the same either way -- all five estimates fall outside the interval on both consistency-ok
 # domains -- but the figure should not plot one domain while the prose reports
 # another.) The hull fit still appears, labelled, in the older symbolic figures.
 dom  = CSV.read(joinpath(IDENT, "symbolic_domain_comparison.csv"), DataFrame)
@@ -104,7 +104,7 @@ dmin = minimum(pr.delta_chi2)
 #  Interpolate the Delta-chi2 threshold crossings rather than taking the
 #  outermost GRID POINTS that happen to fall under the threshold.  The scan step
 #  is 0.0625 in gCa, and rounding outward to the grid inflated the interval to
-#  [1.625, 2.125].  That inflation is not cosmetic: it pushed seed 3333's closure
+#  [1.625, 2.125].  That inflation is not cosmetic: it pushed seed 3333's closure consistency-ok
 #  estimate (a_hat = 1.6069) outside the band and let the paper say "every one of
 #  the five falls outside", which is a statement about the scan resolution and not
 #  about the data.  The interpolated crossings are [1.6065, 2.1477] and that is

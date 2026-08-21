@@ -106,9 +106,9 @@ function panel_set(c, supertitle, outfile)
     return out
 end
 
-# The optimiser is BFGS, not L-BFGS: src/experiment.jl calls
+# The optimiser is BFGS, not L-BFGS: src/experiment.jl calls consistency-ok
 # OptimizationOptimJL.BFGS(initial_stepnorm = 0.01), and `grep -rn LBFGS
-# --include=*.jl .` returns nothing. These two supertitles said "L-BFGS" while
+# --include=*.jl .` returns nothing. These two supertitles said "L-BFGS" while consistency-ok
 # the manuscript was corrected around them, which is exactly how a figure ends
 # up contradicting its own paper. Do not put it back.
 o1 = panel_set(bef,

@@ -1,0 +1,169 @@
+# =============================================================================
+#  consistency.yaml -- the repeated-claim ledger
+# =============================================================================
+#  WHY THIS FILE EXISTS
+#
+#  Five audit rounds found 154 defects. By rounds 4 and 5 almost none of them
+#  were errors of fact any more; they were CONSISTENCY DEBT. The paper asserts
+#  the same dozen things in three to six places each. A correction lands in one
+#  or two of them, the other sites keep the old wording, and the next audit finds
+#  the survivors. Each fix seeds the next round's findings, which is why the
+#  defect rate flattened at ~1.6 per audit area instead of falling to zero.
+#
+#  The round-5 BLOCKER is the archetype. Round 4 established that the
+#  matched-objective control never isolates the optimiser, so the residual
+#  twofold BOUNDS the representation rather than measuring it, and wrote the rule
+#  into claims.yaml: "Say 'at most', never 'is'." That fix was then applied to
+#  Limitations and nowhere else. The abstract -- the most-read sentence in the
+#  paper -- still said the representation's own contribution "is" a factor of
+#  about two. One site fixed out of five.
+#
+#  No existing checker can see this. check_numbers verifies traceability,
+#  check_claims verifies the ledger is anchored, and neither compares two
+#  sentences to each other. This file does.
+#
+#  HOW IT WORKS
+#  Each group is a claim the paper makes in more than one place.
+#    probe    finds the sites (case-insensitive regex over non-comment text)
+#    require  every probed site must ALSO match this, or it is flagged
+#    forbid   no site anywhere in the file may match this, ever
+#    min_sites  guards against a probe that has silently stopped matching
+#  Run:  python scripts/check_consistency.py
+#
+#  WHEN YOU CHANGE A CLAIM: add or update its group here FIRST, then let the
+#  checker tell you every site you still have to touch. That is the whole point.
+# =============================================================================
+
+groups:
+
+  - id: representation-share-is-an-upper-bound
+    why: >-
+      The matched-objective control swaps the objective but keeps multi-start
+      Nelder-Mead, so it never isolates the optimiser. The residual ~2.1x is
+      representation AND optimiser together. Every site that quotes the
+      representation's share must mark it as a bound, never as a measured value.
+      Round 5 blocker: the abstract said "is" while Limitations said "at most".
+    files: [paper/main.tex, README.md]
+    probe: '(twofold|factor of about two|two-fifths)[^.]{0,200}?representation|representation[^.]{0,200}?(twofold|factor of about two|two-fifths)'
+    require: '(at most|bounds|bounding|upper bound|no more than|remainder bounds)'
+    forbid: >-
+      (representation's own contribution is a factor|
+       objective and the representation each account for roughly half|
+       representation owns a factor of about two)
+    min_sites: 4
+
+  - id: retired-data-side-thesis
+    why: >-
+      The paper's thesis was reversed in Aug 2026. The retired claim -- that the
+      conductance is not identifiable from a single trajectory, or that the data
+      are at fault -- must never reappear. It came back twice: once at
+      main.tex:623 in the gCa=0.4 justification, once in the Introduction.
+    files: [paper/main.tex, README.md, paper/claims.yaml]
+    probe: null
+    forbid: >-
+      (not identifiable from a single trajectory|
+       single trajectory cannot determine|
+       too small a contribution to the voltage to be recoverable at all|
+       the data cannot determine)
+
+  - id: optimiser-is-full-bfgs
+    why: >-
+      src/experiment.jl calls OptimizationOptimJL.BFGS. There is no LBFGS
+      anywhere in the codebase. "L-BFGS" appeared ten times in the prose and
+      twice inside figure supertitles, where it survived a round of prose fixes.
+    files: [paper/main.tex, README.md, paper/claims.yaml, figure_coeff_recovery_panels.jl]
+    probe: null
+    forbid: 'L-BFGS'
+
+  - id: five-gates-not-six
+    why: >-
+      There are five gates (m, h, n, p, s) and six STATE ODEs, the sixth being
+      the voltage equation. "six gate ODEs" appeared in Figure 1 and its caption.
+      "six states" is correct and must not be caught by this rule.
+    files: [paper/main.tex]
+    probe: null
+    forbid: 'six gate'
+
+  - id: profile-interval-is-interpolated
+    why: >-
+      The 95% profile interval is the interpolated Delta-chi2 crossing
+      [1.6065, 2.1477], not the raw 0.0625-grid bracket [1.63, 2.13]. The old
+      bracket pushed seed 3333 outside the band and licensed "every one of the
+      five falls outside", which is a statement about scan resolution.
+    files: [paper/main.tex, paper/claims.yaml, figure_identifiability.jl]
+    probe: null
+    forbid: >-
+      (1\.63,\s*2\.13|
+       \[1\.625,\s*2\.125\]|
+       [Ee]very one of the five (closure )?(conductances|estimates)|
+       all five (closure )?estimates fall outside)
+
+  - id: closure-count-outside-interval
+    why: >-
+      Four of the five traj-train closure estimates fall outside the interpolated
+      interval; seed 3333 at 1.6069 is inside by 0.0004. Any site restating the
+      count must say four, not five.
+    files: [paper/main.tex]
+    probe: '(conductances|closure estimates)[^.]{0,200}?(outside|inside)[^.]{0,80}?(that )?interval'
+    require: '([Ff]our|4 of 5|lower edge)'
+    min_sites: 1
+
+  - id: conductance-numbers-name-their-domain
+    why: >-
+      THE DOMAIN RULE. Hull and supervised-trajectory conductance estimates
+      differ by ~6x at gCa=0.4. Four separate defects came from quoting one
+      without saying which. Any line carrying a hull-only macro must say "hull"
+      on that line or within its caption.
+    files: [paper/main.tex]
+    probe: 'valSymbolicAHatNegControl|valSymbolicAHatMeanStd|valSymbolicAHatRange[^T]|valGcaFourRetrainAHat'
+    require: '(hull|convex)'
+    window: 70   # a table row can sit far below its caption
+    min_sites: 3
+
+  - id: no-equally-good-fits
+    why: >-
+      The licensed inference is one-directional: because the data pin the
+      conductance, the closure's failure is not the data's fault. A 2-parameter
+      model given the true form is EXPECTED to beat a 337-parameter closure, so
+      the paper must never present the two as equally good fits that disagree.
+    files: [paper/main.tex, README.md]
+    probe: null
+    forbid: '(two equally good fits|equally good fits disagree|both fit equally well)'
+    # The paper legitimately DENIES this phrasing; only an affirmative use is a defect.
+    forbid_unless: '(not that|never|must not|do not|rather than) '
+
+  - id: rollout-horizon-is-censored
+    why: >-
+      The rollout horizon is right-censored at min(cap, available). Guard G1
+      forbids quoting a mean +/- SD for it, and forbids presenting the cap as a
+      measurement. The common-eval window is ~49.9 ms, so a 70 ms cap there is
+      unreachable.
+    files: [paper/main.tex]
+    probe: 'valUdeForecastRollout|valUdeVoltageForecastRollout'
+
+    require: '(censor|cap|saturat|>=|\\ge|never (leaves|breach))'
+    window: 60
+    min_sites: 2
+
+  - id: symbolic-form-is-supplied
+    why: >-
+      Mentor review point 2. The conductance form s^2(aV+b) is SUPPLIED to the
+      estimator, not discovered by it. Any sentence claiming functional-form
+      recovery must carry that qualification.
+    files: [paper/main.tex, README.md]
+    probe: null
+    forbid: >-
+      (discovers the functional form|
+       recovers the functional form|
+       functional-form recovery)
+
+  - id: ablations-declare-single-seed
+    why: >-
+      Guard G13. Every ablation point except the conductance sweep is one run at
+      seed 1111 with no error bar. Any ablation sentence must say so.
+    files: [paper/main.tex]
+    probe: '(window|noise)[- ]ablation'
+    only_if: 'val[A-Z]'
+    require: '(single seed|one run|single-seed|no error bars|n\s*=\s*1)'
+    window: 10
+    min_sites: 1

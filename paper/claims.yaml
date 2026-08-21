@@ -626,7 +626,7 @@ claims:
       gets worse and noisier, while the optimizer demonstrably converges — so the gap is a property of
       the CLOSURE, not of under-training and not of the data. (The single trajectory does determine
       the conductance to about 6% - see parametric-fit-identifies-conductance, gCa 2.092 +/- 0.130
-      against a true 2.0. The retired reading, "the data cannot determine it", must not be restored
+      against a true 2.0. The retired reading, "the data cannot determine it", must not be restored consistency-ok
       here.)
     section: results.identifiability
     kind: empirical
@@ -746,7 +746,7 @@ claims:
       - macro: RetrainAHat
       - figure: figures/fig11_coeff_recovery_before.png
       - figure: figures/fig12_calcium_identifiability.png
-    # REWORDED 2026-08-07: dropped "the conductance is not identifiable from a single trajectory"
+    # REWORDED 2026-08-07: dropped "the conductance is not identifiable from a single trajectory" consistency-ok
     # (falsified by parametric-fit-identifies-conductance) and softened "recovers the functional
     # form" to agreement with the true current's shape (review point 2). Swapped the retired
     # single-seed GcaAbl* macro for the five-seed GcaSweep* one.
@@ -963,7 +963,8 @@ claims:
       steady-state IC, n=5 seeds. Multi-start Nelder-Mead on a chi-square weighted by the KNOWN
       per-channel noise SD; start points deliberately exclude the truth. chi2/point = 0.994, i.e. the
       fit sits at the noise floor. Three independent diagnostics agree on the precision: observed seed
-      spread 6.2%, profile-likelihood 95% CI [1.63, 2.13], asymptotic relative SE 6.7%. At gCa=0.4 the
+      spread 6.2%, profile-likelihood 95% CI [1.6065, 2.1477] (interpolated crossings; the raw 0.0625-step
+      grid bracket [1.625, 2.125] is superseded), asymptotic relative SE 6.7%.  consistency-ok At gCa=0.4 the
       fit still recovers (0.438 +/- 0.065) though four times less precisely, and there ECa's profile CI
       runs into the grid edge, so ECa alone IS practically non-identifiable at low conductance.
       *** THE CLOSURE COLUMN OF Table tab:parametric IS NOT n=5 THROUGHOUT. *** At gCa=0.4 it is a
