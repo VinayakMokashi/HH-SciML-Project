@@ -65,12 +65,12 @@
 \newcommand{\Ndata}{512}       % DATASIZE                              src/hh_core.jl:79
 \newcommand{\Ntrain}{154}      % samples with t<=\Ttrain ms            src/hh_core.jl:80,178
 \newcommand{\Nchisq}{924}      % 6 channels x \Ntrain = chi^2/point denom  identifiability_parametric.jl:186
-\newcommand{\Ttube}{10}        % rollout tube threshold, mV            src/metrics.jl:81
-\newcommand{\Rcap}{70}         % rollout cap_ms                        src/metrics.jl:82
+\newcommand{\Ttube}{10}        % rollout tube threshold, mV            src/metrics.jl:92
+\newcommand{\Rcap}{70}         % rollout cap_ms                        src/metrics.jl:93
 \newcommand{\Vrest}{-65}       % V0 rest potential, mV                 src/hh_core.jl:98
 % -- metric knobs (src/metrics.jl); spelled out in Appendix B --
-\newcommand{\Rsus}{1.0}        % rollout sustained_ms                  src/metrics.jl:82
-\newcommand{\Tfcast}{30.137}   % first forecast sample = 154*100/511   src/hh_core.jl:80 + src/metrics.jl:167
+\newcommand{\Rsus}{1.0}        % rollout sustained_ms                  src/metrics.jl:93
+\newcommand{\Tfcast}{30.137}   % first forecast sample = 154*100/511   src/hh_core.jl:80 + src/metrics.jl:178
 \newcommand{\Vthresh}{0}       % spike detector vthresh, mV            src/metrics.jl:31
 \newcommand{\SpikeSep}{2.0}    % spike min_dist_ms (refractory merge)  src/metrics.jl:31
 \newcommand{\SpikeTol}{2.0}    % spike match_tol_ms (greedy match)     src/metrics.jl:54
@@ -312,11 +312,14 @@ random seeds.
 % claim: closure-induced-nonidentifiability
 The contribution is not that this can happen; it is a characterisation of
 \emph{when} it happens, and a demonstration, through a chain of controls, that
-the failure is a property of the flexible representation rather than of the data,
-the fit, or the optimiser: on the same trajectory, a direct two-parameter fit
+the failure is a property of the flexible representation rather than of the data:
+on the same trajectory, a direct two-parameter fit
 pins the conductance to about six per cent, while the estimates distilled from
 the closure scatter across a factor of two and all but one of them fall outside
-the short stretch of the trade-off the likelihood tolerates.
+the short stretch of the trade-off the likelihood tolerates. The two arms also
+differ in how they are fitted, and we measure that rather than assume it away:
+the objective accounts for about a threefold inflation of the parametric spread
+and the representation for a further twofold.
 
 \subsection{Contributions}
 
@@ -835,7 +838,7 @@ the three quantities we report are likelihood diagnostics. We use
     = \sum_{t\in\mathcal{T}_{\mathrm{train}}}\ \sum_{i=1}^{6}
       \frac{\bigl(u_i(t)-\hat u_i(t)\bigr)^2}{\sigma_i^2},
   \qquad
-  \sigma_i = \NoisePct\,\%\times \mathrm{SD}(u_i).
+  \sigma_i = \NoisePct\,\%\times \mathrm{SD}(u_i^{\mathrm{clean}}).
   \label{eq:chisq}
 \end{equation}
 The sums run over all six channels at each of the \Ntrain{} samples in the
@@ -1246,7 +1249,7 @@ the value at every longer one. Beyond twenty milliseconds the
 axis carries no evidence that more data helps. The twenty- and thirty-millisecond
 windows are indistinguishable ($\valWindowAblCommonEvalVRmseTwenty$ and
 $\valWindowAblCommonEvalVRmseThirty$\,mV, a gap well inside the
-$\pm\valUdeForecastVRmseStd$\,mV five-seed spread at the centre point), while the
+$\pm\valCommonEvalVRmseFullStd$\,mV five-seed common-eval spread at the centre point), while the
 forty- and fifty-millisecond windows are measurably \emph{worse}
 ($\valWindowAblCommonEvalVRmseForty$ and $\valWindowAblCommonEvalVRmseFifty$\,mV,
 several times that spread; single seed per point). That rise is \emph{not}
@@ -1600,9 +1603,10 @@ retains a usable one even at the physiological value.
   Relative standard errors come from the Fisher information in log parameters;
   $\chi^2$ per point---the statistic of \eqref{eq:chisq} divided by its $\Nchisq$
   residuals---stays near unity at every setting, so each fit sits at the
-  known noise floor; the spread in the second column widens as the calcium signal
-  shrinks toward the top row, and that is information
-  loss rather than misfit. The last column is quoted on the \emph{supervised
+  known noise floor; the second column's spread \emph{relative to its own mean}
+  widens as the calcium signal shrinks toward the top row (the absolute standard
+  deviation printed there does not, being largest in the middle of the range), and
+  that relative widening is information loss rather than misfit. The last column is quoted on the \emph{supervised
   trajectory}, the domain used throughout the text; on the convex hull the
   closure is worse at both settings ($\valSymbolicAHatMeanStd$ at $\gcaMain$,
   $\valSymbolicAHatNegControl$ at $\gcaPhys$), so this choice does not flatter
@@ -1825,7 +1829,7 @@ The transferable lesson is that predictive accuracy on the observed channel is
 not evidence that a learned physical term has been identified. Three independent
 instances make the point here: sparse regression attains a high $R^2$ against the
 true current while fitting the physical $Vs^2$ term --- the one that carries the
-conductance --- with the wrong sign; five seeds reach
+conductance --- with the wrong sign at the representative seed; five seeds reach
 indistinguishable forecast accuracy with conductances spanning more than a factor
 of two on the supervised trajectory, and more than four on the hull; and the retrain holds forecast accuracy on the representative seed while
 its agreement with the true current collapses. Parity plots and rollout error,
@@ -1891,7 +1895,10 @@ closure learned with what that projection discards. We therefore read the gap
 between them as a contrast in kind, not as one error bar against another --- and
 not as a single effect either, since the matched-objective control of
 Sec.~\ref{sec:results-parametric} attributes roughly a threefold inflation to the
-objective and a further twofold to the representation.
+objective alone. What that control does \emph{not} isolate is the optimiser: it
+swaps the objective while keeping multi-start Nelder--Mead, so the residual
+twofold is the representation and the optimiser together, and the
+representation's own share is at most that and probably less.
 
 Three further limitations bound the claims. The training-window and noise
 ablations remain single-seed and carry no error bars; only the conductance sweep
@@ -2088,9 +2095,9 @@ rather than as a mean and standard deviation. During training, a step whose solv
 returns the wrong number of samples is scored with a large fixed penalty instead
 of raising, which keeps the optimiser moving but makes such steps
 indistinguishable in the loss history. Finally, the two-stage trainer records
-whether the BFGS polish succeeded, but that flag is written out only for the
-aggressive-retrain and neural-ODE parity runs; for the baseline and ablation
-sweep it is discarded, so a silent degradation to the Adam result would not be
+whether the BFGS polish succeeded, but of the runs this paper reports that flag
+reaches a results file only for the aggressive-retrain and neural-ODE parity
+runs; for the baseline and ablation sweep it is discarded, so a silent degradation to the Adam result would not be
 visible in those tables. We report this rather than repair it, because changing
 any of it would change the numbers.
 

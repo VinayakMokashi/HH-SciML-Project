@@ -44,7 +44,7 @@ per guard) before building. All clean ⇒ the trapped numbers are safe.
 and the multiseed CSV's literal `rollout_horizon_ms = 70.0 ± 0.0`. A drafter writes: *"the UDE
 forecasts accurately for 70 ± 0 ms."*
 
-**Why it is wrong.** `70.0` is the constant `cap_ms` in `rollout_horizon` (`src/metrics.jl:81-82`).
+**Why it is wrong.** `70.0` is the constant `cap_ms` in `rollout_horizon` (`src/metrics.jl:92-93`).
 The function returns `cap_ms` when `|Vpred − Vtrue|` **never** breaches 10 mV for ≥1 ms — i.e. `70.0`
 is the sentinel for *"never failed"*, not a duration that was observed. And `70 = 100 − 30` is the
 **entire remaining trajectory** past `t_train_end=30`: there is no data after t=100, so the metric
@@ -59,7 +59,7 @@ Second hazard: the cap is a hard `70.0` while the *available* span is `100 − t
 metric==rollout_horizon_ms`: UDE/full `mean=70.0, std=0.0, n_seeds=5`; UDE/voltage `mean=70.0,
 std=0.0, n_seeds=5`. Per-seed from `results/metrics_all.csv` filter `model==UDE ∧ window==forecast ∧
 metric==rollout_horizon_ms ∧ @base`: `70.0, 70.0, 70.0, 70.0, 70.0` for both `observed` values.
-Cap constant: `src/metrics.jl:81` (`cap_ms = 70.0`, `thresh_mv = 10.0`, `sustained_ms = 1.0`).
+Cap constant: `src/metrics.jl:92` (`cap_ms = 70.0`, `thresh_mv = 10.0`, `sustained_ms = 1.0`).
 
 **Honest rewrite.**
 > The UDE never leaves the 10 mV error tube: across all five seeds the rollout horizon saturates the
@@ -628,7 +628,7 @@ Seed pinning: `experiments_runner.jl:159-172`.
 > gCa = 2.0 and gCa = 4.0 (0.11 vs 0.07) is comparable to it and we draw no conclusion from it.
 
 `ICa_rmse_norm > 1` is the sharpest sentence in the paper — the error exceeds the signal's own
-variation (`ICa_rmse / std(ICa_true)`, `src/metrics.jl:151-153`). Spend it on gCa = 0.4 and nowhere
+variation (`ICa_rmse / std(ICa_true)`, `src/metrics.jl:162-164`). Spend it on gCa = 0.4 and nowhere
 else.
 
 **Grep before submit:** `monotonic`, `dose`, `trend` near an ablation; `0.068`/`0.0677` presented as

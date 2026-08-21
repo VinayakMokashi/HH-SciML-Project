@@ -226,7 +226,7 @@ macros:
     round: 3
     # raw mean=0.1403411215254637 std=0.02458393492014376 n=5  -> 0.140 ± 0.025
     note: >-
-      ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:151-153). The
+      ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:162-164). The
       normalizer is recomputed per window, so the train and forecast values use
       different denominators and are not comparable to each other. Its value is
       as the unit-free scale that makes the gCa sweep (Block 3) interpretable:
@@ -321,7 +321,7 @@ macros:
     # raw mean=70.0 std=0.0 n=5  -> renders "\ge 70"
     note: >-
       *** GUARDED — claim-guards.md G1. emit: ge IS MANDATORY HERE. ***
-      70.0 is cap_ms (src/metrics.jl:81-82), returned when the 10 mV tube is
+      70.0 is cap_ms (src/metrics.jl:92-93), returned when the 10 mV tube is
       NEVER breached — a right-censored value, not a measured horizon. It is
       also exactly 100 − 30, i.e. the entire remaining trajectory: the metric is
       saturated for all 5 seeds and cannot discriminate among them. A macro
@@ -1972,7 +1972,7 @@ macros:
 #     spike vthresh=0.0 mV, min_dist_ms=2.0, match_tol_ms=2.0;
 #     SINDy TAU=0.05, 6-term library, grid 80x80.
 #     Method-description constants. Cite the file; do not macro.
-#     % numok: rollout cap, src/metrics.jl:81
+#     % numok: rollout cap, src/metrics.jl:92
 #
 #   Split sizes: 154 train / 358 forecast points at t_train_end=30; 256
 #     common_eval points (t > 50). Derived from TSTEPS; recompute, cite make_split.

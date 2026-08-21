@@ -168,7 +168,7 @@ claims:
       no statistical test.
     guard: rollout-is-censored
     status: supported
-    # UdeForecastRollout is RIGHT-CENSORED, not measured. cap_ms=70.0 (src/metrics.jl:81-82) and
+    # UdeForecastRollout is RIGHT-CENSORED, not measured. cap_ms=70.0 (src/metrics.jl:92-93) and
     # 70 ms = 100-30 = the whole remaining trajectory, so "70.0 +/- 0.0 ms" across all 5 seeds means
     # "never breached, in any seed" — the metric is saturated and cannot discriminate. It must render
     # as ">=70 ms (capped)". A macro emitting `70.0 \pm 0.0` asserts a precision that does not exist.
@@ -1011,7 +1011,10 @@ claims:
       2.478 +/- 0.489 (19.7%) against 2.092 +/- 0.130 (6.2%) under the likelihood
       (ParamFitGcaHatTwoSseFull). Its self-test re-fits the chi-square row through the same code
       path and reproduces parametric_fit.csv with worst relative disagreement exactly 0, so the sole
-      variable is the objective. DECOMPOSITION, and this is the licensed one: objective ~3.2x
+      variable is the objective. DECOMPOSITION, with one caveat that must travel with it: the control swaps the OBJECTIVE
+      but keeps multi-start Nelder-Mead, so it does NOT isolate the optimiser. The residual factor
+      is therefore representation-plus-optimiser, and the representation's own share is AT MOST
+      ~2.1x. Say "at most", never "is". Licensed split: objective ~3.2x
       (6.2 -> 19.7%), representation ~2.1x (19.7 -> 40.9%). Quote the ~2x figure for the
       representation, NEVER the ~6-7x ratio, which is objective and representation compounded. The
       one-directional inference is untouched and remains the load-bearing part: some estimator
