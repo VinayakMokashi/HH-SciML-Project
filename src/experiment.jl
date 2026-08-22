@@ -221,7 +221,7 @@ function save_trajectory_figs(prefix, model_label, data_clean, pred, t_train_end
     end
     # stacked overview — per-group y-limits from the truth range
     ov_V = plot(TSTEPS, data_clean[1, :], lw = 2, label = "V truth", ylabel = "V (mV)",
-                title = "$model_label : state reconstruction (truth vs $model_label)",
+                title = "$model_label : state propagation (truth vs $model_label)",
                 legend = :outertopright, ylims = _ylims_data(data_clean[1, :]), left_margin = 8mm)
     plot!(ov_V, TSTEPS, pred[1, :], lw = 2, ls = :dash, label = "V $model_label")
     ov_cls = plot(ylabel = "classical gates m,h,n\n(dimensionless)", left_margin = 8mm,

@@ -1185,7 +1185,9 @@ on the calcium current.
   only; $m,h,n,p,s$ are unobserved and unscored at every training step. Their
   agreement is the retained kinetics' doing, not the network's, and it is
   \emph{propagation} from the true initial state under known gate equations
-  rather than reconstruction of the gates from voltage. Forecast $V$ RMSE
+  rather than reconstruction of the gates from voltage; the panel's printed
+  title is emitted by the plotting code and still reads ``state
+  reconstruction'', which is the reading this caption corrects. Forecast $V$ RMSE
   is $\valUdeVoltageForecastVRmseMeanStd$\,mV against
   $\valUdeForecastVRmseMeanStd$\,mV for full-state observation
   ($n=\valUdeForecastVRmseN$, $\pm$ SD), equivalent within seed noise; one seed
