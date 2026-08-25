@@ -165,6 +165,18 @@ def figures_referenced(*texts):
 
 def main():
     cut_src = os.path.join(CUTDIR, 'main.tex')
+    #  Dormant, not obsolete -- see the note in scripts/check_workshop_cut.py.
+    #  The 5-page draft was deleted on 2026-08-26 to be rewritten from scratch
+    #  against the mentor's video feedback. Everything else here (the anonymising
+    #  transform, the identifying-string self-check, the figure staging) is still
+    #  correct and will be needed again the moment the redraft exists.
+    if not os.path.exists(cut_src):
+        print('-- make_sim2science_bundle: nothing to build.')
+        print('   paper/sim2science/main.tex does not exist (deleted 2026-08-26 for a')
+        print('   redraft). Write the new 5-page paper there, then re-run this.')
+        print('   The anonymising supplementary transform is unchanged and ready.')
+        return 0
+
     for p in (cut_src,
               os.path.join(CUTDIR, 'neurips_2026.sty'),
               os.path.join(CUTDIR, 'checklist.tex'),

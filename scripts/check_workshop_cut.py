@@ -90,7 +90,20 @@ def newcommands(text):
 
 
 def main():
-    for p in (FULL, CUT, METRICS, BIB):
+    #  The cut was DELETED on 2026-08-26 to be redrafted from scratch against the
+    #  mentor's video feedback. This checker is not obsolete -- it is dormant. The
+    #  moment paper/sim2science/main.tex exists again it resumes guarding, and
+    #  consistency.yaml still lists that path in all 15 groups for the same
+    #  reason. Skipping is therefore correct; failing would tempt someone to
+    #  delete the checker along with the draft.
+    if not os.path.exists(CUT):
+        print('-- check_workshop_cut: SKIPPED, no 5-page cut present.')
+        print('   paper/sim2science/main.tex does not exist (deleted 2026-08-26 for a')
+        print('   redraft). This checker re-arms automatically when it is recreated.')
+        print('   Recover the old draft with: git show bfc8768:paper/sim2science/main.tex')
+        return 0
+
+    for p in (FULL, METRICS, BIB):
         if not os.path.exists(p):
             print('FAIL missing required file: %s' % os.path.relpath(p, ROOT))
             return 1
