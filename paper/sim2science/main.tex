@@ -304,7 +304,8 @@ unweighted objective: it is already almost a voltage-only objective.
 The trained closure is distilled by sparse regression \emph{constrained to} the
 conductance form $s^2(aV+b)$ on the supervised trajectory. The form is
 \emph{supplied} to the estimator, not found by it, so what follows is agreement
-with an assumed form and not discovery of one; $a$ is the conductance. We also
+with an assumed form and not discovery of one; $a$ is the conductance and $-b/a$
+the reversal potential. We also
 ran unconstrained sparse regression over a six-term library on the same closure:
 it never sparsifies and still scores $R^2=\valSymbolicRTwoSindyTrueMeanStd$
 against the true current.
@@ -317,6 +318,7 @@ against the true current.
 
 % claim: ude-forecasts-accurately
 % claim: voltage-only-equivalent
+% claim: physics-prior-reconstructs-unobserved-gates
 The UDE never leaves the \Ttube\,mV error tube on any seed, so its rollout
 horizon is right-censored at the metric's ceiling: $\valUdeForecastRollout$\,ms
 means the tube was never left and the true horizon is unknown. Forecast voltage
@@ -382,9 +384,9 @@ noise-weighted $\chi^2$ by multi-start Nelder--Mead. It returns
 $g_{Ca}=\valParamFitGcaHatTwoMeanStd$ against a true \gcaMain, an error of about
 six per cent, at $\chi^2$ per point of $\valParamFitChiSqPerPointTwo$ -- exactly
 at the known noise floor. An asymptotic relative standard error of
-$\valCondRelSeGcaTwoMean$ agrees with the observed seed spread, though it is the
-Gauss--Newton approximation to the same $\chi^2$ surface the profile traces and
-so is not independent evidence. The representative seed's estimate is the lowest
+$\valCondRelSeGcaTwoMean$ agrees with the observed seed spread, though it is a
+Gauss--Newton approximation to the same $\chi^2$ surface and so is not
+independent evidence. The representative seed's estimate is the lowest
 of the five, and the 95\% profile interval centred on \emph{that} estimate is % numok: 95% confidence level, a convention
 $[1.6065, 2.1477]$; % numok: Delta-chi2 = 3.8415 crossings, linearly interpolated between the bracketing grid points of results/identifiability/profile_gca_gca2.0.csv
 each realisation owns its own. Four of the five conductances distilled from the
@@ -396,9 +398,13 @@ So the trajectory determines the conductance and the closure is what loses it. A
 two-parameter model handed the true form \emph{should} beat a
 $\NparamUde$-parameter closure handed none, and it forecasts about twice as well
 (Table~\ref{tab:main}), so the claim is not that two equally good fits disagree.
-It runs one way, and that is enough: because some estimator recovers the
-conductance to six per cent from this trajectory, the closure's scatter cannot be
-charged to the data.
+Nor are the two spreads the same kind of quantity: $\hat g_{Ca}$ is a parameter
+the likelihood estimates directly, while $\hat a$ is a least-squares projection
+of an already-learned function, so its scatter compounds what the closure learned
+with what that projection discards. We read the gap as a contrast in kind, not
+one error bar against another. It runs one way, and that is enough: because some
+estimator recovers the conductance to six per cent from this trajectory, the
+closure's scatter cannot be charged to the data.
 
 \begin{figure}[t]
   \centering
@@ -473,8 +479,9 @@ conductance, and the reason is not the one that would be assumed:
 the same trajectory determines the conductance to about six per cent under a
 direct parametric fit, so the information is present and the closure discards it.
 No diagnostic a practitioner would normally trust gives any warning. Forecast
-error is sub-millivolt, $R^2$ against the true current is above $0.99$, and the % numok: R^2 threshold, from valSymbolicRTwoTrajTrainMeanStd = 0.991
-training loss is not merely low but lower than the loss at the true parameters.
+error is sub-millivolt, $R^2$ against the true current is
+$\valSymbolicRTwoTrajTrainMeanStd$, and the training loss is not merely low but
+lower than the loss at the true parameters.
 
 % claim: identifiability-is-the-general-lesson
 We state the general form of that as a recommendation, not a result, because our
@@ -495,8 +502,10 @@ Running the conductance at \gcaMain{} makes the hidden current easier to see tha
 in a real cell; at \gcaPhys{} the closure learns essentially nothing while the
 direct fit still recovers it. Everything here is one model, one trajectory family
 and one closure architecture, so ``flexibility costs identifiability'' is
-demonstrated rather than established in general, and no statistical test is run
-anywhere, so every comparison is an equivalence-within-noise statement.
+demonstrated rather than established in general. No statistical test is run
+anywhere and $\valUdeForecastVRmseN$ seeds would support almost none, so every
+comparative statement here is an equivalence-within-noise statement and not an
+ordering.
 
 % claim: closure-induced-nonidentifiability
 We also did not vary the distillation. Two methods were run on the same trained
