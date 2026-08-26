@@ -215,7 +215,9 @@ earned.
 We replace the calcium current in a six-state Hodgkin--Huxley model with a
 neural closure $U(V,s)$, train on the first \Ttrain\,ms of a single \Tfull\,ms
 noisy trajectory, and
-distil the closure back into the conductance form $s^2(aV+b)$.
+distil the closure back into closed form twice: once constrained to the
+conductance form $s^2(aV+b)$, and once by unconstrained sparse regression over a
+six-term library.
 % claim: ude-forecasts-accurately
 % claim: voltage-only-equivalent
 The UDE forecasts held-out voltage to $\valUdeForecastVRmseMeanStd$\,mV
@@ -383,7 +385,8 @@ and at most a further twofold is attributable to the representation.
   $\valParamFitGcaHatTwoSseFullMeanStd$, so the objective accounts for about a
   threefold inflation and at most a further twofold is the representation's. This is
   parametric identifiability holding while functional identifiability fails for this
-  closure (Sec.~\ref{sec:results-parametric}, Table~\ref{tab:parametric}).
+  closure, under both the distillations we ran
+  (Sec.~\ref{sec:results-parametric}, Table~\ref{tab:parametric}).
 
   \item % claim: retrain-improves-loss-worsens-recovery
   \textbf{Not under-training, and we can now show the loss.} Quadrupling the
@@ -1824,8 +1827,9 @@ That conclusion has a name in the identifiability literature. Following
 an unknown \emph{function} standing in for the same physics is not, and
 \citet{loman2025ude} separate exactly these two notions for universal
 differential equations. Our experiments are an empirical instance: parametric
-identifiability holds and functional identifiability fails for this closure, on
-identical data, with the representation the axis we set out to vary. It is not the only thing
+identifiability holds and functional identifiability fails for this closure,
+under both the distillations we ran, on identical data, with the representation
+the axis we set out to vary. It is not the only thing
 that changes between the two arms, as Sec.~\ref{sec:methods-parametric} records,
 so the size of the gap should not be read as a pure representation effect; what
 the comparison establishes is the direction, that an estimator does recover the
@@ -1898,8 +1902,8 @@ not all methods. What the constrained arm does establish is that the estimator
 has no room left in which to be at fault: given the closure's output, its two
 coefficients are the least-squares optimum in that basis, and the basis is well
 conditioned on the supervised trajectory (condition number
-$\valSymbolicCondTrajTrain$), so no better algorithm exists for that basis and
-the scatter has to originate in the closure. A method with a different inductive
+$\valSymbolicCondTrajTrain$), so the scatter has to originate in the closure and
+not in the fit. A method with a different inductive
 bias could still change the answer --- by searching over a different form, or by
 imposing a constraint on $E_{Ca}$ that the closure does not supply --- and we
 have not tried one. We therefore claim the failure for this closure under these

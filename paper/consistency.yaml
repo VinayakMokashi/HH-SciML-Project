@@ -283,3 +283,34 @@ groups:
        no closure can recover|
        closures cannot recover|
        flexible closures do not identify)
+
+  - id: identifiability-narrowing-names-the-distillation
+    why: >-
+      Added 2026-08-26 (round 9), as a SECOND group rather than a tightening of
+      functional-identifiability-names-its-scope, because changing a passing
+      group's regex changes what it protects.
+      That sibling's `require` is an OR, so a site passes on "this closure"
+      alone. That is the FLOOR. claims.yaml (closure-induced-nonidentifiability,
+      "AXIS NOT VARIED, AND THE CLAIM IS BOUND TO IT") makes BOTH halves binding:
+      "State the failure FOR THIS CLOSURE UNDER THESE DISTILLATIONS, never as a
+      property of closures in general."
+      Round 9 found the 2026-08-26 narrowing had landed at two sites out of four.
+      The abstract and the Limitations paragraph carried both halves; the
+      Discussion and the contributions bullet carried the closure half only. That
+      matters because "functional identifiability fails for this closure",
+      unqualified, says that NO distillation could recover the conductance from
+      it -- which is exactly what the Limitations paragraph disclaims a page
+      later ("A method with a different inductive bias could still change the
+      answer ... and we have not tried one"). Two distillations were run, not
+      all of them, and the sentence has to say so wherever it states the result.
+      The probe deliberately fires only where the result is STATED (the phrase is
+      followed by "fails" or by "of this"), not on back-references or on the
+      vocabulary being introduced.
+    files: [paper/main.tex, paper/sim2science/main.tex, README.md, paper/claims.yaml]
+    probe: 'functional(ly)?[- ]identifiab\w*\s+(fails|of\s+this)'
+    require: >-
+      (these\s+distillations|the\s+distillations\s+we\s+ran|
+       constrained\s+and\s+the\s+unconstrained|
+       distillations\s+we\s+ran|distilled\s+this\s+way)
+    window: 6
+    min_sites: 4

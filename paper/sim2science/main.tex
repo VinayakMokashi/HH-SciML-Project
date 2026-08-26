@@ -200,7 +200,7 @@ explanation is that one short trajectory does not carry enough information to pi
 a hidden current's conductance. It does: a direct two-parameter fit to the same
 trajectory, with no network anywhere, returns the conductance to about six per
 cent. What fails is not parametric identifiability but the functional
-identifiability of this closure.
+identifiability of this closure, under both the distillations we ran.
 \end{abstract}
 
 % =========================================================================
@@ -228,8 +228,9 @@ can distil it into closed form by sparse regression
 \citep{brunton2016sindy, rudy2017pdefind} or symbolic search
 \citep{udrescu2020aifeynman, cranmer2023pysr} and the coefficients read as
 biophysics -- here, a conductance and a reversal potential.
-\citet{beck2026hybrid} learn unknown currents this way, and
-\citet{iravanian2020} recover hidden states of ionic models symbolically.
+\citet{beck2026hybrid} learn unknown currents inside such models, and a
+domain-specific recurrent network recovers hidden ionic
+states \citep{iravanian2020}.
 
 That last step carries the scientific weight and is checked least often. It
 assumes the data determine the coefficient, and identifiability analysis says
@@ -305,8 +306,10 @@ The trained closure is distilled by sparse regression \emph{constrained to} the
 conductance form $s^2(aV+b)$ on the supervised trajectory. The form is
 \emph{supplied} to the estimator, not found by it, so what follows is agreement
 with an assumed form and not discovery of one; $a$ is the conductance and $-b/a$
-the reversal potential. We also
-ran unconstrained sparse regression over a six-term library on the same closure:
+the reversal potential.
+% claim: sindy-does-not-sparsify
+We also ran unconstrained sparse regression over a six-term library on the same
+closure, fitted on a hull-masked grid over the training trajectory:
 it never sparsifies and still scores $R^2=\valSymbolicRTwoSindyTrueMeanStd$
 against the true current.
 
@@ -328,7 +331,8 @@ $\valUdeVoltageForecastVRmseMeanStd$\,mV, equivalent within seed noise, as it
 nearly must be given that voltage already carries \LossShareV\,\% of the
 unweighted objective at the noise floor. The five gate trajectories, which never
 enter the loss in that condition, are still propagated accurately by the retained
-kinetics.
+kinetics from the true initial state, so this is propagation, not reconstruction
+of the gates from voltage.
 
 % claim: node-failure-is-architecture-not-budget
 Our black-box baseline needed repair first: it read raw time as an input, which is
@@ -340,11 +344,13 @@ shortage of optimisation and Table~\ref{tab:main} gives both.
 \begin{table}[t]
   \caption{\textbf{Forecasting and recovery on the same single trajectory}
   ($g_{Ca}=\gcaMain$; mean\,$\pm$\,SD over $\valUdeForecastVRmseN$ seeds unless
-  noted). Bold marks the best value per column: lowest error, longest horizon,
-  and for the conductance the estimate closest to the true \gcaMain. Horizons are
-  right-censored at the metric's ceiling, so $\ge$ means the tube was never left
-  and the true horizon is unknown. The time-indexed neural ODE error is a span,
-  not a dispersion, because those forecasts blow up rather than degrade.}
+  noted). Bold marks the best value per column, but the parametric row is handed
+  the true form and two free parameters, so it is expected to win and licenses
+  only the one-directional reading of Sec.~\ref{sec:parametric}; no statistical
+  test was run. Horizons are right-censored at the metric's ceiling, so $\ge$
+  means the tube was never left and the true horizon is unknown. The time-indexed
+  errors are spans because those forecasts blow up rather than degrade; the
+  autonomous row is a median because one seed of five still fails outright.}
   \label{tab:main}
   \centering
   \setlength{\tabcolsep}{4.5pt}   % default 6pt overflows \textwidth by 0.64pt
@@ -352,7 +358,8 @@ shortage of optimisation and Table~\ref{tab:main} gives both.
     \toprule
     & forecast $V$ RMSE (mV) & rollout (ms) & recovered $g_{Ca}$ \\
     \midrule
-    Neural ODE, as published         & $\valNodeParityTimeVRmseMin$--$\valNodeParityTimeVRmseMax$ (span) & $\valNodeParityTimeRolloutMeanStd$ & --- \\
+    Neural ODE, $+t$, as published   & $\valNodePublishedVRmseMin$--$\valNodePublishedVRmseMax$ (span) & $\valNodeForecastRolloutMeanStd$ & --- \\
+    Neural ODE, $+t$, parity         & $\valNodeParityTimeVRmseMin$--$\valNodeParityTimeVRmseMax$ (span) & $\valNodeParityTimeRolloutMeanStd$ & --- \\
     Neural ODE, autonomous, parity   & $\valNodeParityAutoVRmseMedian$ (median) & $\valNodeParityAutoRolloutMeanStd$ & --- \\
     UDE, full-state                  & $\valUdeForecastVRmseMeanStd$ & $\mathbf{\valUdeForecastRollout}$ & $\valSymbolicAHatTrajTrainMeanStd$ \\
     UDE, voltage-only                & $\valUdeVoltageForecastVRmseMeanStd$ & $\mathbf{\valUdeVoltageForecastRollout}$ & --- \\
@@ -381,12 +388,12 @@ information about a hidden current to pin its conductance. That is testable, and
 it does not survive. We fit $(g_{Ca},E_{Ca})$ to the \emph{same} noisy
 trajectory, true functional form known and no network in the loop, minimising a
 noise-weighted $\chi^2$ by multi-start Nelder--Mead. It returns
-$g_{Ca}=\valParamFitGcaHatTwoMeanStd$ against a true \gcaMain, an error of about
-six per cent, at $\chi^2$ per point of $\valParamFitChiSqPerPointTwo$ -- exactly
-at the known noise floor. An asymptotic relative standard error of
+$g_{Ca}=\valParamFitGcaHatTwoMeanStd$ against a true \gcaMain, a relative spread
+of about six per cent, at $\chi^2$ per point of $\valParamFitChiSqPerPointTwo$,
+near unity and so at the known noise floor. An asymptotic relative standard error of
 $\valCondRelSeGcaTwoMean$ agrees with the observed seed spread, though it is a
 Gauss--Newton approximation to the same $\chi^2$ surface and so is not
-independent evidence. The representative seed's estimate is the lowest
+independent evidence. The pre-registered baseline seed's estimate is the lowest
 of the five, and the 95\% profile interval centred on \emph{that} estimate is % numok: 95% confidence level, a convention
 $[1.6065, 2.1477]$; % numok: Delta-chi2 = 3.8415 crossings, linearly interpolated between the bracketing grid points of results/identifiability/profile_gca_gca2.0.csv
 each realisation owns its own. Four of the five conductances distilled from the
@@ -408,22 +415,25 @@ closure's scatter cannot be charged to the data.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.85\textwidth]{fig13_parametric_identifiability.png}
+  \includegraphics[width=0.70\textwidth]{fig13_parametric_identifiability.png}
   \caption{\textbf{The single trajectory determines the conductance; the closure
-  does not recover it.} (a) The $g_{Ca}$--$E_{Ca}$ valley is a genuine trade-off,
-  and a bounded one. (b) Profile likelihood on one representative noise
-  realisation; the 95\% interval is read from interpolated $\Delta\chi^2$ % numok: 95% confidence level, a convention
-  crossings, not from the scan's outermost grid points. (c) The same data through
-  two representations, seed by seed: orange circles the direct parametric fit,
-  red diamonds the conductance distilled from the closure on the supervised
-  trajectory, dashed line the truth. Each of the $\valUdeForecastVRmseN$
-  realisations owns its noise draw and its interval.}
+  does not recover it.} The valley in (a) and the profile in (b) come from the
+  pre-registered baseline realisation; the estimates in all three panels come
+  from the $\valUdeForecastVRmseN$ realisations, each owning its noise draw and
+  its interval. (a) The $g_{Ca}$--$E_{Ca}$ valley is a genuine trade-off, and a
+  bounded one. (b) The 95\% interval is read from interpolated $\Delta\chi^2$ % numok: 95% confidence level, a convention
+  crossings, not from the scan's outermost grid points; two closure estimates
+  coincide within a marker width, so the rug resolves only four ticks. (c) The
+  same data through two representations, seed by seed: orange circles the direct
+  parametric fit, red diamonds the conductance distilled from the closure on the
+  supervised trajectory, dashed line the truth.}
   \label{fig:ident}
 \end{figure}
 
 \subsection{What owns the gap, and what does not close it}
 \label{sec:decomp}
 
+% claim: closure-induced-nonidentifiability
 The data were held fixed across that comparison, but the representation was not
 the only thing that changed: the parametric arm minimises a noise-weighted
 $\chi^2$ by multi-start Nelder--Mead, while the closure descends the unweighted
@@ -443,14 +453,14 @@ to quote, never the sixfold one, which is the two effects compounded.
 Nor had the closure simply failed to converge. Quadrupling the budget to
 \AdamRe/\BfgsRe{} lowers the training objective from $\valTrainLossBefore$ to
 $\valTrainLossAfter$, about \LossDropPct\,per cent, and makes every recovery
-quantity worse. Both sides are quoted on the \emph{convex-hull} domain, where the
-retrained closures were distilled, so the comparison is like-for-like and the
-before-values differ from the supervised-trajectory figures above. On the hull the
-conductance moves further from the truth and its spread inflates
-($\hat{a}$: $\valSymbolicAHatMeanStd \to \valRetrainAHatMeanStd$), agreement with
-the true current falls
-($R^2$: $\valSymbolicRTwoCondTrueMeanStd \to \valRetrainRTwoCondTrueMeanStd$),
-and the forecast degrades
+quantity worse. Both symbolic quantities are quoted on the \emph{convex-hull}
+domain, where the retrained closures were distilled, so that pair is like-for-like
+and its before-values differ from the supervised-trajectory figures above. On the
+hull the conductance moves further from the truth and its spread inflates
+($\hat{a}$: $\valSymbolicAHatMeanStd \to \valRetrainAHatMeanStd$) and agreement
+with the true current falls
+($R^2$: $\valSymbolicRTwoCondTrueMeanStd \to \valRetrainRTwoCondTrueMeanStd$);
+even the trajectory forecast, which has no fitting domain, degrades
 ($\valUdeForecastVRmseMeanStd \to \valRetrainForecastVRmseMeanStd$\,mV). The
 optimiser succeeded and the science got worse. At the true structure's
 maximum-likelihood $(g_{Ca},E_{Ca})$ the identical objective scores
@@ -477,11 +487,11 @@ the remainder of the trajectory, and yields a closure agreeing closely with the
 true calcium current's shape. The second stage does not deliver that current's
 conductance, and the reason is not the one that would be assumed:
 the same trajectory determines the conductance to about six per cent under a
-direct parametric fit, so the information is present and the closure discards it.
+direct parametric fit, so the information is present and the pipeline loses it.
 No diagnostic a practitioner would normally trust gives any warning. Forecast
 error is sub-millivolt, $R^2$ against the true current is
 $\valSymbolicRTwoTrajTrainMeanStd$, and the training loss is not merely low but
-lower than the loss at the true parameters.
+lower than the correctly fitted true structure's own loss.
 
 % claim: identifiability-is-the-general-lesson
 We state the general form of that as a recommendation, not a result, because our
@@ -499,8 +509,9 @@ against, which turns a bare spread into an attribution.
 \label{sec:limits}
 
 Running the conductance at \gcaMain{} makes the hidden current easier to see than
-in a real cell; at \gcaPhys{} the closure learns essentially nothing while the
-direct fit still recovers it. Everything here is one model, one trajectory family
+in a real cell; at \gcaPhys{} the closure learns essentially nothing, on the one
+seed distilled there, while the direct fit still recovers it across all five.
+Everything here is one model, one trajectory family
 and one closure architecture, so ``flexibility costs identifiability'' is
 demonstrated rather than established in general. No statistical test is run
 anywhere and $\valUdeForecastVRmseN$ seeds would support almost none, so every
