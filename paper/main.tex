@@ -251,8 +251,9 @@ contribution at about a factor of two.
 % claim: retrain-improves-loss-worsens-recovery
 Nor is it under-training: quadrupling the budget lowers the training loss by
 \LossDropPct\,\% while making every recovery quantity worse, including agreement with
-the true trajectory inside the training window itself. What fails here is not parametric
-identifiability but functional identifiability: the data confine the conductance
+the true trajectory inside the training window itself. What fails is not parametric
+identifiability but the functional identifiability of this closure, under both the
+constrained and the unconstrained distillation we ran: the data confine the conductance
 to a short, bounded stretch of the $g_{Ca}$--$E_{Ca}$ trade-off, and the estimates
 read off the closure scatter well beyond it. Code, trained parameters, and all results tables are
 available at \url{TODO-REPOSITORY-URL}; the archived snapshot and the licence
@@ -381,8 +382,8 @@ and at most a further twofold is attributable to the representation.
   identical parametric fit under the closure's own voltage-dominated loss gives
   $\valParamFitGcaHatTwoSseFullMeanStd$, so the objective accounts for about a
   threefold inflation and at most a further twofold is the representation's. This is
-  parametric identifiability holding while functional identifiability fails
-  (Sec.~\ref{sec:results-parametric}, Table~\ref{tab:parametric}).
+  parametric identifiability holding while functional identifiability fails for this
+  closure (Sec.~\ref{sec:results-parametric}, Table~\ref{tab:parametric}).
 
   \item % claim: retrain-improves-loss-worsens-recovery
   \textbf{Not under-training, and we can now show the loss.} Quadrupling the
@@ -1823,8 +1824,8 @@ That conclusion has a name in the identifiability literature. Following
 an unknown \emph{function} standing in for the same physics is not, and
 \citet{loman2025ude} separate exactly these two notions for universal
 differential equations. Our experiments are an empirical instance: parametric
-identifiability holds and functional identifiability fails, on identical data,
-with the representation the axis we set out to vary. It is not the only thing
+identifiability holds and functional identifiability fails for this closure, on
+identical data, with the representation the axis we set out to vary. It is not the only thing
 that changes between the two arms, as Sec.~\ref{sec:methods-parametric} records,
 so the size of the gap should not be read as a pure representation effect; what
 the comparison establishes is the direction, that an estimator does recover the
@@ -1885,6 +1886,24 @@ the full network, measuring where the conductance stops being recoverable. We do
 not run it and make no prediction about its outcome. A second axis we did not
 vary is the closure's input set, which fixes what degeneracies are even
 expressible.
+
+% claim: closure-induced-nonidentifiability
+% claim: regression-machinery-is-sound
+A third axis we did not vary is the distillation. We ran two methods on the same
+trained closure and both fail, differently: the constrained fit is handed the
+true form $s^2(aV+b)$ and returns a conductance that scatters across seeds, while
+the unconstrained six-term sparse regression never sparsifies and gives the
+physical $Vs^2$ term the wrong sign at the representative seed. Two methods are
+not all methods. What the constrained arm does establish is that the estimator
+has no room left in which to be at fault: given the closure's output, its two
+coefficients are the least-squares optimum in that basis, and the basis is well
+conditioned on the supervised trajectory (condition number
+$\valSymbolicCondTrajTrain$), so no better algorithm exists for that basis and
+the scatter has to originate in the closure. A method with a different inductive
+bias could still change the answer --- by searching over a different form, or by
+imposing a constraint on $E_{Ca}$ that the closure does not supply --- and we
+have not tried one. We therefore claim the failure for this closure under these
+distillations, and not for closure-based recovery in general.
 
 The comparison at the heart of the paper is also not a comparison of equals, and
 we would rather state that than let a reader discover it. The parametric fit

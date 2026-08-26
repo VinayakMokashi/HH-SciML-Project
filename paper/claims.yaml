@@ -1027,10 +1027,20 @@ claims:
       the same direction (0.4: 14.9 vs 37.3%; 1.0: 8.1 vs 26.4%; 4.0: 2.9 vs 12.9%), and the
       voltage-only objective agrees with the full-state one to three decimals, which independently
       corroborates LossShareV.
+      AXIS NOT VARIED, AND THE CLAIM IS BOUND TO IT (2026-08-26): the distillation method. Two were
+      run on the learned closure and both fail -- the CONSTRAINED two-term fit on the supplied form
+      s^2(aV+b) (objective3_symbolic.jl), which returns a scattered conductance, and the
+      UNCONSTRAINED six-term sparse regression, which retains all five thresholded terms at every
+      seed and fits the physical Vs^2 term with the wrong sign at the representative seed. Two is not
+      all: nothing here tests a different basis, a symbolic method with a different inductive bias, or
+      a constraint on E_Ca that the closure does not supply. State the failure FOR THIS CLOSURE UNDER
+      THESE DISTILLATIONS, never as a property of closures in general. Enforced by
+      consistency.yaml group functional-identifiability-names-its-scope.
     status: supported
     # ===== THE THESIS OF THE REVISED PAPER. This is the parametric-vs-functional identifiability
     # distinction of Loman/Browning/Baker (arXiv 2606.30289) measured empirically: parametric
-    # identifiability holds, functional identifiability fails. Cite them and norden2025structural here.
+    # identifiability holds, functional identifiability fails for this closure under the two
+    # distillations run here. Cite them and norden2025structural here.
     # The claim is INTERPRETIVE, not empirical — the two numbers are facts, the causal attribution is
     # an inference licensed by the fact that the data were identical. Keep it labelled as such.
 

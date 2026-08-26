@@ -246,3 +246,40 @@ groups:
     require: '(single seed|one run|single-seed|no error bars|n\s*=\s*1)'
     window: 10
     min_sites: 1
+
+  - id: functional-identifiability-names-its-scope
+    why: >-
+      Added 2026-08-26 after the mentor asked for precision rather than breadth:
+      "we can make exact claim if some of the identification is not working."
+      Two distillations WERE run on the learned closure -- the constrained
+      two-term fit on the supplied form s^2(aV+b), and the unconstrained six-term
+      sparse regression -- and both fail, differently (scattered conductance; and
+      no sparsification with the physical Vs^2 term wrong-signed at the
+      representative seed). Two is not all. Nothing in these runs tests a
+      symbolic method with a different inductive bias, a different basis, or a
+      constraint on E_Ca that the closure does not supply, and nothing varies the
+      closure's architecture. So the evidence licenses "functional identifiability
+      fails FOR THIS CLOSURE UNDER THESE DISTILLATIONS", not a property of
+      closures in general.
+      The Loman/Browning/Baker vocabulary stays -- it is the correct frame and the
+      mentor asked for it. What must travel with it is the binding scope. The
+      thesis is stated in the abstract, the contributions, the Discussion, the
+      README and the claims ledger, which is exactly the five-site fan-out that
+      produced the round-5 blocker.
+    files: [paper/main.tex, paper/sim2science/main.tex, README.md, paper/claims.yaml]
+    probe: 'functional(ly)?[- ]identifiab\w*'
+    require: >-
+      (this\s+closure|these\s+closures|this\s+distillation|these\s+distillations|
+       distilled\s+this\s+way|one\s+closure|as\s+distilled\s+here|
+       this\s+representation|the\s+closure\s+studied\s+here)
+    window: 6
+    # \s+ and not a literal space, deliberately: the checker joins the context
+    # with ' '.join(), so a qualifier that straddles a line break inside an
+    # \item block arrives as "for this   closure" -- three spaces -- and a
+    # single-space literal silently never matches. Found the hard way, 2026-08-26.
+    min_sites: 4
+    forbid: >-
+      (functional identifiability fails in general|
+       no closure can recover|
+       closures cannot recover|
+       flexible closures do not identify)
