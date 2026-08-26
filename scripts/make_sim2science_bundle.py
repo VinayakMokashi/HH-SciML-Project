@@ -78,6 +78,34 @@ SELF_ID_REPLACEMENT = (
     '--- though we note the agreement rather than lean on it as\n'
     'independent ---')
 
+# -------------------------------------------------------------------------
+#  THE PUBLICATION PLACEHOLDERS. paper/main.tex is the ARCHIVAL manuscript and
+#  correctly holds TODO-REPOSITORY-URL / TODO-COMMIT-SHA / TODO-ARCHIVE-DOI
+#  until T5-T7 substitute them. The supplementary is generated from it and goes
+#  to REVIEWERS, so those tokens would print raw -- and would contradict the
+#  5-page paper ("the repository URL, snapshot DOI and commit are withheld here
+#  for anonymity") and checklist Q5 ("both are withheld"), in the same
+#  submission. Neutralised here so all three artifacts say the same thing.
+#  RESTORE THE REAL URL/DOI/SHA IN THE CAMERA-READY, from the archival source.
+TODO_ABSTRACT = (
+    'available at \\url{TODO-REPOSITORY-URL}; the archived snapshot and the licence\n'
+    'terms are given in the Data and Code Availability section.')
+TODO_ABSTRACT_REPLACEMENT = (
+    'released under permissive licences; the repository URL, snapshot DOI and\n'
+    'commit are withheld here for anonymity and given in the camera-ready, and\n'
+    'the licence terms are in the Data and Code Availability section.')
+
+TODO_AVAILABILITY = (
+    'behind the numbers and figures reported here are available at\n'
+    '\\url{TODO-REPOSITORY-URL}. The state that produced these results is tagged\n'
+    '\\texttt{TODO-COMMIT-SHA}, and an archived snapshot of that state is deposited at\n'
+    '\\url{TODO-ARCHIVE-DOI}.')
+TODO_AVAILABILITY_REPLACEMENT = (
+    'behind the numbers and figures reported here are released, but the\n'
+    'repository URL, the commit tag and the archived-snapshot DOI would break\n'
+    'double-blind anonymity, so all three are withheld at submission and given\n'
+    'in the camera-ready.')
+
 IDENT_RX = re.compile('|'.join(re.escape(s) for s in IDENTIFYING))
 
 
@@ -131,6 +159,26 @@ def anonymise(text):
     assert n == 1, ('expected exactly 1 self-identifying clause, found %d -- '
                     'the sentence was reworded; update SELF_ID_CLAUSE' % n)
     notes.append('self-identifying clause: neutralised')
+
+    # ---- 3b. the publication placeholders ---------------------------------
+    #  These print RAW in the supplementary PDF and contradict the 5-page paper
+    #  and checklist Q5, which both say the URL and DOI are withheld. Asserted,
+    #  not best-effort: if the archival wording drifts, the build must FAIL
+    #  loudly rather than ship "TODO-REPOSITORY-URL" to reviewers.
+    for label, old, new in (
+            ('abstract', TODO_ABSTRACT, TODO_ABSTRACT_REPLACEMENT),
+            ('availability', TODO_AVAILABILITY, TODO_AVAILABILITY_REPLACEMENT)):
+        n = text.count(old)
+        assert n == 1, (
+            'expected exactly 1 TODO block in the %s, found %d -- the archival '
+            'wording changed; update TODO_%s in this script' % (label, n, label.upper()))
+        text = text.replace(old, new)
+    notes.append('publication placeholders: neutralised (2 blocks)')
+
+    # Nothing that TYPESETS may still carry a placeholder. Comments may.
+    live = [ln for ln in text.split('\n') if not ln.lstrip().startswith('%')]
+    leaked = [ln for ln in live if 'TODO-' in ln]
+    assert not leaked, 'TODO placeholder survives in live text: %r' % leaked[:2]
 
     # ---- 4. any COMMENT line that names a person or the affiliation -------
     out, ncomment = [], 0
