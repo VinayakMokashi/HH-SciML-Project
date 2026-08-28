@@ -883,23 +883,60 @@ physiological throughout. The headline \gcaMain{} is five times that.
 \label{app:hyper}
 
 \paragraph{Architectures and optimisation.}
-The UDE calcium closure is a multilayer perceptron $\ArchUde$ with $\tanh$
-activations and inputs $\NNinputs$ ($\NparamUde$ parameters); the black-box
-neural ODE is $\ArchNode$ with layer normalisation and inputs of the six
-normalised states and raw time ($\approx\NparamNode$ parameters). Both are
-integrated with an explicit fifth-order Runge--Kutta method at absolute and
-relative tolerances of $\Tol$, under an interpolating continuous adjoint with
-reverse-mode vector--Jacobian products. Training is two-stage: Adam at learning
-rate $\Lr$ followed by a BFGS polish (initial step-norm $\Lr$), wrapped so that a
-failed polish degrades to the Adam result. Budgets are Adam \AdamUde/BFGS
-\BfgsUde{} for the UDE and Adam \AdamNode/BFGS \BfgsNode{} for the neural ODE as
-originally configured; the two repaired neural-ODE rows of Table~\ref{tab:main}
-use the UDE's budget instead, and the autonomous one drops the time input so its
-first layer is $\ArchNodeAuto$. The aggressive-retrain control of
-Sec.~\ref{sec:decomp} uses Adam \AdamRe/BFGS \BfgsRe. The seeds are
-$\{1111,2222,3333,4444,5555\}$; % numok: seed set, experiments_runner.jl:57
-single-run panels use the first of them, fixed before the spread was known and
-checked afterwards to lie inside the five-seed inter-quartile range.
+Table~\ref{tab:hyper} gathers every training hyperparameter in one place. Three
+behaviours it cannot express are worth stating. The two-stage trainer is wrapped
+so that a \emph{failed} BFGS polish degrades silently to the Adam result rather
+than raising. The two repaired neural-ODE rows of Table~\ref{tab:main} reuse the
+UDE's budget, and the autonomous one additionally drops the raw time input, so
+its first layer narrows to $\ArchNodeAuto$. And single-run panels use the first
+seed of the five, fixed before the spread was known and checked afterwards to lie
+inside the five-seed inter-quartile range, so it is a pre-registered choice rather
+than a favourable one.
+
+\begin{table}[t]
+  \caption{\textbf{Complete training hyperparameters.} Every value here is a
+  fixed \emph{input}, never a result. Each is defined once in the preamble
+  alongside the source file and line it was taken from, and the same definitions
+  are shared byte-for-byte with the full manuscript, so this table cannot drift
+  from either the code or the prose. Budgets are written as Adam
+  iterations\slash BFGS iterations.}
+  \label{tab:hyper}
+  \centering
+  \begin{tabular}{ll}
+    \toprule
+    \multicolumn{2}{l}{\emph{Data generation and preprocessing}} \\
+    integration span          & $[0,\Tfull]$\,ms, from rest at $V_0=\Vrest$\,mV \\
+    sampling                  & \Ndata{} uniform points \\
+    observation noise         & Ornstein--Uhlenbeck, \NoisePct\,\% of each channel's own SD \\
+    training window           & $t\le\Ttrain$\,ms ($\Ntrain$ samples) \\
+    seeds                     & $\{1111,2222,3333,4444,5555\}$ \\ % numok: seed set, experiments_runner.jl:57
+    \midrule
+    \multicolumn{2}{l}{\emph{UDE calcium closure}} \\
+    architecture              & $\ArchUde$, $\tanh$ activations \\
+    inputs                    & $\NNinputs$ \\
+    parameters                & $\NparamUde$ \\
+    budget                    & Adam \AdamUde\slash BFGS \BfgsUde \\
+    \midrule
+    \multicolumn{2}{l}{\emph{Black-box neural ODE baseline}} \\
+    architecture, as published & $\ArchNode$, layer normalisation \\
+    inputs, as published      & six normalised states and raw time \\
+    parameters                & $\approx\NparamNode$ \\
+    budget, as published      & Adam \AdamNode\slash BFGS \BfgsNode \\
+    budget, parity control    & Adam \AdamUde\slash BFGS \BfgsUde \\
+    architecture, autonomous  & $\ArchNodeAuto$ (raw time input removed) \\
+    \midrule
+    \multicolumn{2}{l}{\emph{Solver and optimiser, shared by every arm}} \\
+    integrator                & explicit fifth-order Runge--Kutta \\
+    tolerances                & absolute $=$ relative $= \Tol$ \\
+    gradients                 & interpolating continuous adjoint, reverse-mode VJP \\
+    Adam learning rate        & $\Lr$ \\
+    BFGS initial step-norm    & $\Lr$ \\
+    \midrule
+    \multicolumn{2}{l}{\emph{Aggressive-retrain control (Sec.~\ref{sec:decomp})}} \\
+    budget                    & Adam \AdamRe\slash BFGS \BfgsRe \\
+    \bottomrule
+  \end{tabular}
+\end{table}
 
 \paragraph{The two distillations.}
 The constrained fit is a sparse regression restricted to the supplied
@@ -955,8 +992,8 @@ this rather than repair it, because changing any of it would change the numbers.
 \section{Compute, hardware and reproducibility}
 \label{app:compute}
 
-Every experiment ran on a single consumer laptop: \textbf{CPU only, no GPU,
-16\,GB of RAM}, % numok: hardware, stated by the authors; nothing in the repository records it
+Every experiment ran on one machine: \textbf{CPU only, no GPU,
+16\,GB of RAM}, % numok: hardware, stated by the authors; nothing in the repository records it, and no form factor is claimed
 under Julia~1.6.7 with a pinned environment, an explicit-parameter network
 library \citep{pal2023lux} and a unified optimisation interface
 \citep{dixit2023optimization}. The problem is small by design, a six-state ODE
@@ -972,8 +1009,8 @@ between consecutive ones bracket eleven real trainings, and their median is
 \textbf{approximately 11 minutes per UDE training run} % numok: median of the 11 consecutive-snapshot gaps in results/params/ude_abl_gca_*.jld, 6-7 Aug 2026; the 11 gaps run 10.5-16.0 min
 at the Adam \AdamUde/BFGS \BfgsUde{} budget on this machine, inclusive of the
 symbolic post-processing between runs. That is a measurement of elapsed time on
-a shared desktop rather than of processor time, so read it as an upper bound on
-the compute a reproducer needs. The aggressive-retrain runs quadruple the budget
+a machine that was also running other work rather than of processor time, so
+read it as an upper bound on the compute a reproducer needs. The aggressive-retrain runs quadruple the budget
 and scale roughly in proportion. Multiplying that per-run figure by the run count
 implied by the experimental design (the headline full-state and voltage-only
 conditions and the neural-ODE baseline at $\valUdeForecastVRmseN$ seeds each, the
@@ -1023,5 +1060,46 @@ the flat part of the range. This is a single-seed axis, so we read the
 end-to-end trend and not the individual steps. Unlike the window sweep, it
 cannot borrow the five-seed spread at its centre point as a yardstick, because
 the noise level is the very quantity that sets seed-to-seed variation.
+
+\section{Additional figures}
+\label{app:figures}
+
+Two overview figures support numbers the body reports but has no room to plot.
+Figure~\ref{fig:bars} places the forecast error beside the training error on the
+same axes, and Figure~\ref{fig:voltage-only} shows the voltage-only condition
+whose forecast RMSE Sec.~\ref{sec:results} quotes.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.80\textwidth]{fig5_metrics_bar_train_vs_forecast.png}
+  \caption{\textbf{The UDE's forecast error is within a factor of two of its
+  training error.} Bars are the mean over $\valUdeForecastVRmseN$ seeds at the
+  baseline condition; error bars are $\pm$ 1 SD over those seeds, each redrawing
+  both initialisation and noise; the $y$-axis is log-scaled. \textbf{The neural
+  ODE bars are the model \emph{as originally configured}} (raw time input,
+  \AdamNode{} Adam iterations), whose forecast integration does not stay finite;
+  that bar therefore summarises a blown-up solve and \emph{its error bar is not a
+  dispersion estimate}. The repaired autonomous baseline, which is the one we
+  compare against, is in Table~\ref{tab:main} and is not plotted here.}
+  \label{fig:bars}
+\end{figure}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.72\textwidth]{fig6_voltage_only_overview.png}
+  \caption{\textbf{Trained on the voltage trace alone, the UDE keeps five gating
+  variables on track that never entered the loss.} Ground truth (solid) versus
+  voltage-only UDE (dashed), representative seed at the baseline condition,
+  trained on the noisy voltage for $t\le\Ttrain$\,ms. In the gate panels the
+  dashed model trace is drawn in the same colour as, and lies beneath, its solid
+  truth trace, so at this scale the two are not separately resolvable; the
+  agreement there is quantified in Table~\ref{tab:main} rather than read off the
+  panel. The loss is computed on $V$ only; $m,h,n,p,s$ are unobserved and
+  unscored at every training step, so their agreement is the retained kinetics'
+  doing and not the network's --- \emph{propagation} from the true initial state
+  under known gate equations rather than reconstruction of the gates from
+  voltage. One seed shown; dispersion is in Table~\ref{tab:main}.}
+  \label{fig:voltage-only}
+\end{figure}
 
 \end{document}
