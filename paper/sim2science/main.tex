@@ -66,6 +66,35 @@
 %  LENGTH DIAL. GAUGE: the page on which the References head sits, and how far
 %  down it. Page 5 = the body fits. Page 6 = the body is six pages, fix it.
 %
+%  *** CONFIRMED FITTING, 2026-08-28, on the compiled PDF. The body ends at
+%      line 177 at the foot of page 5 and the References head sits at the TOP
+%      of page 6. That is the target state.
+%
+%      READ THIS BEFORE ADDING ANYTHING: THE MARGIN IS ZERO. It fits by two
+%      lines, bought by compressing the "Data and code." paragraph from four
+%      printed lines to two. Pages 3 and 4 are also full -- roughly 59 and 58
+%      lines against a 58.9-line page once caption height (captions are
+%      \small, ~0.9 line each), section-heading space and \parskip are counted.
+%      THERE IS NO SLACK ANYWHERE. One added sentence puts the body back on
+%      page 6.
+%
+%      IF YOU MUST ADD A LINE, PAY FOR IT FIRST. Everything cheap is already
+%      spent (three cut passes, ~12 lines). What is left all costs something
+%      real, in the order a future session should consider it:
+%        1. Fig. 2 (fig:ident) below 0.62	extwidth -- drops its "95 % region"
+%           legend under 4 pt. That legend is the confidence-level qualifier
+%           for the caption's word "bounded" and appears NOWHERE else in the
+%           paper. Refuted twice on that ground; do not do it casually.
+%        2. Stage-1 panels below 0.42	extwidth -- their legend is already at
+%           about 5 pt, on the figure the mentor called "highly important".
+%        3. A control paragraph. DO NOT: the retrain and sweep controls are
+%           what make the finding survive review.
+%
+%      HOW TO MEASURE, since no session can compile: count words per printed
+%      line off the last compile (here 12 after a bold run-in head, 16 on a
+%      full line) and size the replacement against THAT. Source-line counting
+%      mis-prices captions, displayed equations and float graphics.
+%
 %  SETTLED 2026-08-26 against the SECOND real compile: the References head lands
 %  ~75-80 % down page 5, so there are ~12-15 free lines. fig5 costs ~16 even at
 %  0.66\textwidth. It is one to four lines short, and a [t] float can migrate to
