@@ -266,6 +266,33 @@
 
 \graphicspath{{figures/}}
 
+% ---- FLOAT PACKING ------------------------------------------------------
+%  DIAGNOSED 2026-08-28, after three prose cuts moved the page-5 boundary by
+%  only 2 lines between them while removing 9.69. Roughly 79 % of every line cut
+%  was being absorbed, and a capacity audit found ~18.5 lines of slack on pages
+%  1-5. THE BODY WAS NEVER TOO LONG; THE FLOATS WERE PACKING BADLY.
+%
+%  neurips_2026.sty:168 sets \flushbottom, so an under-filled page is stretched
+%  to look full instead of pulling text up from the next one. With the three
+%  body floats restricted to [t], a float that missed the top of its page was
+%  deferred and the page it vacated was padded out. Cutting prose fed the
+%  padding, not the page count.
+%
+%  The floats are now [tb]. That alone is a NO-OP for fig:ident, which is about
+%  42 % of a page (0.62\textwidth graphic plus its caption) against the
+%  template's \bottomfraction of 0.4 -- LaTeX would refuse it the bottom slot.
+%  Raising it to 0.45 is what makes the [tb] real.
+%
+%  THIS DOES NOT DEVIATE FROM THE REQUIRED TEMPLATE. Page geometry, margins and
+%  font size are untouched, and the two lines the CFP names verbatim
+%  (\usepackage[dblblindworkshop]{neurips_2026}, \workshoptitle{Sim2Science})
+%  are byte-identical. neurips_2026.sty:249-252 renews these same four float
+%  parameters itself; this renews one of them again.
+%
+%  TO REVERT: delete this block and put the three [tb] floats back to [t].
+\renewcommand{\bottomfraction}{0.45}
+% -------------------------------------------------------------------------
+
 % =========================================================================
 %  FIXED EXPERIMENTAL CONSTANTS (model INPUTS, not results).
 %  Copied VERBATIM from paper/main.tex, values and provenance comments alike.
@@ -510,7 +537,7 @@ that budget changes everything, so the failure is architectural rather than a
 shortage of optimisation and Table~\ref{tab:main} gives both.
 Figure~\ref{fig:stage-one} puts both models against the truth.
 
-\begin{figure}[t]
+\begin{figure}[tb]
   \centering
   \includegraphics[width=0.42\textwidth]{fig2_neural_ode_voltage.png}
   \hfill
@@ -528,7 +555,7 @@ Figure~\ref{fig:stage-one} puts both models against the truth.
   \label{fig:stage-one}
 \end{figure}
 
-\begin{table}[t]
+\begin{table}[tb]
   \caption{\textbf{Forecasting and recovery, same single trajectory} ($g_{Ca}=\gcaMain$; mean\,$\pm$\,SD
   over $\valUdeForecastVRmseN$ seeds unless noted). Bold marks the column best, but the parametric row,
   handed the true form and two free parameters, is expected to win and licenses only the one-directional
@@ -594,7 +621,7 @@ one error bar against another. It runs one way, and that is enough: because some
 estimator recovers the conductance to six per cent from this trajectory, the
 closure's scatter cannot be charged to the data.
 
-\begin{figure}[t]
+\begin{figure}[tb]
   \centering
   \includegraphics[width=0.62\textwidth]{fig13_parametric_identifiability.png}
   \caption{\textbf{The single trajectory determines the conductance; the closure
