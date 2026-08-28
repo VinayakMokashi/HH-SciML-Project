@@ -20,10 +20,13 @@ upload), and the table-caption point he has independently confirmed.
 2. The compute paragraph states the per-run number as *measured from file timestamps*. Keep
    that framing — it is the honest version and it is what makes the claim defensible.
 3. If Raj's ID arrives before you send, delete ask 1.
-4. **COMPILE FIRST AND CHECK WHERE THE REFERENCES HEAD LANDS.** The restructure adds roughly
-   four model lines against about twelve that were free, so it should still fit — but that is
-   a model, not a measurement, and nobody has compiled it. If References has slipped off
-   page 5, turn the first dial in the LENGTH DIAL block at the top of
+4. **The length question is CLOSED and must not be re-litigated by eye.** Measured on the
+   2026-08-28 compile: the body ends at the foot of page 5 and the References head sits at
+   the TOP of page 6, which is the target state (the CFP excludes references, checklist and
+   appendix from the five pages). Round 11's fixes were all in the appendix and the
+   checklist, so the body is byte-for-byte the version that was measured. **Recompile
+   anyway before attaching, and confirm the References head still opens page 6.** If it has
+   moved, turn the first dial in the LENGTH DIAL block at the top of
    `paper/sim2science/main.tex` before sending, not after.
 
 ---
@@ -92,11 +95,11 @@ walked all sixteen answers again rather than only the three you named — Q4 and
 pointing at a supplementary that will not exist, and two others were pointing at the wrong
 section. Tell me if you would rather Q8 said something else.
 
-**One thing I did not do.** The in-image titles on two older figures still read "state
-reconstruction" where the code and the text now say "state propagation". Regenerating them
-means retraining, and I was not willing to do that this close to the deadline for a wording
-fix. Neither of those figures is in the workshop paper — I picked panels for the Stage-1
-figure that never carried the wrong word — so nothing we are submitting is affected. It is on
-the list for the archival version.
+**The "state reconstruction" figure titles are fixed.** Two of the overview composites still
+printed that in-image title where the code and the text now say "state propagation". It
+turned out not to need a retrain: the UDE figures reload the saved parameter snapshot and do
+a forward solve, and the one neural-ODE figure that did retrain came back byte-identical
+panel for panel. The regenerated versions are what is attached, and no results file behind
+any reported number was touched.
 
 Vinayak

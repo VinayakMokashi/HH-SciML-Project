@@ -952,8 +952,9 @@ it. The profile interval quoted in Sec.~\ref{sec:parametric} and drawn in
 Fig.~\ref{fig:ident}(b) is read at linearly interpolated $\Delta\chi^2$
 crossings between the bracketing points of a $\ProfileStep$-spaced grid in
 $g_{Ca}$, not at the outermost grid points of the scan; two of the five closure
-estimates coincide to within a marker width, so the rug in that panel resolves
-only four ticks. The parametric fit of Sec.~\ref{sec:parametric} also carries an
+estimates coincide to within a marker width, so the closure-estimate tick marks
+along that panel's lower axis resolve only four of the five.
+The parametric fit of Sec.~\ref{sec:parametric} also carries an
 asymptotic relative standard error of $\valCondRelSeGcaTwoMean$ on $g_{Ca}$,
 which agrees with the roughly six per cent seed spread reported there, though it
 is a Gauss--Newton approximation to the same $\chi^2$ surface the profile traces
@@ -1013,7 +1014,8 @@ a machine that was also running other work rather than of processor time, so
 read it as an upper bound on the compute a reproducer needs. The aggressive-retrain runs quadruple the budget
 and scale roughly in proportion. Multiplying that per-run figure by the run count
 implied by the experimental design (the headline full-state and voltage-only
-conditions and the neural-ODE baseline at $\valUdeForecastVRmseN$ seeds each, the
+conditions at $\valUdeForecastVRmseN$ seeds each, the three neural-ODE
+conditions of Table~\ref{tab:main} at $\valUdeForecastVRmseN$ seeds each, the
 conductance sweep at $\valUdeForecastVRmseN$ seeds per point, the window and
 noise ablations at a single seed per point, and the retrain control) is enough
 to plan a replication. We prefer to give the ingredients than a remembered total.
@@ -1092,9 +1094,9 @@ whose forecast RMSE Sec.~\ref{sec:results} quotes.
   voltage-only UDE (dashed), representative seed at the baseline condition,
   trained on the noisy voltage for $t\le\Ttrain$\,ms. In the gate panels the
   dashed model trace is drawn in the same colour as, and lies beneath, its solid
-  truth trace, so at this scale the two are not separately resolvable; the
-  agreement there is quantified in Table~\ref{tab:main} rather than read off the
-  panel. The loss is computed on $V$ only; $m,h,n,p,s$ are unobserved and
+  truth trace, so at this scale the two are not separately resolvable and the
+  agreement there should not be read off the panel. The loss is computed on $V$
+  only; $m,h,n,p,s$ are unobserved and
   unscored at every training step, so their agreement is the retained kinetics'
   doing and not the network's --- \emph{propagation} from the true initial state
   under known gate equations rather than reconstruction of the gates from
