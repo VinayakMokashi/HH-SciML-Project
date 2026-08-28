@@ -23,8 +23,10 @@ upload), and the table-caption point he has independently confirmed.
 4. **The length question is CLOSED and must not be re-litigated by eye.** Measured on the
    2026-08-28 compile: the body ends at the foot of page 5 and the References head sits at
    the TOP of page 6, which is the target state (the CFP excludes references, checklist and
-   appendix from the five pages). Round 11's fixes were all in the appendix and the
-   checklist, so the body is byte-for-byte the version that was measured. **Recompile
+   appendix from the five pages). Every round-11 and round-12 fix landed in the appendix,
+   the checklist or this email — **lines 1-770 of `paper/sim2science/main.tex`, which is the
+   preamble, the abstract and all of Secs 1-5, are byte-for-byte the version that was
+   measured on 28 Aug.** Verified with `diff`, not by eye. **Recompile
    anyway before attaching, and confirm the References head still opens page 6.** If it has
    moved, turn the first dial in the LENGTH DIAL block at the top of
    `paper/sim2science/main.tex` before sending, not after.
@@ -94,6 +96,17 @@ a reader can multiply. **Checklist Q8 has gone from No to Yes** on the strength 
 walked all sixteen answers again rather than only the three you named — Q4 and Q5 were still
 pointing at a supplementary that will not exist, and two others were pointing at the wrong
 section. Tell me if you would rather Q8 said something else.
+
+Since then I have run two more audit passes over the checklist and the appendix, because the
+checklist is the one file none of my automated checks can read and it ships inside the PDF.
+They turned up nine more things and I have fixed all of them: the checklist was citing an
+"Eq. 1" that no longer exists (a length pass had inlined that equation), and three separate
+answers described the methods without mentioning the parametric fit, which is the paper's
+main counter-experiment. The rest were appendix cross-references that pointed at the right
+label but the wrong content — a caption sending the reader to Table 1 for a number Table 1
+does not carry, and the compute appendix naming one neural-ODE run where the design has
+three. **None of it touched the five-page body**, so the length is exactly where you last
+saw it. I mention it not to alarm you but so you know what has moved since your review.
 
 **The "state reconstruction" figure titles are fixed.** Two of the overview composites still
 printed that in-image title where the code and the text now say "state propagation". It
