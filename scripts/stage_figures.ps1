@@ -32,6 +32,15 @@ $map = [ordered]@{
   # --- non-colliding, copied under their own names ---
   "figures\fig2_neural_ode_overview.png"                                   = "fig2_neural_ode_overview.png"
   "figures\fig3_ude_overview.png"                                          = "fig3_ude_overview.png"
+  # The two single-variable voltage panels, added 2026-08-28 for the 5-page
+  # paper's Stage-1 figure. Same run and same representative seed as the two
+  # _overview composites above -- save_trajectory_figs writes the per-variable
+  # panels and the composite in ONE call (src/experiment.jl:212-244) -- but the
+  # per-variable title is "Membrane voltage : truth vs <model>" and carries NONE
+  # of the stale "state reconstruction" wording that decision D1 still owes the
+  # two overviews. That is why the 5-page cut uses these and not the composites.
+  "figures\fig2_neural_ode_voltage.png"                                    = "fig2_neural_ode_voltage.png"
+  "figures\fig3_ude_voltage.png"                                           = "fig3_ude_voltage.png"
   "figures\fig3_ude_calcium_parity.png"                                    = "fig3_ude_calcium_parity.png"
   "figures\fig5_metrics_bar_train_vs_forecast.png"                         = "fig5_metrics_bar_train_vs_forecast.png"
   "figures\fig6_voltage_only_overview.png"                                 = "fig6_voltage_only_overview.png"

@@ -69,9 +69,16 @@ IDENTIFYING = [
 #  breaks anonymity, so the transform keeps the epistemic hedge (do not lean on
 #  it as independent) and drops only the reason. RESTORE THE FULL DISCLOSURE IN
 #  THE CAMERA-READY -- it is not optional there.
+#  The two number words are matched GENERICALLY (\w+), deliberately. They were
+#  hard-coded as "four ... five" until 2026-08-28, when the archival byline went
+#  from five authors to three and the sentence became "two of this paper's
+#  three" -- which silently made this regex match zero times and the assertion
+#  below refuse to build the bundle. The count is derived from the byline and
+#  will change again; the SENTENCE is what must not disappear, and that is what
+#  this now guards.
 SELF_ID_CLAUSE = re.compile(
-    r'---\s*though\s+that\s+work\s+shares\s+four\s+of\s+this\s+'
-    r'paper\'s\s+five\s+authors,\s+so\s+we\s+note\s+the\s+agreement\s+'
+    r'---\s*though\s+that\s+work\s+shares\s+\w+\s+of\s+this\s+'
+    r'paper\'s\s+\w+\s+authors,\s+so\s+we\s+note\s+the\s+agreement\s+'
     r'rather\s+than\s+lean\s+on\s+it\s+as\s+independent\s*---',
     re.S)
 SELF_ID_REPLACEMENT = (
@@ -292,14 +299,24 @@ def main():
     print("""
 UPLOAD: make a NEW Overleaf project and drag EVERY item in sim2science_upload/
 onto its file tree -- main.tex, supplementary.tex, neurips_2026.sty, arxiv.sty,
-checklist.tex, references.bib, generated/, figures/.  Compile main.tex for the
-5-page submission and supplementary.tex for the supplement, then upload both
-PDFs to OpenReview.
+checklist.tex, references.bib, generated/, figures/.
+
+*** ONE PDF IS SUBMITTED, NOT TWO (verified on the live form, 2026-08-28). ***
+Compile main.tex. That single file is body + references + checklist + appendix
+and it is the ONLY thing the OpenReview form accepts: there is one `PDF *`
+field and NO supplementary-material field.
+supplementary.tex is still built, because it is the anonymised archival
+manuscript and the target the two documents are cross-checked against -- but it
+is NOT uploaded. Do not attach it anywhere.
+NEVER upload a pdf built from paper/main.tex itself: it carries the real byline,
+affiliations and emails, and would break double-blind.
 
 REMEMBER, none of which this script can do for you:
   - nominate one author as the reciprocal reviewer at submission time;
-  - check the compiled main.pdf is <= 5 pages EXCLUDING references;
-  - fill checklist.tex (it does not count toward the page limit).""")
+  - check the compiled main.pdf's BODY is <= 5 pages; references, checklist and
+    appendix are all excluded from that limit, so the gauge is where the
+    References head lands, not the page total;
+  - every author needs an OpenReview profile before you can submit.""")
     return 0
 
 

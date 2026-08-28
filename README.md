@@ -8,9 +8,11 @@ Limits of Universal Differential Equations in a Hodgkin-Huxley Neuron"* (`paper/
 Hodgkin-Huxley model with a neural closure forecasts held-out voltage accurately and
 reproduces the shape of the hidden current, but does **not** recover its conductance.
 The reason is not a shortage of data: a direct two-parameter fit of `(gCa, ECa)` to the
-*same* single noisy trajectory recovers `gCa` to about six per cent. Parametric
-identifiability holds; functional identifiability fails for this closure, under both the
-constrained and the unconstrained distillation we ran. The data confine the conductance
+*same* single noisy trajectory recovers `gCa` to about six per cent. What fails is the
+practical recovery of the physical coefficient from this flexible closure, under the
+tested objectives and distillation procedures: parametric identifiability holds, and
+functional identifiability fails for this closure, under both the constrained and the
+unconstrained distillation we ran. The data confine the conductance
 to a short, bounded stretch of the `gCa`-`ECa` trade-off, and the estimates read off the
 closure scatter well beyond it. The two arms also differ in objective and optimiser, not
 only in representation: a matched-objective control attributes a roughly threefold

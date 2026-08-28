@@ -1041,6 +1041,13 @@ claims:
     # distinction of Loman/Browning/Baker (arXiv 2606.30289) measured empirically: parametric
     # identifiability holds, functional identifiability fails for this closure under the two
     # distillations run here. Cite them and norden2025structural here.
+    # HOW TO STATE IT (2026-08-28, mentor review 2). Where the paper ASSERTS the finding, assert
+    # the practical recovery of the physical coefficient from this flexible closure, under the
+    # tested objectives and distillation procedures -- his wording, and narrower than ours because
+    # it names the two axes actually varied (the objective, via the matched-objective control; the
+    # distillation, constrained and unconstrained). Keep the Loman vocabulary as the sentence that
+    # EXPLAINS what kind of failure it is. Enforced by consistency.yaml group
+    # headline-failure-is-practical-recovery, alongside the two scope groups.
     # The claim is INTERPRETIVE, not empirical — the two numbers are facts, the causal attribution is
     # an inference licensed by the fact that the data were identical. Keep it labelled as such.
 

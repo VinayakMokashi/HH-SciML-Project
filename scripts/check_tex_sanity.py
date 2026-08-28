@@ -126,6 +126,65 @@ def check_midline_comments(path):
     return out
 
 
+def check_comment_eats_interword_space(path):
+    r"""A comment at the TRUE END of a line still needs a SPACE before its %.
+
+    This is the sibling defect of the mid-line comment above, and it is subtler.
+    TeX discards everything from % to the end of line INCLUDING the newline, so
+    the newline's interword space is gone too. When the line reads
+
+        ... centred on% numok: ...
+        \emph{that} estimate ...
+
+    the PDF says "centred onthat". With a space before the %, the space survives
+    and it reads "centred on that". Nothing else in this suite sees it:
+    check_numbers reads the numok as a valid exemption and is happy, and the
+    mid-line check above only fires when PROSE follows the %.
+
+    Added 2026-08-28 while moving a sentence between sections put four numok
+    comments at line ends; all four were correct, but only because they were
+    written carefully by hand.
+    """
+    if path.suffix != ".tex":
+        return []
+    out = []
+    lines = path.read_text(encoding="utf-8").split("\n")
+    for i, raw in enumerate(lines, 1):
+        pos = first_comment(raw)
+        if pos is None:
+            continue
+        before = raw[:pos]
+        if before.strip() == "" or before.endswith((" ", "\t")):
+            continue
+        # Only a defect if the comment really is at the end of the line AND the
+        # next line starts with something that would be GLUED ON as text.
+        nxt = lines[i].lstrip() if i < len(lines) else ""
+        if not nxt or nxt.startswith("%"):
+            continue
+        # A line ending in an explicit break or a group close is not gluing words.
+        if re.search(r"(\\\\|\{|\}|&|~|-)$", before.rstrip()):
+            continue
+        if not re.search(r"[A-Za-z0-9\}\$\.,;:]$", before):
+            continue
+        # The next line must actually begin with text. A line starting with a
+        # closing brace, an alignment tab, a rule or a structural macro cannot
+        # have a word glued to it -- and a line-end % is the CORRECT idiom there
+        # (it is how the \GenericError stale-upload canary in both preambles
+        # suppresses a spurious space, which is why this guard exists).
+        if not re.match(r"[A-Za-z0-9$]|\\[A-Za-z]", nxt):
+            continue
+        if re.match(r"\\(begin|end|item|label|caption|centering|includegraphics"
+                    r"|hline|toprule|midrule|bottomrule|cmidrule|bibliography"
+                    r"|bibliographystyle|appendix|section|subsection|paragraph"
+                    r"|newcommand|renewcommand|input|usepackage|documentclass"
+                    r"|maketitle|author|title|And|GenericError|ifdefined|else|fi"
+                    r"|setlength|graphicspath|workshoptitle|hypersetup)\b", nxt):
+            continue
+        out.append((i, "comment eats the interword space (no space before %)",
+                    "%r + %r" % (before[-30:], nxt[:30])))
+    return out
+
+
 def check_stale_upload_canary():
     """CHECK 4 -- the stale-upload canary in main.tex must name a real macro.
 
@@ -171,7 +230,8 @@ def main():
             print("missing: %s" % p)
             continue
         for line, kind, ctx in (check_control_bytes(p) + check_non_ascii(p)
-                                + check_midline_comments(p)):
+                                + check_midline_comments(p)
+                                + check_comment_eats_interword_space(p)):
             findings.append((p, line, kind, ctx))
 
     findings.extend(check_stale_upload_canary())
@@ -189,6 +249,9 @@ def main():
         print("  control byte  -> replace with the characters that were intended")
         print("  non-ASCII     -> use the ASCII form (em dash is '---'); comments are exempt")
         print("  mid-line %%    -> move the comment to its own line, or to the true end of the line")
+        print("  eats space    -> put a SPACE before the %%. TeX drops the newline after a")
+        print("                   comment, so that space is the only thing separating the")
+        print("                   last word of this line from the first word of the next")
         print("  canary        -> point the \\ifdefined guard after \\input{generated/metrics}")
         print("                   at a macro that exists, or a partial Overleaf upload goes")
         print("                   back to failing as scattered 'Undefined control sequence'")

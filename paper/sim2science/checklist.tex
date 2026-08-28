@@ -7,8 +7,17 @@
 % md5 as downloaded: b3450429513a86f46735450d0288b722
 %
 % UNLIKE the .sty, this file is MEANT to be edited: answer each question for this
-% paper before submitting. It ships in sim2science_upload/ but is not \input by
-% main.tex yet -- add \input{checklist} before \end{document} once it is filled in.
+% paper before submitting.
+%
+% PLACEMENT (2026-08-28). The CFP is explicit: the checklist is "placed after the
+% references and before the appendix; it does not count toward the page limit."
+% main.tex therefore \input's it between \bibliography and \appendix. Do not
+% move it, and do not count it against the five pages.
+%
+% NOTHING VERIFIES THIS FILE. Not check_numbers (which never sees it), not
+% check_claims, not lint_prose, not check_consistency -- and it ships inside the
+% submitted pdf. Every answer below was read against the manuscript by hand.
+% If an answer cites a section or an appendix, re-read it after any restructure.
 %
 \section*{NeurIPS Paper Checklist}
 
@@ -19,7 +28,7 @@
 \item {\bf Claims}
     \item[] Question: Do the main claims made in the abstract and introduction accurately reflect the paper's contributions and scope?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The abstract and Sec.~1 state exactly what Sec.~3 shows: accurate forecasting, a distilled conductance that scatters across seeds, and a direct parametric fit on the same trajectory that recovers it. The scope limits are stated rather than implied: one model, one trajectory family, one closure architecture, and two distillation methods (Sec.~5).
+    \item[] Justification: The abstract and Sec.~1 state exactly what Sec.~3 shows: accurate forecasting, a distilled conductance that scatters across seeds, and a direct parametric fit on the same trajectory that recovers it. Both bind the finding to what was actually varied -- the practical recovery of the physical coefficient from this flexible closure, under the tested objectives and distillation procedures -- rather than asserting a property of closures in general. The scope limits are stated rather than implied: one model, one trajectory family, one closure architecture, and two distillation methods (Sec.~5).
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the abstract and introduction do not include the claims made in the paper.
@@ -31,7 +40,7 @@
 \item {\bf Limitations}
     \item[] Question: Does the paper discuss the limitations of the work performed by the authors?
     \item[] Answer: \answerYes{}
-    \item[] Justification: Sec.~5 gives them: the elevated conductance setting, the single model/trajectory/architecture, the absence of any statistical test, and the fact that the matched-objective control bounds rather than measures the representation's share because it holds the optimiser fixed. It also names the distillation as an axis we did not vary, and confines the claim to this closure under the two distillations we ran.
+    \item[] Justification: Sec.~5 gives them: the elevated conductance setting, the single model/trajectory/architecture, and the absence of any statistical test, which is why every comparative statement is an equivalence-within-noise statement and not an ordering. It also names the distillation as an axis we did not vary, and confines the claim to this closure under the two distillations we ran. The remaining limitation is stated where the result is, in Sec.~3.3: the matched-objective control holds the optimiser fixed, so the residual twofold bounds the representation's own contribution rather than measuring it.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the paper has no limitation while the answer \answerNo{} means that the paper has limitations, but those are not discussed in the paper. 
@@ -61,7 +70,7 @@
     \item {\bf Experimental result reproducibility}
     \item[] Question: Does the paper fully disclose all the information needed to reproduce the main experimental results of the paper to the extent that it affects the main claims and/or conclusions of the paper (regardless of whether the code and data are provided or not)?
     \item[] Answer: \answerYes{}
-    \item[] Justification: Sec.~2 gives the generating model and its currents, the integration span and initial condition, the sampling and noise protocol, the training split, the closure architecture and parameter count, the optimiser budgets and the adjoint, and the objective in closed form (Eq.~1). The supplementary adds the full parameter table and the metric definitions.
+    \item[] Justification: Sec.~2 gives the generating model and its currents, the integration span and initial condition, the sampling and noise protocol, the training split, the closure architecture and parameter count, the optimiser budgets and the adjoint, and the objective in closed form (Eq.~1). App.~\ref{app:eqns} adds the gating kinetics and the full parameter table with the provenance of every constant, and App.~\ref{app:hyper} the architectures, solver tolerances, learning rate, seed set, both distillation procedures and the metric definitions, including the failure paths the reported tables silently inherit.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the paper does not include experiments.
@@ -81,7 +90,7 @@
 \item {\bf Open access to data and code}
     \item[] Question: Does the paper provide open access to the data and code, with sufficient instructions to faithfully reproduce the main experimental results, as described in supplemental material?
     \item[] Answer: \answerNo{}
-    \item[] Justification: Not at submission time: the repository URL and the archived snapshot DOI would break double-blind anonymity, so both are withheld (Sec.~5). The experiments are reproducible from the details in Sec.~2 and the supplementary, and the full codebase, trained parameters and results tables are released publicly upon acceptance, under MIT for the software and CC BY 4.0 for the results.
+    \item[] Justification: Not at submission time: the repository URL, the commit tag and the archived snapshot DOI would break double-blind anonymity, so all three are withheld and given in the camera-ready. The experiments are reproducible from Sec.~2 together with App.~\ref{app:eqns}--\ref{app:ablations}, which carry the parameter table, the training and metric definitions and the compute details. The full codebase, trained parameters and results tables are released publicly upon acceptance, under MIT for the software and CC BY 4.0 for the results -- the same wording the paper's ``Data and code'' paragraph uses.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that paper does not include experiments requiring code.
@@ -98,7 +107,7 @@
 \item {\bf Experimental setting/details}
     \item[] Question: Does the paper specify all the training and test details (e.g., data splits, hyperparameters, how they were chosen, type of optimizer) necessary to understand the results?
     \item[] Answer: \answerYes{}
-    \item[] Justification: Sec.~2 specifies the training split, the optimiser and its iteration budget for every arm, the continuous adjoint, and the objective in closed form. The parametric arm is a multi-start Nelder--Mead minimisation of a noise-weighted $\chi^2$ over two free parameters.
+    \item[] Justification: Sec.~2 specifies the training split, the optimiser and its iteration budget for every arm, the continuous adjoint, and the objective in closed form. The parametric arm is a multi-start Nelder--Mead minimisation of a noise-weighted $\chi^2$ over two free parameters. App.~\ref{app:hyper} adds the layer widths and activations, the solver tolerances, the learning rate, the BFGS fallback behaviour and the seed set.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the paper does not include experiments.
@@ -125,8 +134,8 @@
 
 \item {\bf Experiments compute resources}
     \item[] Question: For each experiment, does the paper provide sufficient information on the computer resources (type of compute workers, memory, time of execution) needed to reproduce the experiments?
-    \item[] Answer: \answerNo{}
-    \item[] Justification: The paper does not report wall-clock time, memory or hardware. The experiments are small -- a six-state ODE closed by a 337-parameter multilayer perceptron, five seeds per condition -- and were run on a single machine, but we did not record those figures and do not want to state them from memory.
+    \item[] Answer: \answerYes{}
+    \item[] Justification: App.~\ref{app:compute} gives them, and is explicit about which are measured and which are not. Hardware is stated as fact: every experiment ran on a single consumer laptop, CPU only, with no GPU and 16\,GB of RAM, under a pinned Julia~1.6.7 environment. Wall-clock time was never instrumented -- no results file carries a timing column and no run log was kept -- so rather than state a total from memory we give what can be measured and let a reproducer multiply. Each trained-parameter snapshot is written as its run finishes, so the conductance sweep wrote twelve of them back to back and the eleven gaps between consecutive ones bracket eleven real trainings, putting a single universal-differential-equation training at a median of approximately 11 minutes at the Adam~\AdamUde\slash BFGS~\BfgsUde{} budget on this machine, inclusive of the symbolic post-processing between runs. That is elapsed time on a shared desktop rather than processor time, so read it as an upper bound; the aggressive-retrain control quadruples the budget and scales roughly in proportion. App.~\ref{app:compute} also states the run count implied by the experimental design, which is what the per-run figure has to be multiplied by. The problem is small enough that no accelerator is needed and none was used: a six-state ODE closed by a $\NparamUde$-parameter multilayer perceptron fitted to $\Ntrain$ samples.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the paper does not include experiments.
@@ -176,7 +185,7 @@
 \item {\bf Licenses for existing assets}
     \item[] Question: Are the creators or original owners of assets (e.g., code, data, models), used in the paper, properly credited and are the license and terms of use explicitly mentioned and properly respected?
     \item[] Answer: \answerYes{}
-    \item[] Justification: The software stack is cited in Sec.~2 and the biophysical model, its currents and its parameter values are attributed to the published sources they are taken from. The vendored NeurIPS style file and this checklist are third-party files and carry their source, fetch date, licence and checksum in their own headers.
+    \item[] Justification: The software stack is cited in Sec.~2 and App.~\ref{app:compute}, and the biophysical model and its currents in Sec.~2. Every model constant is attributed individually in App.~\ref{app:eqns}, Table~\ref{tab:params}, which names either the published source or, where we chose a value rather than taking one, marks it a choice. The vendored NeurIPS style file and this checklist are third-party files and carry their source, fetch date, licence and checksum in their own headers.
     \item[] Guidelines:
     \begin{itemize}
         \item The answer \answerNA{} means that the paper does not use existing assets.

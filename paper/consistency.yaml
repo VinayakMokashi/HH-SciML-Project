@@ -314,3 +314,43 @@ groups:
        distillations\s+we\s+ran|distilled\s+this\s+way)
     window: 6
     min_sites: 4
+
+  - id: headline-failure-is-practical-recovery
+    why: >-
+      Added 2026-08-28 after mentor review 2. He asked for the HEADLINE
+      SENTENCE to be softened, in his own words: replace "What fails is the
+      functional identifiability of this closure" with "What fails is the
+      practical recovery of the physical coefficient from this flexible closure
+      under the tested objectives and distillation procedures."
+      His phrasing is NARROWER than ours and that is the right direction for an
+      artifact we are about to freeze, because it names the two axes we actually
+      varied -- the objective (the matched-objective control) and the
+      distillation (constrained and unconstrained) -- instead of asserting a
+      property of the closure as such.
+      THIS GROUP DOES NOT RETIRE THE PARAMETRIC-VS-FUNCTIONAL VOCABULARY. He
+      asked for that frame in review 1, and the two sibling groups below probe
+      on it with min_sites, so deleting it would FAIL loudly. The division of
+      labour is: his wording where the paper ASSERTS the failure (both
+      abstracts, the README headline, the contributions bullet), the Loman
+      vocabulary where the paper EXPLAINS what kind of failure it is. Sites
+      therefore carry BOTH, and both sibling groups still find four-plus sites.
+      What this group guards is the same fan-out failure as every other group
+      here: the softening landing in the 5-page abstract and not in the
+      archival's, or in the paper and not in the README.
+    files: [paper/main.tex, paper/sim2science/main.tex, README.md, paper/claims.yaml]
+    probe: 'practical\s+recovery\s+of\s+the\s+physical\s+coefficient'
+    require: >-
+      (tested\s+objectives|objectives\s+and\s+distillation|
+       distillation\s+procedures|objectives\s+and\s+the\s+distillations|
+       objectives\s+and\s+distillations\s+we\s+tested)
+    window: 5
+    min_sites: 4
+    # The un-softened absolutes the softening exists to keep out. These are
+    # phrasings the paper has never used and must not acquire: our evidence is
+    # two distillations under two objectives on one closure, so nothing here
+    # licenses an impossibility statement.
+    forbid: >-
+      (the\s+coefficient\s+cannot\s+be\s+recovered|
+       recovery\s+is\s+impossible|
+       UDEs\s+cannot\s+recover|
+       flexible\s+closures\s+cannot\s+recover)

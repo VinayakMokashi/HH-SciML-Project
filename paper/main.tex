@@ -169,6 +169,19 @@ Hodgkin--Huxley Neuron}
 
 % ---- Author block ------------------------------------------------------
 % Vinayak (first author, Brown) + the Vizuara AI Labs team. ORCIDs still optional/TBD.
+%
+% THREE AUTHORS, not five (Vinayak's decision, 2026-08-28). Rajat Dandekar and
+% Sreedath Panat were removed so this byline MATCHES the Sim2Science workshop
+% submission -- the same work was going out under two different author lists,
+% which is a thing to decide rather than to let happen.
+% COUPLED, and already done in the same edit: the pdfauthor line below, and the
+% author-overlap disclosure in Sec. 1.1, which said "four of this paper's five
+% authors" and is now "two of this paper's three". kainth2025pinodesr is Kainth,
+% Joshi, Raj Dandekar, Rajat Dandekar, Panat, so the overlap with THIS byline is
+% Joshi and Raj -- two. If the byline ever changes again, re-derive that count
+% from references.bib rather than editing the number.
+% ALSO COUPLED: scripts/make_sim2science_bundle.py's SELF_ID_CLAUSE regex reads
+% that sentence and asserts it matches exactly once.
 \author{
   Vinayak Mokashi \\
   Brown University \\
@@ -181,14 +194,6 @@ Hodgkin--Huxley Neuron}
   Raj Abhijit Dandekar \\
   Vizuara AI Labs \\
   \texttt{raj@vizuara.com} \\
-  \And
-  Rajat Dandekar \\
-  Vizuara AI Labs \\
-  \texttt{rajat@vizuara.com} \\
-  \And
-  Sreedath Panat \\
-  Vizuara AI Labs \\
-  \texttt{sreedath@vizuara.com} \\
 }
 
 \renewcommand{\shorttitle}{Identifiability Limits of UDEs in a Hodgkin--Huxley Neuron}
@@ -198,7 +203,7 @@ Hodgkin--Huxley Neuron}
   pdfborder={0 0 0},         % belt and braces: some viewers ignore `hidelinks`
   pdftitle={When Can Scientific Machine Learning Recover a Hidden Ionic Current? Identifiability Limits of Universal Differential Equations in a Hodgkin-Huxley Neuron},
   pdfsubject={q-bio.NC, q-bio.QM, cs.LG},
-  pdfauthor={Vinayak Mokashi, Prathamesh Dinesh Joshi, Raj Abhijit Dandekar, Rajat Dandekar, Sreedath Panat},
+  pdfauthor={Vinayak Mokashi, Prathamesh Dinesh Joshi, Raj Abhijit Dandekar},
   pdfkeywords={scientific machine learning, universal differential equations, neural ODE, Hodgkin-Huxley, symbolic regression, SINDy, identifiability, computational neuroscience},
 }
 
@@ -253,11 +258,13 @@ contribution at about a factor of two.
 % claim: retrain-improves-loss-worsens-recovery
 Nor is it under-training: quadrupling the budget lowers the training loss by
 \LossDropPct\,\% while making every recovery quantity worse, including agreement with
-the true trajectory inside the training window itself. What fails is not parametric
-identifiability but the functional identifiability of this closure, under both the
-constrained and the unconstrained distillation we ran: the data confine the conductance
-to a short, bounded stretch of the $g_{Ca}$--$E_{Ca}$ trade-off, and the estimates
-read off the closure scatter well beyond it. Code, trained parameters, and all results tables are
+the true trajectory inside the training window itself. What fails is the practical
+recovery of the physical coefficient from this flexible closure, under the tested
+objectives and distillation procedures: the data confine the conductance to a short,
+bounded stretch of the $g_{Ca}$--$E_{Ca}$ trade-off, and the estimates read off the
+closure scatter well beyond it. Parametric identifiability holds; the functional
+identifiability of this closure, under both the constrained and the unconstrained
+distillation we ran, does not. Code, trained parameters, and all results tables are
 available at \url{TODO-REPOSITORY-URL}; the archived snapshot and the licence
 terms are given in the Data and Code Availability section.
 \end{abstract}
@@ -383,9 +390,11 @@ and at most a further twofold is attributable to the representation.
   representation, because the two arms also differ in objective: repeating the
   identical parametric fit under the closure's own voltage-dominated loss gives
   $\valParamFitGcaHatTwoSseFullMeanStd$, so the objective accounts for about a
-  threefold inflation and at most a further twofold is the representation's. This is
-  parametric identifiability holding while functional identifiability fails for this
-  closure, under both the distillations we ran
+  threefold inflation and at most a further twofold is the representation's. What
+  fails is the practical recovery of the physical coefficient from this flexible
+  closure, under the tested objectives and distillation procedures: parametric
+  identifiability holds while functional identifiability fails for this closure,
+  under both the distillations we ran
   (Sec.~\ref{sec:results-parametric}, Table~\ref{tab:parametric}).
 
   \item % claim: retrain-improves-loss-worsens-recovery
@@ -477,8 +486,8 @@ oscillatory dynamics unreliably under realistic iteration budgets, and stabilise
 them by normalising physics residuals across state variables that evolve on
 disparate timescales. That diagnosis is directly relevant to us twice over. It corroborates the
 weakness of the black-box baseline we report in
-Sec.~\ref{sec:results-forecasting} --- though that work shares four of this
-paper's five authors, so we note the agreement rather than lean on it as
+Sec.~\ref{sec:results-forecasting} --- though that work shares two of this
+paper's three authors, so we note the agreement rather than lean on it as
 independent --- and the imbalance it corrects is the same one
 that makes our full-state and voltage-only conditions nearly identical
 (Sec.~\ref{sec:results-partial}). Where they rebalance the residual to make the
@@ -1189,9 +1198,8 @@ on the calcium current.
   only; $m,h,n,p,s$ are unobserved and unscored at every training step. Their
   agreement is the retained kinetics' doing, not the network's, and it is
   \emph{propagation} from the true initial state under known gate equations
-  rather than reconstruction of the gates from voltage; the panel's printed
-  title is emitted by the plotting code and still reads ``state
-  reconstruction'', which is the reading this caption corrects. Forecast $V$ RMSE
+  rather than reconstruction of the gates from voltage, which is what the
+  panel's printed title now says. Forecast $V$ RMSE
   is $\valUdeVoltageForecastVRmseMeanStd$\,mV against
   $\valUdeForecastVRmseMeanStd$\,mV for full-state observation
   ($n=\valUdeForecastVRmseN$, $\pm$ SD), equivalent within seed noise; one seed

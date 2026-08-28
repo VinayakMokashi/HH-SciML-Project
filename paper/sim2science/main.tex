@@ -3,10 +3,17 @@
 %
 %  THIS IS A DERIVED ARTIFACT. The full manuscript is paper/main.tex and remains
 %  the archival version; this is the 5-page cut required by the workshop CFP
-%  (5 pages excluding references, unlimited supplementary). Nothing here may
-%  state a number the full paper does not, and every claim carries the same
-%  guards -- paper/consistency.yaml lists this file so the ninth checker
-%  enforces the shared invariants across both.
+%  (5 pages excluding references; the checklist and the appendix are excluded
+%  too, and the appendix has no page limit of its own -- but the CFP requires
+%  the five-page BODY to be SELF-CONTAINED and warns that reviewers are not
+%  obliged to read the appendix, so detail may move out of the body and
+%  substance may not). Nothing here may state a number the full paper does not,
+%  and every claim carries the same guards -- paper/consistency.yaml lists this
+%  file so the ninth checker enforces the shared invariants across both.
+%
+%  WHAT IS SUBMITTED: ONE pdf. body <= 5 pp + references + checklist + appendix.
+%  Compile sim2science_upload/main.tex; EDIT THIS FILE, never the bundle, which
+%  make_sim2science_bundle.py destroys and rewrites on every run.
 %
 %  DOUBLE-BLIND. No author block, no affiliations, no emails, no repository URL,
 %  no self-identifying references. The real author block is preserved in
@@ -24,9 +31,15 @@
 %       contributions, Conclusion opening positive and then turning. Option A
 %       would have made the workshop paper more aggressively framed than the
 %       manuscript it is derived from.
-%    2. THE SUPPLEMENTARY IS THAT MANUSCRIPT. make_sim2science_bundle.py
-%       generates supplementary.tex by anonymising main.tex, so a mismatch in
-%       framing ships inside one submission.
+%    2. THE SUPPLEMENTARY WAS THAT MANUSCRIPT -- make_sim2science_bundle.py
+%       generates supplementary.tex by anonymising main.tex -- so a mismatch in
+%       framing would have shipped inside one submission.
+%       THIS SECOND REASON IS NOW MOOT (2026-08-28): the Sim2Science form has
+%       one PDF field and no supplementary slot, so the archival never ships
+%       alongside. DO NOT REOPEN THE FRAMING ON THAT BASIS. Reason 1 is
+%       untouched and was always the stronger of the two. supplementary.tex is
+%       still GENERATED -- it is the cross-check target and the archival's own
+%       anonymisation route -- it is simply no longer submitted.
 %
 %  EXHIBITS: ONE figure (fig13) and one table. This was re-examined properly on
 %  2026-08-26 against a REAL compile, not an estimate, and the arithmetic is
@@ -44,14 +57,11 @@
 %    the controls are what make the finding survive review.
 %  fig13 stays: it is the thesis and doubles as the symbolic-recovery graph.
 %
-%  LENGTH: MEASURED, not estimated, as of the 2026-08-26 compile. The one-figure
-%  option-A draft put the References head about 78 % down page 5, i.e. a body of
-%  ~4.8 pages with ~13 lines of headroom. This revision spends that headroom on
-%  fig5 (~15 lines at 0.72\textwidth with a three-line caption) and pays for it
-%  by trimming Methods, for a net addition of roughly +8 lines. It should still
-%  land inside five pages, but the margin is now THIN. Re-measure after every
-%  edit, and use the page on which References STARTS as the gauge: page 5 = fits,
-%  page 6 = the body is six pages and something must go.
+%  [A fourth LENGTH block stood here, describing an option-A revision that would
+%   spend the headroom on fig5. IT NEVER SHIPPED -- fig5 was rejected on the
+%   arithmetic above and again below, so the block described a document that
+%   does not exist and contradicted the two measurements that follow. Deleted
+%   2026-08-28. The live arithmetic is the 2026-08-28 block at the end.]
 %
 %  LENGTH DIAL. GAUGE: the page on which the References head sits, and how far
 %  down it. Page 5 = the body fits. Page 6 = the body is six pages, fix it.
@@ -60,27 +70,155 @@
 %  ~75-80 % down page 5, so there are ~12-15 free lines. fig5 costs ~16 even at
 %  0.66\textwidth. It is one to four lines short, and a [t] float can migrate to
 %  page 3 or 4 and cost MORE than its own height by leaving a ragged page bottom.
-%  DECISION: ship one figure. The forecast bars are not lost -- the supplementary
-%  IS the archival manuscript and already prints them, and the Supplementary
-%  paragraph now says so, which is what a reader actually needs.
+%  DECISION AT THE TIME: ship one figure, on the reasoning that the forecast
+%  bars survive in the supplementary. THAT REASONING IS DEAD -- see below. The
+%  measurement it rests on (References head ~75-80 % down page 5) is still the
+%  best number anyone has, and is the baseline the 2026-08-28 arithmetic works
+%  against.
 %
-%  TO LENGTHEN, only if a future compile leaves the References head ABOVE ~70 %:
-%    1. restore fig5_metrics_bar_train_vs_forecast.png immediately after Table 1
-%       at 0.66\textwidth (~16 lines) and add ", Fig.~\ref{fig:bars}" to the
-%       Table 1 citation in Sec. 3.1. Caption MUST name blue=NODE and green=UDE,
+%
+%  REVISED 2026-08-28 (mentor review 2, N13/N14). THE TRADE ABOVE IS DEAD:
+%  there is no supplementary upload slot on the Sim2Science form, so "the
+%  supplementary prints fig5" was never a defence and is now simply false. The
+%  submission is ONE pdf: body <= 5 pp + references + checklist + appendix.
+%  WHAT CHANGED, in model lines (58.9 lines/page at this geometry):
+%    + Stage-1 figure, two 0.47\textwidth panels side by side  ~11 + 4 caption
+%    + the softened headline sentence in the abstract                      ~+2
+%    - Fig. 2 (was Fig. 1) shrunk 0.70 -> 0.62\textwidth                   ~-2
+%    - its caption trimmed, panel-(b) interpolation detail -> App. B       ~-4
+%    - the availability paragraph rewritten, no supplementary promise      ~-4
+%    - the gCa=0.4 rescaling derivation -> App. A                          ~-2
+%    - the six-term regression's method detail -> App. B                   ~-1
+%  Net ~ +4 model lines against the ~12 free at the last compile, so it
+%  should still land on page 5 -- but THAT IS A MODEL, AND THE GAUGE IS THE
+%  COMPILE. Measure where the References head falls before turning any dial.
+%
+%  *** THE MODEL ABOVE WAS WRONG. MEASURED ON THE COMPILE, 2026-08-28: THE BODY
+%      OVERFLOWED ONTO PAGE 6 by about 9 typeset lines. Kept here because the
+%      ERROR is the reusable part: the +4 estimate counted the Stage-1 figure's
+%      CAPTION but not its GRAPHIC. A figure adds page space while adding ZERO
+%      numbered text lines, so the template's line numbers (183 -> 186, only +3)
+%      hid ~11 lines of cost. WHEN ESTIMATING LENGTH, COUNT GRAPHIC HEIGHT
+%      SEPARATELY FROM SOURCE LINES: a WxH px image at width=f\textwidth costs
+%      f * 5.5 * (H/W) * 6.54 lines. Side-by-side panels cost ONE panel's height.
+%      The over-length was paid down in the same session; see the cut log below.
+%
+%  TO SHORTEN, in order, if the References head goes past the bottom of page 5.
+%  MEASURED SAVINGS, not guesses:
+%    1. tighten a CAPTION before shrinking anything. Captions here run long and
+%       are pure detail; the Stage-1 caption alone was 18 source lines.
+%    2. Stage-1 figure panels 0.47 -> 0.42\textwidth (~1.2 lines);
+%    3. shrink Fig. 2 (fig13) 0.62 -> 0.55\textwidth (~1.8 lines);
+%    4. move the asymptotic-relative-standard-error sentence in Sec. 3.2 into
+%       App. B (~4 lines). KEEP its "not independent evidence" hedge WITH it --
+%       stranding that hedge is the round-8 MAJOR defect repeating itself.
+%  (A previous version of this list had a step 4 pointing at a "six-domain
+%   sentence of Sec. 5". THERE IS NO SUCH SENTENCE in the cut -- it exists only
+%   in the archival. Removed 2026-08-28; do not restore it.)
+%  DO NOT pay for a figure by deleting the retrain control or the sweep control,
+%  and do NOT hollow the body into the appendix: the CFP requires the five-page
+%  body to be SELF-CONTAINED and says reviewers are not obliged to read the
+%  appendix. Detail may move out. Substance may not.
+%  TO LENGTHEN, only if the References head lands ABOVE ~75 % of page 5:
+%    1. restore the fuller neural ODE paragraph in Sec. 3.1 (~3 lines);
+%    2. restore fig5_metrics_bar_train_vs_forecast.png after Table 1 at
+%       0.66\textwidth (~16 lines). Caption MUST name blue=NODE and green=UDE
 %       and MUST say those neural ODE bars are the ORIGINAL configuration whose
 %       solve blows up, so the whisker is not a dispersion estimate.
-%    2. restore the fuller neural ODE paragraph in Sec. 3.1 (~3 lines).
-%    3. fig7c_ablation_gca_5seed.png at 0.62\textwidth (~28 lines) -- only if
-%       there is a LOT of room; it is a tall three-panel stack.
-%  TO SHORTEN, in order:
-%    1. shrink Fig. 1 to 0.75\textwidth (~3 lines);
-%    2. drop the sweep paragraph at the end of Sec. 3.3 (~5 lines) -- its point
-%       survives in the first paragraph of Sec. 5;
-%    3. drop Fig. 1 entirely (~22 lines). LAST RESORT: it is the thesis figure.
-%  DO NOT pay for a figure by deleting the retrain control or the sweep control.
-%  Table 1 already states the forecast numbers; the controls are what make the
-%  finding survive review.
+%
+%  ---------------------------------------------------------------------------
+%  CUT LOG, 2026-08-28. The overflow above was PAID DOWN. Six steps, ~12 model
+%  lines against a ~9-line overflow. Produced by an adversarial pass (six
+%  candidates assessed, each attacked by an independent hedge-loss refuter and
+%  an independent checker-break refuter) and verified on two repo mirrors before
+%  being applied here.
+%    1. Stage-1 panels     0.47 -> 0.42\textwidth                        -1.2
+%    2. fig:ident caption  10 -> 9 lines, WIDTH HELD AT 0.62             -1.0
+%    3. fig:stage-one cap  17 -> 10 lines                                -5.8
+%    4. Sec. 3.2 asymptotic-RSE sentence -> App. B, hedge with it         -2.3
+%    5. tab:main caption   9 -> 7 lines                                  -0.9
+%    6. Data and code      9 -> 6 lines                                  -1.9
+%
+%  THREE OF THOSE SIX WERE REFUTED ON FIRST DRAFT and the refuters' fixes are
+%  what is in the file. The rejected drafts each lost a hedge while getting
+%  SHORTER AND MORE CONFIDENT -- the round-8 MAJOR archetype, live again:
+%    * the stage-1 caption dropped "on the representative seed" from its own
+%      bold headline, and the "same axes and same seed" guarantee;
+%    * the fig:ident caption reused the reserved word "span" and made the
+%      closure POSSESS a conductance rather than have one projected out of it;
+%    * the tab:main caption relocated and narrowed "no statistical test was
+%      run", which claims.yaml:59 mandates in that exact formulation.
+%  WHEN YOU SHORTEN A CAPTION, DIFF IT AGAINST THE OLD ONE FOR LOST HEDGES.
+%
+%  REJECTED, with reasons, so they are not retried:
+%    * fig13 to 0.55\textwidth -- refuted TWICE. Panel (a)'s "95 % region"
+%      legend is the confidence-level qualifier for the caption's word
+%      "bounded" and exists nowhere else in the paper; 0.55 drives it to
+%      ~3.7 pt. Shrinking spends qualifier ink to keep claim ink.
+%    * fig13 to 0.58 with the caption absorbing panel (a)'s key -- the
+%      amendment costs ~2.2 lines to buy 1.03. Net WORSE than holding.
+%    * fig13 to 0.50 -- no text in the figure stays above 5 pt.
+%  ---------------------------------------------------------------------------
+%  CUT PASS 2, 2026-08-28, AFTER THE COMPILE SHOWED PASS 1 WAS NOT ENOUGH.
+%  Pass 1 took the overflow from 9 typeset lines to 4. Pass 2 stopped MODELLING
+%  and MEASURED: every block was set in a pdflatex harness reproducing this
+%  template (ptm 10pt on 11pt, textwidth 5.5in, abovedisplayskip =
+%  belowdisplayskip = 7pt). ONE TYPESET LINE = 10.95pt.
+%    1. inline the displayed loss equation, and both \eqref{eq:loss}    -3.89
+%    2. Limitations paragraph 1 (drop "still", "comparative statement")  -1.00
+%    3. retrain control: drop "The optimiser succeeded and the science
+%       got worse." -- rhetoric; the topic sentence already carries the
+%       claims.yaml-mandated summary, and no number or hedge moves       -1.00
+%    4. Discussion paragraph 1: drop the re-definition of a UDE and the
+%       "the reason is not the one that would be assumed" build-up.
+%       This edit ADDS a qualification: the vague "dependable" becomes
+%       "on every seed", which is what it was carrying                   -1.00
+%                                                                       ------
+%                                                             75.46pt =  -6.89
+%
+%  WHY THE EQUATION WAS THE BIG WIN, and it generalises: a DISPLAYED equation
+%  costs its own height PLUS \abovedisplayskip AND \belowdisplayskip, about
+%  three typeset lines of pure skip. Inlining it into the paragraph recovers
+%  almost all of that. The ${...}$ braces around the inline formula are
+%  LOAD-BEARING: without them the = and the binary minus are legal breakpoints
+%  and the formula can split across lines. Measured with braces: no overfull
+%  and no underfull box. Both \eqref{eq:loss} sites became
+%  $\mathcal{L}_{\mathrm{full}}$ and that swap measured length-neutral.
+%
+%  ---------------------------------------------------------------------------
+%  CUT PASS 3, 2026-08-28. Compile 6 left body lines 181-182 on page 6 -- the
+%  TAIL of the Data-and-code paragraph, a 2-line overflow. BOTH reserves below
+%  were applied, plus the Data-and-code short variant: -2.80 against -2.00
+%  needed. Progress across the three passes: 9 -> 4 -> 2 -> (expected 0).
+%  R3 (Data and code 6 -> 5) was chosen over shrinking the Stage-1 panels to
+%  0.39: the panels' legend already sits near 5pt and 0.39 pushes it under, on
+%  the figure the mentor called "highly important". R3 costs the body's pointer
+%  to App. C and App. D, which is recoverable -- Methods still points at App. A
+%  and App. B, and the checklist names all four. Legibility is not recoverable.
+%  The text below is kept as the record of what was applied and why.
+%
+%  RESERVES, MEASURED -- ALL THREE NOW APPLIED (2026-08-28). Kept for the
+%  reasoning, which is what a future session needs; each was run through both
+%  refuter lenses.
+%    R1  the conditioning argument in Sec. 5 (-1.00). Rewrite so the sentence
+%        reads "...so THAT ARM has no room left to be at fault". "that arm" is
+%        MANDATORY, not style: the cut dropped the archival's "Two methods are
+%        not all methods", so this clause is the only thing scoping the
+%        exoneration to the CONSTRAINED arm. App. B asserts nothing about the
+%        six-term library's conditioning.
+%    R2  Sec. 1 paragraph 3 (-1.00): drop the closing "So we ran both stages
+%        end to end...", whose every atom survives in \paragraph{Contributions.}
+%        on the next line. Keep the opener's original wording -- do NOT write
+%        "which identifiability analysis says needs testing", because the
+%        "which" then binds to the coefficient rather than to the assumption.
+%        All 24 introduction cite keys survive the rewrite.
+%  AND ONLY THEN: Stage-1 panels 0.42 -> 0.39 (-0.7, legibility cost), and the
+%  "Data and code" 5-line variant that drops the appendix pointer list (-0.8).
+%
+%  MEASURED AT ZERO, so do not retry them: the "shape is right; the scale is
+%  not" sentence; "Raising the conductance does not improve the closure, it
+%  enlarges the target"; the $V_0=\Vrest$ and gate-name lists; the elgazzar
+%  gloss in Sec. 1. Each costs real information and buys nothing.
 % =========================================================================
 \documentclass{article}
 
@@ -155,6 +293,38 @@
 \newcommand{\NoisePct}{2}      % noise_level=0.02 as a percentage    experiments_runner.jl:49
 \newcommand{\NNinputs}{[\,V/100,\ s\,]}              % closure inputs    src/experiment.jl:161
 
+% -- ADDED 2026-08-28 for the appendix (N14). Same rule as the block above:
+%    copied VERBATIM from paper/main.tex, values and provenance comments alike,
+%    because check_workshop_cut.py FAILS if a macro defined in both files has a
+%    different body. Extracted mechanically, not retyped.
+\newcommand{\Tcommon}{50}      % COMMON_EVAL_START                     src/hh_core.jl:89
+\newcommand{\Rcap}{70}         % rollout cap_ms                        src/metrics.jl:93
+\newcommand{\Rsus}{1.0}        % rollout sustained_ms                  src/metrics.jl:93
+\newcommand{\Tfcast}{30.137}   % first forecast sample = 154*100/511   src/hh_core.jl:80 + src/metrics.jl:178
+\newcommand{\Vthresh}{0}       % spike detector vthresh, mV            src/metrics.jl:31
+\newcommand{\SpikeSep}{2.0}    % spike min_dist_ms (refractory merge)  src/metrics.jl:31
+\newcommand{\SpikeTol}{2.0}    % spike match_tol_ms (greedy match)     src/metrics.jl:54
+\newcommand{\NparamNode}{5318} % NODE params (approx; 7->64->64->6)    src/experiment.jl:448-449
+\newcommand{\mCm}{1.0}\newcommand{\mgNa}{120}\newcommand{\mgK}{36}\newcommand{\mgL}{0.3}
+\newcommand{\mENa}{50}\newcommand{\mEK}{-77}\newcommand{\mEL}{-54.4}
+\newcommand{\mgNaP}{0.5}\newcommand{\mECa}{120}\newcommand{\mIapp}{10}
+\newcommand{\mtaup}{1}\newcommand{\mtaus}{5}
+\newcommand{\mOUth}{5}\newcommand{\mOUsig}{0.5}
+\newcommand{\pHalf}{-50}       % p_inf half-activation, mV           src/hh_core.jl:65
+\newcommand{\pSlope}{6}        % p_inf slope factor, mV              src/hh_core.jl:65
+\newcommand{\sHalf}{-25}       % s_inf half-activation, mV           src/hh_core.jl:70
+\newcommand{\sSlope}{9}        % s_inf slope factor, mV              src/hh_core.jl:70
+\newcommand{\gcaLit}{0.17}     % Pospischil IB L-current density, mS/cm^2
+\newcommand{\gNaLit}{50}       % Pospischil sodium density, mS/cm^2
+\newcommand{\gcaRescaled}{0.408}  % (0.17/50)*120, the unrounded rescaled value
+\newcommand{\ArchUde}{2\!\to\!16\!\to\!16\!\to\!1}   % UDE closure MLP   src/experiment.jl:147
+\newcommand{\ArchNode}{7\!\to\!64\!\to\!64\!\to\!6}  % NODE MLP          src/experiment.jl:448-449
+\newcommand{\ArchNodeAuto}{6\!\to\!64\!\to\!64\!\to\!6} % autonomous NODE   node_parity.jl
+\newcommand{\Tol}{10^{-8}}     % solver abstol=reltol            src/experiment.jl:98,397,457
+\newcommand{\Lr}{10^{-2}}      % Adam LR 84,372,434 / BFGS step-norm 105  src/experiment.jl
+\newcommand{\dtSample}{0.196}       % ms                    src/hh_core.jl:80
+\newcommand{\ProfileStep}{0.0625}   % profile grid step in gCa, mS/cm^2
+
 % -- EXCEPTION: DERIVED FROM RESULTS, not a model input --------------------
 %    Hand-maintained; keep in sync with generated/metrics.tex. Training-loss
 %    reduction from the aggressive retrain: (35.71-29.66)/35.71.
@@ -199,8 +369,10 @@ forecast error, $R^2$ and training loss stay good and give no warning. The usual
 explanation is that one short trajectory does not carry enough information to pin
 a hidden current's conductance. It does: a direct two-parameter fit to the same
 trajectory, with no network anywhere, returns the conductance to about six per
-cent. What fails is not parametric identifiability but the functional
-identifiability of this closure, under both the distillations we ran.
+cent. What fails is the practical recovery of the physical coefficient from
+this flexible closure, under the tested objectives and distillation procedures:
+parametric identifiability holds, and the functional identifiability of this
+closure, under both the distillations we ran, does not.
 \end{abstract}
 
 % =========================================================================
@@ -236,16 +408,14 @@ That last step carries the scientific weight and is checked least often. It
 assumes the data determine the coefficient, and identifiability analysis says
 that needs testing: gating variables and conductances of a generalised
 Hodgkin--Huxley model are not separately identifiable from voltage-clamp
-recordings \citep{walch2016}, reparametrisation is needed before the classical
-model can be fitted at all \citep{daly2015}, and structural and practical
-identifiability are routinely distinguished \citep{raue2009, wieland2021}. A
-recent line of work draws the distinction that matters here, between a
-\emph{parameter} being identifiable and an unknown \emph{function} standing in
-for the same physics being identifiable
-\citep{loman2026structural, loman2025ude, norden2025structural}. Discovery
-practice has not caught up, and \citet{silvestri2023analysis} find UDE recovery
-fragile even where it is possible. So we ran both stages end to end on a system
-where the answer is known, and treated the second as the thing under test.
+recordings \citep{walch2016}, the classical model needs reparametrising before it
+can be fitted at all \citep{daly2015}, and structural and practical
+identifiability are routinely distinguished \citep{raue2009, wieland2021}. Recent
+work draws the distinction that matters here, between an identifiable
+\emph{parameter} and an identifiable unknown \emph{function} standing in for the
+same physics \citep{loman2026structural, loman2025ude, norden2025structural}.
+Discovery practice has not caught up, and \citet{silvestri2023analysis} find UDE
+recovery fragile even where it is possible.
 
 \paragraph{Contributions.}
 \textbf{We audit the two-stage predict-then-interpret recipe against ground truth
@@ -267,9 +437,10 @@ $I_{Ca}=g_{Ca}s^2(V-E_{Ca})$ driven by one activation gate $s$
 \citep{pospischil2008, reuveni1993}. Five gates ($m$, $h$, $n$, $p$, $s$) with
 the voltage give six states, integrated over $[0,\Tfull]$\,ms from rest at
 $V_0=\Vrest$\,mV \citep{rackauckas2017diffeq}. The headline $g_{Ca}=\gcaMain$ is
-five times the physiological density and derived rather than tuned: rescaling a
-published bursting pyramidal cell's calcium density to this model's squid-axon
-sodium conductance gives \gcaPhys.
+five times the physiological \gcaPhys, which is derived rather than tuned by
+rescaling a published bursting pyramidal cell's calcium density to this model's
+squid-axon sodium conductance; App.~\ref{app:eqns} gives that arithmetic and
+lists every model constant with its provenance.
 
 \paragraph{Preprocessing.}
 The trajectory is sampled at \Ndata{} uniform points and every channel corrupted
@@ -280,9 +451,10 @@ forecast number is the tail of the same integration, scored against the
 noise and initialisation jointly.
 
 \paragraph{Neural ODE baseline.}
-The black-box baseline replaces the whole vector field with a network, trained
-\AdamNode{} Adam iterations plus a \BfgsNode-iteration BFGS polish. As originally
-configured it read raw time as an input alongside the six states.
+The black-box baseline replaces the whole vector field with a network
+($\ArchNode$), trained \AdamNode{} Adam iterations plus a \BfgsNode-iteration
+BFGS polish. As originally configured it read raw time as an input alongside the
+six states.
 
 \paragraph{Universal differential equation.}
 The UDE keeps every known term and the exact gate kinetics, replacing only the
@@ -291,11 +463,7 @@ parameters \citep{pal2023lux}. Training is Adam for \AdamUde{} iterations then a
 BFGS polish of \BfgsUde{} \citep{dixit2023optimization} under a continuous
 adjoint \citep{ma2021comparison}. The loss is a sum of squares over the sampled
 states in native units,
-\begin{equation}
-\mathcal{L}_{\mathrm{full}} = \sum_{i=1}^{\Ntrain}\ \sum_{c=1}^{6}
-  \bigl(x_c(t_i)-\hat{x}_c(t_i)\bigr)^2 ,
-\label{eq:loss}
-\end{equation}
+${\mathcal{L}_{\mathrm{full}} = \sum_{i=1}^{\Ntrain}\sum_{c=1}^{6}\bigl(x_c(t_i)-\hat{x}_c(t_i)\bigr)^2}$,
 with no normalisation and no channel weights. Voltage's standard deviation
 exceeds the mean gate standard deviation by more than $\GateSdRatio\times$, so at
 the noise floor voltage carries \LossShareV\,\% of the expected value of this
@@ -308,10 +476,10 @@ conductance form $s^2(aV+b)$ on the supervised trajectory. The form is
 with an assumed form and not discovery of one; $a$ is the conductance and $-b/a$
 the reversal potential.
 % claim: sindy-does-not-sparsify
-We also ran unconstrained sparse regression over a six-term library on the same
-closure, fitted on a hull-masked grid over the training trajectory:
-it never sparsifies and still scores $R^2=\valSymbolicRTwoSindyTrueMeanStd$
-against the true current.
+A second, unconstrained sparse regression over a six-term library on the same
+closure never sparsifies and still scores
+$R^2=\valSymbolicRTwoSindyTrueMeanStd$ against the true current
+(App.~\ref{app:hyper}).
 
 % =========================================================================
 \section{Results}
@@ -340,17 +508,34 @@ more expressive than an autonomous system requires. Raising its budget to the
 UDE's own \AdamUde/\BfgsUde{} changes nothing while removing the time input at
 that budget changes everything, so the failure is architectural rather than a
 shortage of optimisation and Table~\ref{tab:main} gives both.
+Figure~\ref{fig:stage-one} puts both models against the truth.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.42\textwidth]{fig2_neural_ode_voltage.png}
+  \hfill
+  \includegraphics[width=0.42\textwidth]{fig3_ude_voltage.png}
+  \caption{\textbf{Stage one, on the representative seed: the black-box neural
+  ODE leaves the \Ttube\,mV tube just past the forecast boundary; the UDE never
+  leaves it.} Clean truth (solid) against each model's prediction (dashed) at
+  the baseline condition ($g_{Ca}=\gcaMain$), both trained on $t\le\Ttrain$\,ms,
+  left of the dotted divider. Left, the neural ODE \emph{as originally
+  configured} (raw time input, \AdamNode{} Adam iterations); its prediction runs
+  off-panel because the axes are framed to the truth: deliberate framing, not
+  clipping. Not a baseline we compare against: removing the time input keeps the
+  forecast finite (Table~\ref{tab:main}, row~3). Right, the full-state UDE, same
+  axes and same seed; seed-to-seed dispersion is in Table~\ref{tab:main}.}
+  \label{fig:stage-one}
+\end{figure}
 
 \begin{table}[t]
-  \caption{\textbf{Forecasting and recovery on the same single trajectory}
-  ($g_{Ca}=\gcaMain$; mean\,$\pm$\,SD over $\valUdeForecastVRmseN$ seeds unless
-  noted). Bold marks the best value per column, but the parametric row is handed
-  the true form and two free parameters, so it is expected to win and licenses
-  only the one-directional reading of Sec.~\ref{sec:parametric}; no statistical
-  test was run. Horizons are right-censored at the metric's ceiling, so $\ge$
-  means the tube was never left and the true horizon is unknown. The time-indexed
-  errors are spans because those forecasts blow up rather than degrade; the
-  autonomous row is a median because one seed of five still fails outright.}
+  \caption{\textbf{Forecasting and recovery, same single trajectory} ($g_{Ca}=\gcaMain$; mean\,$\pm$\,SD
+  over $\valUdeForecastVRmseN$ seeds unless noted). Bold marks the column best, but the parametric row,
+  handed the true form and two free parameters, is expected to win and licenses only the one-directional
+  reading of Sec.~\ref{sec:parametric}; no statistical test was run. Horizons are right-censored at the
+  metric's ceiling: $\ge$ means the tube was never left, true horizon unknown. Time-indexed errors are
+  spans because those forecasts blow up rather than degrade; the autonomous row is a median because one
+  seed of five still fails outright.}
   \label{tab:main}
   \centering
   \setlength{\tabcolsep}{4.5pt}   % default 6pt overflows \textwidth by 0.64pt
@@ -390,15 +575,11 @@ trajectory, true functional form known and no network in the loop, minimising a
 noise-weighted $\chi^2$ by multi-start Nelder--Mead. It returns
 $g_{Ca}=\valParamFitGcaHatTwoMeanStd$ against a true \gcaMain, a relative spread
 of about six per cent, at $\chi^2$ per point of $\valParamFitChiSqPerPointTwo$,
-near unity and so at the known noise floor. An asymptotic relative standard error of
-$\valCondRelSeGcaTwoMean$ agrees with the observed seed spread, though it is a
-Gauss--Newton approximation to the same $\chi^2$ surface and so is not
-independent evidence. The pre-registered baseline seed's estimate is the lowest
-of the five, and the 95\% profile interval centred on \emph{that} estimate is % numok: 95% confidence level, a convention
-$[1.6065, 2.1477]$; % numok: Delta-chi2 = 3.8415 crossings, linearly interpolated between the bracketing grid points of results/identifiability/profile_gca_gca2.0.csv
-each realisation owns its own. Four of the five conductances distilled from the
-closure fall clearly outside that interval and the fifth sits on its lower edge
-(Fig.~\ref{fig:ident}).
+near unity and so at the known noise floor. The pre-registered baseline seed's
+estimate is the lowest of the five, and the 95\% profile interval centred on % numok: 95% confidence level, a convention
+\emph{that} estimate is $[1.6065, 2.1477]$; each realisation owns its own. % numok: Delta-chi2 = 3.8415 crossings, linearly interpolated between the bracketing grid points of results/identifiability/profile_gca_gca2.0.csv
+Four of the five conductances distilled from the closure fall clearly outside
+that interval and the fifth sits on its lower edge (Fig.~\ref{fig:ident}).
 
 % claim: closure-induced-nonidentifiability
 So the trajectory determines the conductance and the closure is what loses it. A
@@ -415,18 +596,16 @@ closure's scatter cannot be charged to the data.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.70\textwidth]{fig13_parametric_identifiability.png}
+  \includegraphics[width=0.62\textwidth]{fig13_parametric_identifiability.png}
   \caption{\textbf{The single trajectory determines the conductance; the closure
-  does not recover it.} The valley in (a) and the profile in (b) come from the
-  pre-registered baseline realisation; the estimates in all three panels come
-  from the $\valUdeForecastVRmseN$ realisations, each owning its noise draw and
-  its interval. (a) The $g_{Ca}$--$E_{Ca}$ valley is a genuine trade-off, and a
-  bounded one. (b) The 95\% interval is read from interpolated $\Delta\chi^2$ % numok: 95% confidence level, a convention
-  crossings, not from the scan's outermost grid points; two closure estimates
-  coincide within a marker width, so the rug resolves only four ticks. (c) The
-  same data through two representations, seed by seed: orange circles the direct
-  parametric fit, red diamonds the conductance distilled from the closure on the
-  supervised trajectory, dashed line the truth.}
+  does not recover it.} (a) and (b) show the pre-registered baseline seed;
+  estimates in all panels come from the $\valUdeForecastVRmseN$ realisations,
+  each owning its noise draw and interval. (a) The $g_{Ca}$--$E_{Ca}$ valley is a
+  genuine trade-off, and bounded. (b) The 95\% interval is read at interpolated % numok: 95% confidence level, a convention
+  $\Delta\chi^2$ crossings, not the scan's outermost grid points
+  (App.~\ref{app:hyper}). (c) Same data, two representations, per seed: orange
+  circles the direct parametric fit, red diamonds the conductance distilled from
+  the closure on the supervised trajectory, not the hull; dashed line the truth.}
   \label{fig:ident}
 \end{figure}
 
@@ -437,8 +616,9 @@ closure's scatter cannot be charged to the data.
 The data were held fixed across that comparison, but the representation was not
 the only thing that changed: the parametric arm minimises a noise-weighted
 $\chi^2$ by multi-start Nelder--Mead, while the closure descends the unweighted
-\eqref{eq:loss}, which is \LossShareV\,\% voltage at the noise floor, by Adam and
-BFGS. So we repeat the parametric fit under \eqref{eq:loss} -- same data, same
+$\mathcal{L}_{\mathrm{full}}$, which is \LossShareV\,\% voltage at the noise floor,
+by Adam and BFGS. So we repeat the parametric fit under
+$\mathcal{L}_{\mathrm{full}}$ -- same data, same
 true form, same two free parameters, same starting points, changing nothing but
 which residual is minimised. It returns $\valParamFitGcaHatTwoSseFullMeanStd$, a
 relative spread of roughly twenty per cent against six under the likelihood. The
@@ -461,11 +641,10 @@ hull the conductance moves further from the truth and its spread inflates
 with the true current falls
 ($R^2$: $\valSymbolicRTwoCondTrueMeanStd \to \valRetrainRTwoCondTrueMeanStd$);
 even the trajectory forecast, which has no fitting domain, degrades
-($\valUdeForecastVRmseMeanStd \to \valRetrainForecastVRmseMeanStd$\,mV). The
-optimiser succeeded and the science got worse. At the true structure's
-maximum-likelihood $(g_{Ca},E_{Ca})$ the identical objective scores
-$\valParamFitSseFullTwo$, so both training losses sit \emph{below} the correct
-physics on the data the physics generated.
+($\valUdeForecastVRmseMeanStd \to \valRetrainForecastVRmseMeanStd$\,mV). At the
+true structure's maximum-likelihood $(g_{Ca},E_{Ca})$ the identical objective
+scores $\valParamFitSseFullTwo$, so both training losses sit \emph{below} the
+correct physics on the data the physics generated.
 
 % claim: gca-sweep-shows-nonidentifiability
 Nor is $\gcaMain$ chosen to flatter the method: sweeping $g_{Ca}$ over
@@ -481,13 +660,12 @@ two pooled standard deviations, so we claim the trend and not the steps.
 \label{sec:discussion}
 
 % claim: predictive-accuracy-is-not-identifiability
-The recipe's first stage does what it promises. Embedding known physics and
-learning one hidden current makes extrapolation accurate and dependable across
-the remainder of the trajectory, and yields a closure agreeing closely with the
-true calcium current's shape. The second stage does not deliver that current's
-conductance, and the reason is not the one that would be assumed:
-the same trajectory determines the conductance to about six per cent under a
-direct parametric fit, so the information is present and the pipeline loses it.
+The recipe's first stage does what it promises: extrapolation stays accurate on
+every seed across the remainder of the trajectory, and it yields a closure
+agreeing closely with the true calcium current's shape. The second stage does not
+return that current's conductance, and not because the trajectory lacks the
+information: a direct parametric fit to the same trajectory recovers the
+conductance to about six per cent, so the pipeline loses what the data carry.
 No diagnostic a practitioner would normally trust gives any warning. Forecast
 error is sub-millivolt, $R^2$ against the true current is
 $\valSymbolicRTwoTrajTrainMeanStd$, and the training loss is not merely low but
@@ -510,43 +688,286 @@ against, which turns a bare spread into an attribution.
 
 Running the conductance at \gcaMain{} makes the hidden current easier to see than
 in a real cell; at \gcaPhys{} the closure learns essentially nothing, on the one
-seed distilled there, while the direct fit still recovers it across all five.
-Everything here is one model, one trajectory family
-and one closure architecture, so ``flexibility costs identifiability'' is
-demonstrated rather than established in general. No statistical test is run
-anywhere and $\valUdeForecastVRmseN$ seeds would support almost none, so every
-comparative statement here is an equivalence-within-noise statement and not an
-ordering.
+seed distilled there, while the direct fit recovers it across all five.
+Everything here is one model, one trajectory family and one closure architecture,
+so ``flexibility costs identifiability'' is demonstrated rather than established
+in general. No statistical test is run anywhere and $\valUdeForecastVRmseN$ seeds
+would support almost none, so every comparison here is an equivalence-within-noise
+statement and not an ordering.
 
 % claim: closure-induced-nonidentifiability
 We also did not vary the distillation. Two methods were run on the same trained
 closure and both fail, differently: the constrained fit returns a scattered
-conductance, the unconstrained six-term regression never sparsifies. What the
-constrained arm establishes is that the estimator has no room left in which to be
-at fault -- given the closure's output its two coefficients are the least-squares
-optimum in that basis, and the basis is well conditioned on the supervised
-trajectory (condition number $\valSymbolicCondTrajTrain$), so the scatter
-originates in the closure. A different inductive bias could still change the
-answer, by searching a different form or constraining $E_{Ca}$, and we have not
-tried one. We therefore claim the failure for this closure under these
+conductance, the unconstrained six-term regression never sparsifies. Given the
+closure's output, the constrained fit's two coefficients are the least-squares
+optimum in a basis well conditioned on the supervised trajectory (condition
+number $\valSymbolicCondTrajTrain$), so that arm has no room left to be at fault
+and the scatter originates in the closure. A different inductive bias could still
+change the answer, by searching a different form or constraining $E_{Ca}$, and we
+have not tried one. We therefore claim the failure for this closure under these
 distillations, not for closure-based recovery in general. Locating where
 identifiability is lost needs a ladder of intermediate closures between two
-parameters and the full network, which is the obvious next experiment.
+parameters and the full network: the obvious next experiment.
 
-\paragraph{Data, code and supplementary material.}
-Code, trained parameters and every results table behind these numbers are
-released under permissive licences; the repository URL, snapshot DOI and commit
-are withheld here for anonymity and given in the camera-ready. The supplementary
-carries the full model and parameter table, training and metric definitions, the
-forecast and voltage-only overview figures, all three ablations, the
-unconstrained sparse-regression attempt, the six-domain robustness check, the
-\gcaPhys{} negative control, and the seed counts behind every mean.
+\paragraph{Data and code.}
+Code, trained parameters and every results table behind the reported numbers
+are released on acceptance under MIT for the software and CC BY 4.0 for the % numok: CC BY 4.0 is a licence name, not a measurement; matches checklist Q5/Q13
+results. The repository URL, commit tag and snapshot DOI would break
+double-blind anonymity, so all three are withheld and given in the camera-ready.
 
 \bibliographystyle{unsrtnat}
 \bibliography{references}
 
-% The CFP requires the filled checklist. The template puts it AFTER the
-% references and it does NOT count toward the five-page limit.
+% ORDER IS FIXED BY THE CFP, verbatim: the checklist is "placed after the
+% references and before the appendix; it does not count toward the page limit."
+% Do not move either block.
 \input{checklist}
+
+% =========================================================================
+%  APPENDIX (N14, mentor review 2). The Sim2Science form has ONE pdf field and
+%  no supplementary slot, so everything that used to be promised to a
+%  supplementary lives here instead.
+%  THE CFP PUTS NO PAGE LIMIT ON THIS -- but the same sentence requires the
+%  five-page body to be SELF-CONTAINED and warns that reviewers are not obliged
+%  to read the appendix. So what is below is DETAIL a reproducer needs, never a
+%  step of the argument. Nothing here is load-bearing for any claim in Secs 1-5.
+%  Ported from paper/main.tex App. A + App. B + Table 1, trimmed. App. C is new.
+% =========================================================================
+\appendix
+
+\section{Model constants, kinetics and the physiological reference}
+\label{app:eqns}
+
+The classical gating kinetics are taken verbatim from \citet{hodgkin1952} in the
+resting-potential-referenced convention:
+\begin{align*}
+  \alpha_m(V) &= \frac{0.1\,(V+40)}{1-e^{-(V+40)/10}}, &  % numok: HH kinetics, src/hh_core.jl:50-63
+  \beta_m(V)  &= 4\,e^{-(V+65)/18}, \\                    % numok: HH kinetics, src/hh_core.jl:50-63
+  \alpha_h(V) &= 0.07\,e^{-(V+65)/20}, &                  % numok: HH kinetics, src/hh_core.jl:50-63
+  \beta_h(V)  &= \frac{1}{1+e^{-(V+35)/10}}, \\           % numok: HH kinetics, src/hh_core.jl:50-63
+  \alpha_n(V) &= \frac{0.01\,(V+55)}{1-e^{-(V+55)/10}}, & % numok: HH kinetics, src/hh_core.jl:50-63
+  \beta_n(V)  &= 0.125\,e^{-(V+65)/80},                   % numok: HH kinetics, src/hh_core.jl:50-63
+\end{align*}
+with the removable singularities of $\alpha_m,\alpha_n$ evaluated at their
+analytic limits. The two added gates use steady-state activations
+$p_\infty(V) = [1+e^{-(V+50)/6}]^{-1}$ and $s_\infty(V) = [1+e^{-(V+25)/9}]^{-1}$ % numok: p_inf/s_inf, src/hh_core.jl:65,70
+with first-order relaxation at fixed time constants $\tau_p,\tau_s$. Both are
+logistic approximations, not kinetics transcribed from a source: the
+high-threshold calcium activation of \citet{reuveni1993} is specified by
+voltage-dependent rate functions whose steady state sits lower and rises more
+steeply than the single logistic used here. Nothing reported in this paper
+depends on the shape of $s_\infty$: the gate kinetics are known physics,
+supplied identically to the data generator, to the closure and to the parametric
+fit, so they cancel from every comparison we draw, and the recovery target is the
+pair $(g_{Ca},E_{Ca})$, not the activation curve. Of the four added-gate
+activation constants only the persistent-sodium half-point is
+literature-anchored, and Table~\ref{tab:params} labels the other three as
+choices. The persistent-sodium \emph{conductance} $g_{NaP}=\mgNaP$ is likewise a
+declared choice: it is of the same order as the persistent-sodium conductance of
+\citet{golomb1997} once rescaled to our sodium conductance, but we did not verify
+a printed value against the original and prefer to mark it as ours than to
+attribute a number we have not checked. It is a constant of the ground-truth
+generator, supplied identically to the data, the closure and the parametric fit,
+so it too cancels from every comparison.
+
+\paragraph{The physiological reference value.}
+\citet{pospischil2008} model the same \citet{reuveni1993} high-threshold calcium
+current in an intrinsically-bursting cortical pyramidal cell at a density of
+\gcaLit\,\nicefrac{mS}{cm$^2$} alongside a sodium density of
+\gNaLit\,\nicefrac{mS}{cm$^2$} (their published implementation, ModelDB accession
+123623). % numok: literature densities, demo_PY_IB.hoc:133,137
+Our model inherits the classical squid-axon $g_{Na}=\mgNa$\,\nicefrac{mS}{cm$^2$}
+rather than their cortical value, so the quantity to carry across is the
+\emph{ratio} of calcium to sodium conductance and not the absolute density.
+Holding that ratio fixed gives $(\gcaLit/\gNaLit)\times\mgNa =
+\gcaRescaled$\,\nicefrac{mS}{cm$^2$}, which we round to \gcaPhys{} and call
+physiological throughout. The headline \gcaMain{} is five times that.
+
+\begin{table}[t]
+  \centering
+  \caption{Model constants and their provenance. Values marked ``choice'' are
+  modelling decisions stated for reproducibility, not measurements attributed to
+  a source. The calcium conductance $g_{Ca}$ is not listed: it is the swept axis
+  of Sec.~\ref{sec:decomp}, not a fixed constant, and the noise level's row gives
+  only the baseline value of an axis that is likewise swept
+  (App.~\ref{app:ablations}). Two entries need a word of care. The OU volatility
+  $\sigma$ sets neither the size of the noise nor its shape: each channel's noise
+  path is renormalised to unit variance before being scaled to the stated
+  percentage of that channel's own standard deviation, so $\sigma$ cancels
+  outright, the noise level is the only amplitude knob, and the relaxation rate
+  $\theta$ sets the temporal structure. And the calcium current here is
+  activation-only, $s^2$; the source model of \citet{reuveni1993} carries a
+  further inactivation gate, which we omit. That omission is a declared
+  simplification of the target dynamics, not a claim about the biology: the
+  recovery target is two scalars because the conductance form $s^2(aV+b)$ has two
+  coefficients, which is true with or without the inactivation gate.}
+  \label{tab:params}
+  \begin{tabular}{llll}
+    \toprule
+    Symbol & Value & Units & Source \\
+    \midrule
+    $C_m$ & \mCm{} & \nicefrac{$\mu$F}{cm$^2$} & \citep{hodgkin1952} \\ % numok: passive constants, src/hh_core.jl:30
+    $g_{Na},\ g_K,\ g_L$ & \mgNa,\ \mgK,\ \mgL & \nicefrac{mS}{cm$^2$} & \citep{hodgkin1952} \\ % numok: conductances, src/hh_core.jl:31-33
+    $E_{Na},\ E_K,\ E_L$ & \mENa,\ \mEK,\ \mEL & mV & \citep{hodgkin1952} \\ % numok: reversal potentials, src/hh_core.jl:34-36
+    $g_{NaP}$ & \mgNaP & \nicefrac{mS}{cm$^2$} & choice \\ % numok: persistent-Na conductance, src/hh_core.jl:38
+    $p_\infty$ half-activation $V_{1/2}$ & \pHalf & mV & \citep{magistretti1999} \\ % numok: p_inf V-half, src/hh_core.jl:65
+    $p_\infty$ slope factor & \pSlope & mV & choice \\ % numok: p_inf slope, src/hh_core.jl:65
+    $s_\infty$ half-activation $V_{1/2}$ & \sHalf & mV & choice (approximates \citealp{reuveni1993}) \\ % numok: s_inf V-half, src/hh_core.jl:70
+    $s_\infty$ slope factor & \sSlope & mV & choice (approximates \citealp{reuveni1993}) \\ % numok: s_inf slope, src/hh_core.jl:70
+    $E_{Ca}$ & \mECa & mV & \citep{reuveni1993} \\ % numok: calcium reversal, src/hh_core.jl:43
+    $I_{\mathrm{app}}$ & \mIapp & \nicefrac{$\mu$A}{cm$^2$} & choice (drives spiking) \\ % numok: applied drive, src/hh_core.jl:44
+    $V_0$ (rest potential) & \Vrest & mV & choice (initial condition) \\ % numok: rest potential, src/hh_core.jl:98
+    $\tau_p,\ \tau_s$ & \mtaup,\ \mtaus & ms & choice \\ % numok: gate time constants, src/hh_core.jl:66,71
+    OU relaxation rate $\theta$ & \mOUth & ms$^{-1}$ & choice \\ % numok: noise process, src/hh_core.jl:92
+    OU volatility $\sigma$ & \mOUsig & ms$^{-1/2}$ & choice \\ % numok: noise process, src/hh_core.jl:93
+    Noise level & \NoisePct & \% of channel SD & choice \\ % numok: baseline noise level, experiments_runner.jl:49
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Hyperparameters, training and metric definitions}
+\label{app:hyper}
+
+\paragraph{Architectures and optimisation.}
+The UDE calcium closure is a multilayer perceptron $\ArchUde$ with $\tanh$
+activations and inputs $\NNinputs$ ($\NparamUde$ parameters); the black-box
+neural ODE is $\ArchNode$ with layer normalisation and inputs of the six
+normalised states and raw time ($\approx\NparamNode$ parameters). Both are
+integrated with an explicit fifth-order Runge--Kutta method at absolute and
+relative tolerances of $\Tol$, under an interpolating continuous adjoint with
+reverse-mode vector--Jacobian products. Training is two-stage: Adam at learning
+rate $\Lr$ followed by a BFGS polish (initial step-norm $\Lr$), wrapped so that a
+failed polish degrades to the Adam result. Budgets are Adam \AdamUde/BFGS
+\BfgsUde{} for the UDE and Adam \AdamNode/BFGS \BfgsNode{} for the neural ODE as
+originally configured; the two repaired neural-ODE rows of Table~\ref{tab:main}
+use the UDE's budget instead, and the autonomous one drops the time input so its
+first layer is $\ArchNodeAuto$. The aggressive-retrain control of
+Sec.~\ref{sec:decomp} uses Adam \AdamRe/BFGS \BfgsRe. The seeds are
+$\{1111,2222,3333,4444,5555\}$; % numok: seed set, experiments_runner.jl:57
+single-run panels use the first of them, fixed before the spread was known and
+checked afterwards to lie inside the five-seed inter-quartile range.
+
+\paragraph{The two distillations.}
+The constrained fit is a sparse regression restricted to the supplied
+conductance form $s^2(aV+b)$, evaluated on the supervised trajectory; its design
+matrix has condition number $\valSymbolicCondTrajTrain$ there, so its two
+coefficients are the least-squares optimum in a well-conditioned basis. The
+unconstrained arm is a six-term polynomial sparse regression over the same
+trained closure, fitted on a hull-masked grid spanning the training trajectory.
+It retains every thresholded term at every seed and fits the physical $Vs^2$ term
+with the wrong sign at the representative seed. We did not measure the
+conditioning of the six-term library on either domain and assert nothing about
+it. The profile interval quoted in Sec.~\ref{sec:parametric} and drawn in
+Fig.~\ref{fig:ident}(b) is read at linearly interpolated $\Delta\chi^2$
+crossings between the bracketing points of a $\ProfileStep$-spaced grid in
+$g_{Ca}$, not at the outermost grid points of the scan; two of the five closure
+estimates coincide to within a marker width, so the rug in that panel resolves
+only four ticks. The parametric fit of Sec.~\ref{sec:parametric} also carries an
+asymptotic relative standard error of $\valCondRelSeGcaTwoMean$ on $g_{Ca}$,
+which agrees with the roughly six per cent seed spread reported there, though it
+is a Gauss--Newton approximation to the same $\chi^2$ surface the profile traces
+and so is not independent evidence.
+
+\paragraph{Metric definitions.}
+Two metrics carry knobs the reported numbers depend on. The rollout horizon is
+the elapsed time from the first forecast sample until $|V_{\mathrm{pred}} -
+V_{\mathrm{true}}|$ exceeds \Ttube\,mV and \emph{stays} above it for at least
+\Rsus\,ms; at the \dtSample\,ms sampling interval that is five consecutive
+samples, so a shorter excursion is discarded, a non-finite error counts as a
+breach, and a trajectory that never breaches is right-censored at whichever bound
+comes first: the \Rcap\,ms cap, or the time actually left in the trace after
+the first forecast sample. Because the grid is \Ndata{} uniform samples over the
+\Tfull\,ms window, the first forecast sample lies at \Tfcast\,ms rather than at
+\Ttrain\,ms exactly, and horizons are measured from there. Spikes are local
+maxima of $V$ above \Vthresh\,mV with peaks closer together than \SpikeSep\,ms
+merged as refractory, matched greedily to true peaks within \SpikeTol\,ms.
+
+\paragraph{Silent failure paths, which the tables inherit.}
+A full-span solve that stops early or throws is caught and returned NaN-padded to
+the full sample grid with a warning only, so a run that failed to integrate still
+produces metric rows. The RMSE helper drops non-finite pairs before averaging, so
+such a metric is an RMSE over whatever part of the window stayed finite and
+carries no record of how much that was, which is why the diverged neural-ODE
+voltage errors are reported as spans rather than as a mean and standard
+deviation. During training, a step whose solve returns the wrong number of
+samples is scored with a large fixed penalty instead of raising, which keeps the
+optimiser moving but makes such steps indistinguishable in the loss history.
+The trainer records whether the BFGS polish succeeded, but that flag reaches a
+results file only for the retrain, neural-ODE parity and conductance-sweep runs;
+for the headline baseline and the window and noise ablations it is discarded, so
+a silent degradation to the Adam result would not be visible there. We report
+this rather than repair it, because changing any of it would change the numbers.
+
+\section{Compute, hardware and reproducibility}
+\label{app:compute}
+
+Every experiment ran on a single consumer laptop: \textbf{CPU only, no GPU,
+16\,GB of RAM}, % numok: hardware, stated by the authors; nothing in the repository records it
+under Julia~1.6.7 with a pinned environment, an explicit-parameter network
+library \citep{pal2023lux} and a unified optimisation interface
+\citep{dixit2023optimization}. The problem is small by design, a six-state ODE
+closed by a $\NparamUde$-parameter multilayer perceptron fitted to $\Ntrain$
+samples, so no accelerator is needed and none was used.
+
+\textbf{Wall-clock time was never instrumented.} No timing, elapsed or duration
+column exists in any results file, and no run log was kept, so we do not state a
+total from memory. What the repository does record is the modification time of
+each trained-parameter snapshot, which is written as its run finishes. The
+conductance sweep wrote twelve such snapshots back to back, so the eleven gaps
+between consecutive ones bracket eleven real trainings, and their median is
+\textbf{approximately 11 minutes per UDE training run} % numok: median of the 11 consecutive-snapshot gaps in results/params/ude_abl_gca_*.jld, 6-7 Aug 2026; the 11 gaps run 10.5-16.0 min
+at the Adam \AdamUde/BFGS \BfgsUde{} budget on this machine, inclusive of the
+symbolic post-processing between runs. That is a measurement of elapsed time on
+a shared desktop rather than of processor time, so read it as an upper bound on
+the compute a reproducer needs. The aggressive-retrain runs quadruple the budget
+and scale roughly in proportion. Multiplying that per-run figure by the run count
+implied by the experimental design (the headline full-state and voltage-only
+conditions and the neural-ODE baseline at $\valUdeForecastVRmseN$ seeds each, the
+conductance sweep at $\valUdeForecastVRmseN$ seeds per point, the window and
+noise ablations at a single seed per point, and the retrain control) is enough
+to plan a replication. We prefer to give the ingredients than a remembered total.
+
+\section{Remaining ablations}
+\label{app:ablations}
+
+Sec.~\ref{sec:decomp} reports the conductance sweep, which is the axis the
+argument uses. Two further axes were run, each at a single seed per point with no
+error bars, and neither changes any claim in the body.
+
+% claim: window-needs-sufficient-length
+\paragraph{Training window.}
+Scored on the shared unseen window $t>\Tcommon$\,ms, a fifteen-millisecond
+training window gives $\valWindowAblCommonEvalVRmseFifteen$\,mV, roughly seven
+times the value at the twenty- and thirty-millisecond windows, which are
+themselves indistinguishable ($\valWindowAblCommonEvalVRmseTwenty$ and
+$\valWindowAblCommonEvalVRmseThirty$\,mV, a gap well inside the
+$\pm\valCommonEvalVRmseFullStd$\,mV five-seed spread at the centre point). Too
+little data fails. The forty- and fifty-millisecond windows are measurably
+\emph{worse} ($\valWindowAblCommonEvalVRmseForty$ and
+$\valWindowAblCommonEvalVRmseFifty$\,mV), and that non-monotonicity is
+\textbf{not} evidence that longer windows are intrinsically harder: every window
+trains for the same fixed iteration budget regardless of how many points it must
+fit, so the longer windows are under-optimised and this axis confounds window
+length with optimisation adequacy. We read it only as ``a sufficiently long
+window is required, and twenty milliseconds suffices''.
+
+% claim: noise-ablation-degrades-gracefully
+\paragraph{Observation noise.}
+Varying the noise level over $\{0, 1, 2, 5, 10\}$ per cent of each channel's own % numok: noise sweep axis, experiments_runner.jl:44; the 2 per cent baseline point is B_NOISE, experiments_runner.jl:49
+standard deviation, with every other axis at baseline, the normalised calcium
+error rises monotonically through $\valNoiseAblICaNormZero$,
+$\valNoiseAblICaNormOnePct$, $\valNoiseAblICaNormTwoPct$,
+$\valNoiseAblICaNormFivePct$ and $\valNoiseAblICaNormTenPct$, and forecast
+voltage error from $\valNoiseAblVRmseZero$\,mV to
+$\valNoiseAblVRmseTenPct$\,mV. The zero-noise point is a control the paper
+otherwise lacks: with no observation noise at all the closure's calcium error
+does not vanish but falls only to about a tenth of its baseline value, so part of
+what the closure gets wrong is its own approximation error and not the data's
+noise. The degradation is gentle across the lower four levels and steep only at
+the top, which puts the \NoisePct\,\% setting used everywhere else well inside
+the flat part of the range. This is a single-seed axis, so we read the
+end-to-end trend and not the individual steps. Unlike the window sweep, it
+cannot borrow the five-seed spread at its centre point as a yardstick, because
+the noise level is the very quantity that sets seed-to-seed variation.
 
 \end{document}
