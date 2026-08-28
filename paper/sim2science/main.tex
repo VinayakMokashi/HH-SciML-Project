@@ -266,31 +266,30 @@
 
 \graphicspath{{figures/}}
 
-% ---- FLOAT PACKING ------------------------------------------------------
-%  DIAGNOSED 2026-08-28, after three prose cuts moved the page-5 boundary by
-%  only 2 lines between them while removing 9.69. Roughly 79 % of every line cut
-%  was being absorbed, and a capacity audit found ~18.5 lines of slack on pages
-%  1-5. THE BODY WAS NEVER TOO LONG; THE FLOATS WERE PACKING BADLY.
+% ---- FLOAT PLACEMENT ----------------------------------------------------
+%  The three body floats are [tb] rather than [t]. Harmless and standard: it
+%  gives LaTeX a page-bottom option it otherwise lacks. Keep it.
 %
-%  neurips_2026.sty:168 sets \flushbottom, so an under-filled page is stretched
-%  to look full instead of pulling text up from the next one. With the three
-%  body floats restricted to [t], a float that missed the top of its page was
-%  deferred and the page it vacated was padded out. Cutting prose fed the
-%  padding, not the page count.
+%  A \renewcommand{\bottomfraction}{0.45} stood here on 2026-08-28 and WAS
+%  REVERTED THE SAME DAY. It was added on the theory that the page-5 overflow
+%  was float packing rather than length -- that ~18.5 lines of capacity were
+%  being lost to \flushbottom stretching under-filled pages. THAT DIAGNOSIS WAS
+%  WRONG, and the compiled PDF disproved it two ways:
+%    * pages 3 and 4 are FULL once caption height (captions are \small, ~0.9
+%      line each), section-heading space and \parskip are counted. The "slack"
+%      was an artefact of under-counting all three.
+%    * the cuts had been working perfectly linearly all along. Body 186 -> 179
+%      numbered lines; spill 9 -> 2. Seven for seven. The earlier "79 % of every
+%      cut is absorbed" claim compared MEASURED TYPESET LINES against
+%      NUMBERED-LINE reduction -- different units, because inlining the loss
+%      equation freed display skip that never carried a line number.
+%  The override also demonstrably did nothing: all three floats still went to
+%  page tops, since LaTeX tries `t` before `b` and `t` succeeded every time.
+%  An unnecessary override of a template parameter is desk-reject surface for
+%  zero benefit, so it is gone.
 %
-%  The floats are now [tb]. That alone is a NO-OP for fig:ident, which is about
-%  42 % of a page (0.62\textwidth graphic plus its caption) against the
-%  template's \bottomfraction of 0.4 -- LaTeX would refuse it the bottom slot.
-%  Raising it to 0.45 is what makes the [tb] real.
-%
-%  THIS DOES NOT DEVIATE FROM THE REQUIRED TEMPLATE. Page geometry, margins and
-%  font size are untouched, and the two lines the CFP names verbatim
-%  (\usepackage[dblblindworkshop]{neurips_2026}, \workshoptitle{Sim2Science})
-%  are byte-identical. neurips_2026.sty:249-252 renews these same four float
-%  parameters itself; this renews one of them again.
-%
-%  TO REVERT: delete this block and put the three [tb] floats back to [t].
-\renewcommand{\bottomfraction}{0.45}
+%  THE LESSON: when a length cut does not move the boundary, check the UNITS of
+%  your accounting before inventing a mechanism.
 % -------------------------------------------------------------------------
 
 % =========================================================================
@@ -737,10 +736,9 @@ identifiability is lost needs a ladder of intermediate closures between two
 parameters and the full network: the obvious next experiment.
 
 \paragraph{Data and code.}
-Code, trained parameters and every results table behind the reported numbers
-are released on acceptance under MIT for the software and CC BY 4.0 for the % numok: CC BY 4.0 is a licence name, not a measurement; matches checklist Q5/Q13
-results. The repository URL, commit tag and snapshot DOI would break
-double-blind anonymity, so all three are withheld and given in the camera-ready.
+Code, parameters and results tables are released on acceptance under MIT
+(software) and CC BY 4.0 (results); the URL, commit and DOI are withheld for % numok: CC BY 4.0 is a licence name, not a measurement; matches checklist Q5/Q13
+anonymity until the camera-ready.
 
 \bibliographystyle{unsrtnat}
 \bibliography{references}
