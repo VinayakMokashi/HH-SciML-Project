@@ -573,7 +573,7 @@ $R^2=\valSymbolicRTwoSindyTrueMeanStd$ against the true current
 % claim: ude-forecasts-accurately
 % claim: voltage-only-equivalent
 % claim: physics-prior-reconstructs-unobserved-gates
-The UDE never leaves the \Ttube\,mV error tube on any seed, so its rollout
+The UDE never leaves the \Ttube\,mV error tube on any seed. Its rollout
 horizon is right-censored at the metric's ceiling: $\valUdeForecastRollout$\,ms
 means the tube was never left and the true horizon is unknown. Forecast voltage
 RMSE is $\valUdeForecastVRmseMeanStd$\,mV (Table~\ref{tab:main}). Restricting the
@@ -586,12 +586,12 @@ kinetics from the true initial state, so this is propagation, not reconstruction
 of the gates from voltage.
 
 % claim: node-failure-is-architecture-not-budget
-Our black-box baseline needed repair first. It read raw time as an input, which is
-more expressive than an autonomous system requires. Raising its budget to the
-UDE's own \AdamUde/\BfgsUde{} changes nothing while removing the time input at
-that budget changes everything, so the failure is architectural rather than a
-shortage of optimisation. Table~\ref{tab:main} gives both.
-Figure~\ref{fig:stage-one} puts both models against the truth.
+We expected to use our black-box baseline as published. It needed repair. Its
+raw time input is more expressive than an autonomous system requires. Raising
+its budget to the UDE's own \AdamUde/\BfgsUde{} changes nothing. Removing the
+time input at that budget changes everything, so the failure is architectural,
+not a shortage of optimisation. Table~\ref{tab:main} gives both;
+Fig.~\ref{fig:stage-one} puts both models against the truth.
 
 \begin{figure}[tb]
   \centering
@@ -651,9 +651,9 @@ $\hat{a}=\valSymbolicAHatTrajTrainMeanStd$ against a true \gcaMain, spanning
 would licence almost any conclusion.
 
 % claim: parametric-fit-identifies-conductance
-The natural reading is that one short noisy trajectory does not carry enough
-information about a hidden current to pin its conductance. That is testable, and
-it does not survive. We fit $(g_{Ca},E_{Ca})$ to the \emph{same} noisy
+We expected the natural reading to hold: one short noisy trajectory does not
+carry enough information about a hidden current to pin its conductance.
+It does not survive. We fit $(g_{Ca},E_{Ca})$ to the \emph{same} noisy
 trajectory, true functional form known and no network in the loop, minimising a
 noise-weighted $\chi^2$ by multi-start Nelder--Mead. It returns
 $g_{Ca}=\valParamFitGcaHatTwoMeanStd$ against a true \gcaMain, a relative spread
@@ -696,9 +696,9 @@ closure's scatter cannot be charged to the data.
 \label{sec:decomp}
 
 % claim: closure-induced-nonidentifiability
-The data were held fixed across that comparison, but the representation was not
-the only thing that changed: the parametric arm minimises a noise-weighted
-$\chi^2$ by multi-start Nelder--Mead, while the closure descends the unweighted
+The data were held fixed across that comparison; the objective and the optimiser
+were not. The parametric arm minimises a noise-weighted $\chi^2$ by multi-start
+Nelder--Mead, while the closure descends the unweighted
 $\mathcal{L}_{\mathrm{full}}$, which is \LossShareV\,\% voltage at the noise floor,
 by Adam and BFGS. So we repeat the parametric fit under
 $\mathcal{L}_{\mathrm{full}}$ -- same data, same
@@ -708,15 +708,15 @@ relative spread of roughly twenty per cent against six under the likelihood. The
 objective therefore accounts for about a threefold inflation on its own, and the
 closure's roughly forty per cent sits a further twofold above \emph{that}. That
 control swaps the objective while keeping multi-start Nelder--Mead, so it cannot
-separate the representation from the optimiser: the residual twofold bounds the
+separate the representation from the optimiser. The residual twofold bounds the
 representation's own contribution rather than measuring it, and it is the figure
 to quote, never the sixfold one, which is the two effects compounded.
 
 % claim: retrain-improves-loss-worsens-recovery
-The closure did not simply fail to converge. Quadrupling the budget to
-\AdamRe/\BfgsRe{} lowers the training objective from $\valTrainLossBefore$ to
-$\valTrainLossAfter$, about \LossDropPct\,per cent, and makes every recovery
-quantity worse. Both symbolic quantities are quoted on the \emph{convex-hull}
+We expected four times the budget to tighten the estimate. It loosened it. At
+\AdamRe/\BfgsRe{} the training loss falls from $\valTrainLossBefore$ to
+$\valTrainLossAfter$, about \LossDropPct\,per cent, and every recovery quantity
+worsens. Both symbolic quantities are quoted on the \emph{convex-hull}
 domain, where the retrained closures were distilled, so that pair is like-for-like
 and its before-values differ from the supervised-trajectory figures above. On the
 hull the conductance moves further from the truth and its spread inflates
@@ -726,7 +726,7 @@ with the true current falls
 even the trajectory forecast, which has no fitting domain, degrades
 ($\valUdeForecastVRmseMeanStd \to \valRetrainForecastVRmseMeanStd$\,mV). At the
 true structure's maximum-likelihood $(g_{Ca},E_{Ca})$ the identical objective
-scores $\valParamFitSseFullTwo$, so both training losses sit \emph{below} the
+scores $\valParamFitSseFullTwo$. Both training losses sit \emph{below} the
 correct physics on the data the physics generated.
 
 % claim: gca-sweep-shows-nonidentifiability
@@ -757,9 +757,9 @@ loss is low, lower even than the correctly fitted true structure's own loss.
 We state the general form of that as a recommendation, not a result, because our
 evidence is one system. Where a UDE's learned term is to be interpreted rather
 than simulated, its identifiability should be established before its coefficients
-are read as physical quantities, and the question is not only whether the data
-determine the parameter but whether they still determine it once a flexible
-closure carries it. Two cheap diagnostics follow. A seed-spread check on the
+are read as physical quantities. It is not enough that the data determine the
+parameter; ask whether they still determine it once a flexible closure carries
+it. Two cheap diagnostics follow. A seed-spread check on the
 recovered coefficients would have caught this failure at once. Where the
 functional form is approximately known, a parametric fit gives something to
 compare against, turning a bare spread into an attribution.
@@ -774,8 +774,8 @@ seed distilled there, while the direct fit recovers it across all five.
 Everything here is one model, one trajectory family and one closure architecture,
 so ``flexibility costs identifiability'' is demonstrated rather than established
 in general. No statistical test is run anywhere and $\valUdeForecastVRmseN$ seeds
-would support almost none, so every comparison here is an equivalence-within-noise
-statement and not an ordering.
+would support almost none. Every comparison here is an equivalence-within-noise
+statement, not an ordering.
 
 % claim: closure-induced-nonidentifiability
 We also did not vary the distillation. Two methods were run on the same trained
