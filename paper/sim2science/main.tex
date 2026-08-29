@@ -257,6 +257,23 @@
 \usepackage[dblblindworkshop]{neurips_2026}
 \workshoptitle{Sim2Science}
 
+% ---- FIRST-PAGE FOOTER: name the workshop -------------------------------
+%  neurips_2026.sty builds \@trackname with "Workshop: \@workshoptitle" but
+%  only USES it under [final] (sty:419-421). In submission mode it prints the
+%  generic "Submitted to ... NeurIPS 2026. Do not distribute." instead, so the
+%  workshop name never reaches the footer. A co-author flagged this twice.
+%  We renew \@noticestring in OUR preamble rather than editing the .sty --
+%  the CFP warns that tweaking the style files may be grounds for desk
+%  rejection, and this touches none of it. [final] would fix the footer too
+%  but ALSO sets \@anonymousfalse and prints the real byline. DO NOT USE IT.
+%  Keeps "Submitted ... Do not distribute", which is correct for a submission.
+\makeatletter
+\renewcommand{\@noticestring}{%
+  Submitted to the Sim2Science workshop at the \@neuripsordinal\/ Conference on
+  Neural Information Processing Systems (NeurIPS \@neuripsyear). Do not distribute.%
+}
+\makeatother
+
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 % DO NOT REMOVE xcolor, and keep it BEFORE hyperref.
@@ -267,6 +284,17 @@
 %  checklist rather than at the missing package. Cost one compile, 2026-08-26.
 \usepackage{xcolor}
 \usepackage{hyperref}
+% ---- LINK BOXES OFF, LINKS STILL CLICKABLE ------------------------------
+%  Lifted verbatim from paper/main.tex:201-203, where it has always been.
+%  It was never carried into this cut, so the compiled submission drew the
+%  default coloured borders around every citation, \ref and \url. A co-author
+%  saw them and asked for them to be HIDDEN, not removed -- which is exactly
+%  what hidelinks does: no border, no coloured text, hyperlink intact.
+%  pdfborder is belt and braces; some viewers ignore hidelinks.
+\hypersetup{
+  hidelinks,
+  pdfborder={0 0 0},
+}
 \usepackage{url}
 \usepackage{booktabs}
 \usepackage{amsfonts}
@@ -443,23 +471,23 @@ can yield a model matching none of them \citep{golowasch2002}, and wide paramete
 variation leaves function intact \citep{ori2018}. A good fit is therefore weak
 evidence about the physics.
 
-Universal differential equations offer a way through
-\citep{rackauckas2020universal}: keep the trusted terms, replace the unknown one
-with a neural network, fit through the solver. They are being adopted across
+Universal differential equations are a way through
+\citep{rackauckas2020universal}. Keep the trusted terms, swap a neural network
+in for the unknown one and fit through the solver. They are being adopted across
 systems biology \citep{philipps2025ude} and proposed as a unifying modelling
 language for neuroscience \citep{elgazzar2025ude}; the black-box limit is the
 neural ODE \citep{chen2018neural}, the physics-constrained limit a
-physics-informed network \citep{raissi2019pinn}. Their appeal beyond prediction
-is that the unknown term is isolated as one learned function, so a second step
-can distil it into closed form by sparse regression
+physics-informed network \citep{raissi2019pinn}. Beyond prediction, their appeal
+is that the unknown term is isolated as one learned function. A second step can
+then distil it into closed form by sparse regression
 \citep{brunton2016sindy, rudy2017pdefind} or symbolic search
 \citep{udrescu2020aifeynman, cranmer2023pysr} and the coefficients read as
-biophysics -- here, a conductance and a reversal potential.
+biophysics, here a conductance and a reversal potential.
 \citet{beck2026hybrid} learn unknown currents inside such models, and a
 domain-specific recurrent network recovers hidden ionic
 states \citep{iravanian2020}.
 
-That last step carries the scientific weight and is checked least often. It
+The science rests on that last step, and it is checked least often. It
 assumes the data determine the coefficient, and identifiability analysis says
 that needs testing: gating variables and conductances of a generalised
 Hodgkin--Huxley model are not separately identifiable from voltage-clamp
@@ -473,9 +501,9 @@ Discovery practice has not caught up, and \citet{silvestri2023analysis} find UDE
 recovery fragile even where it is possible.
 
 \paragraph{Contributions.}
-\textbf{We audit the two-stage predict-then-interpret recipe against ground truth
-we control, and the stage normally taken on trust is the one that fails.} Stage
-one holds; stage two does not, and not for the reason usually given: a direct fit
+\textbf{We audit the two-stage predict-then-interpret pipeline against ground
+truth we control, and the stage normally taken on trust is the one that fails.}
+Stage one holds. Stage two fails, but not for the reason usually given. A direct fit
 to the same trajectory pins the conductance to about six per cent while the
 closure's estimate scatters roughly six times wider, and a matched-objective
 control charges the larger share of that gap to the loss function.
@@ -558,11 +586,11 @@ kinetics from the true initial state, so this is propagation, not reconstruction
 of the gates from voltage.
 
 % claim: node-failure-is-architecture-not-budget
-Our black-box baseline needed repair first: it read raw time as an input, which is
+Our black-box baseline needed repair first. It read raw time as an input, which is
 more expressive than an autonomous system requires. Raising its budget to the
 UDE's own \AdamUde/\BfgsUde{} changes nothing while removing the time input at
 that budget changes everything, so the failure is architectural rather than a
-shortage of optimisation and Table~\ref{tab:main} gives both.
+shortage of optimisation. Table~\ref{tab:main} gives both.
 Figure~\ref{fig:stage-one} puts both models against the truth.
 
 \begin{figure}[tb]
@@ -616,7 +644,7 @@ Figure~\ref{fig:stage-one} puts both models against the truth.
 Given the conductance form, the distilled closure reproduces the true calcium
 current with $R^2=\valSymbolicRTwoTrajTrainMeanStd$ on the supervised trajectory
 and describes the network's own output about as well
-($R^2=\valSymbolicRTwoNnTrajTrainMeanStd$). The shape is right; the scale is not.
+($R^2=\valSymbolicRTwoNnTrajTrainMeanStd$). The shape fits. The scale does not.
 The conductance that same fit implies is
 $\hat{a}=\valSymbolicAHatTrajTrainMeanStd$ against a true \gcaMain, spanning
 \valSymbolicAHatRangeTrajTrain{} across seeds, wide enough that a single run
@@ -641,7 +669,7 @@ So the trajectory determines the conductance and the closure is what loses it. A
 two-parameter model handed the true form \emph{should} beat a
 $\NparamUde$-parameter closure handed none, and it forecasts about twice as well
 (Table~\ref{tab:main}), so the claim is not that two equally good fits disagree.
-Nor are the two spreads the same kind of quantity: $\hat g_{Ca}$ is a parameter
+The two spreads are not the same kind of quantity. $\hat g_{Ca}$ is a parameter
 the likelihood estimates directly, while $\hat a$ is a least-squares projection
 of an already-learned function, so its scatter compounds what the closure learned
 with what that projection discards. We read the gap as a contrast in kind, not
@@ -685,7 +713,7 @@ representation's own contribution rather than measuring it, and it is the figure
 to quote, never the sixfold one, which is the two effects compounded.
 
 % claim: retrain-improves-loss-worsens-recovery
-Nor had the closure simply failed to converge. Quadrupling the budget to
+The closure did not simply fail to converge. Quadrupling the budget to
 \AdamRe/\BfgsRe{} lowers the training objective from $\valTrainLossBefore$ to
 $\valTrainLossAfter$, about \LossDropPct\,per cent, and makes every recovery
 quantity worse. Both symbolic quantities are quoted on the \emph{convex-hull}
@@ -702,11 +730,11 @@ scores $\valParamFitSseFullTwo$, so both training losses sit \emph{below} the
 correct physics on the data the physics generated.
 
 % claim: gca-sweep-shows-nonidentifiability
-Nor is $\gcaMain$ chosen to flatter the method: sweeping $g_{Ca}$ over
+We did not pick $\gcaMain$ to flatter the method. Sweeping $g_{Ca}$ over
 $\{\gcaPhys,\gcaMid,\gcaMain,\gcaHi\}$ at $\valUdeForecastVRmseN$ seeds per point
 leaves forecast voltage error and raw calcium error flat while the
 \emph{normalised} error falls from $\valGcaSweepICaNormPointFourMeanStd$ to
-$\valGcaSweepICaNormFourMeanStd$. Raising the conductance does not improve the
+$\valGcaSweepICaNormFourMeanStd$. A higher conductance does not improve the
 closure, it enlarges the target. Only the $\gcaMid\!\to\!\gcaMain$ step clears
 two pooled standard deviations, so we claim the trend and not the steps.
 
@@ -715,16 +743,15 @@ two pooled standard deviations, so we claim the trend and not the steps.
 \label{sec:discussion}
 
 % claim: predictive-accuracy-is-not-identifiability
-The recipe's first stage does what it promises: extrapolation stays accurate on
-every seed across the remainder of the trajectory, and it yields a closure
-agreeing closely with the true calcium current's shape. The second stage does not
-return that current's conductance, and not because the trajectory lacks the
-information: a direct parametric fit to the same trajectory recovers the
-conductance to about six per cent, so the pipeline loses what the data carry.
-No diagnostic a practitioner would normally trust gives any warning. Forecast
-error is sub-millivolt, $R^2$ against the true current is
-$\valSymbolicRTwoTrajTrainMeanStd$, and the training loss is not merely low but
-lower than the correctly fitted true structure's own loss.
+The first stage holds up. Extrapolation stays accurate on every seed across the
+remainder of the trajectory, and it yields a closure agreeing closely with the
+true calcium current's shape. The second stage does not return that current's
+conductance, and not for want of information in the trajectory. A direct
+parametric fit to the same trajectory recovers the conductance to about six per
+cent, so the pipeline loses what the data carry. No diagnostic a practitioner
+would normally trust gives any warning. Forecast error is sub-millivolt, $R^2$
+against the true current is $\valSymbolicRTwoTrajTrainMeanStd$, and the training
+loss is low, lower even than the correctly fitted true structure's own loss.
 
 % claim: identifiability-is-the-general-lesson
 We state the general form of that as a recommendation, not a result, because our
@@ -732,10 +759,10 @@ evidence is one system. Where a UDE's learned term is to be interpreted rather
 than simulated, its identifiability should be established before its coefficients
 are read as physical quantities, and the question is not only whether the data
 determine the parameter but whether they still determine it once a flexible
-closure carries it. Two cheap diagnostics follow: a seed-spread check on the
-recovered coefficients, which would have caught this failure immediately, and,
-where the functional form is approximately known, a parametric fit to compare
-against, which turns a bare spread into an attribution.
+closure carries it. Two cheap diagnostics follow. A seed-spread check on the
+recovered coefficients would have caught this failure at once. Where the
+functional form is approximately known, a parametric fit gives something to
+compare against, turning a bare spread into an attribution.
 
 % =========================================================================
 \section{Limitations and future work}
@@ -762,12 +789,12 @@ change the answer, by searching a different form or constraining $E_{Ca}$, and w
 have not tried one. We therefore claim the failure for this closure under these
 distillations, not for closure-based recovery in general. Locating where
 identifiability is lost needs a ladder of intermediate closures between two
-parameters and the full network: the obvious next experiment.
+parameters and the full network, the obvious next experiment.
 
 \paragraph{Data and code.}
-Code, parameters and results tables are released on acceptance under MIT
-(software) and CC BY 4.0 (results); the URL, commit and DOI are withheld for % numok: CC BY 4.0 is a licence name, not a measurement; matches checklist Q5/Q13
-anonymity until the camera-ready.
+We withhold the code for anonymity; the experiments are reproducible from the
+details given here. Everything is released on acceptance, under MIT (software)
+and CC BY 4.0 (results). % numok: CC BY 4.0 is a licence name, not a measurement; matches checklist Q5/Q13
 
 \bibliographystyle{unsrtnat}
 \bibliography{references}
