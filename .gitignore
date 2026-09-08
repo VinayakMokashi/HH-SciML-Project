@@ -68,3 +68,11 @@ overleaf_upload/
 # under paper/, and the supplementary is generated from paper/main.tex.
 sim2science_upload/
 sim2science_upload.zip
+
+# Smoke output from noise_weighted_ude.jl (NW_SMOKE=1). Reduced budgets, so its
+# numbers are MEANINGLESS next to the paper's -- exactly the class of file that
+# once truncated results/metrics_all.csv from 696 rows to 321. Never commit it.
+# The REAL output, results_noiseweighted/, is deliberately NOT ignored: it is
+# evidence and belongs in history.
+results_nw_smoke/
+figures_nw_smoke/
