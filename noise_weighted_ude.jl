@@ -60,13 +60,35 @@
 #  scripts expect, so scripts/symbolic_domain_comparison.py can be pointed at
 #  that tree unchanged to get a_hat on the supervised trajectory.
 #
+#  SEED COUNT (raised 2026-09-09; the n=5 pilot is superseded, not discarded).
+#  The pilot gave a_hat 1.645 +- 0.672 (:sse, published) against 2.018 +- 0.482
+#  (:chi2).  That variance ratio is (0.672/0.482)^2 = 1.94 on F(4,4), where ~6.4
+#  is needed for p<0.05, so the pilot establishes a DIRECTION and nothing more.
+#  NW_SEEDS is now 1111*k for k = 1..28 -- a single arithmetic rule that CONTAINS
+#  the published five (k = 1..5), so the seed set is pre-registerable and cannot
+#  be read as chosen after seeing the numbers.
+#
+#  BOTH ARMS ARE NOW RUN HERE, AND THAT IS THE POINT.  The pilot compared a fresh
+#  :chi2 arm against the PUBLISHED :sse numbers, which is only legitimate at the
+#  five seeds that were published.  For the comparison to stay paired at n=28 the
+#  :sse arm must be run at every seed too, in this same tree, under this same
+#  code.  The self-test below still pins that arm to the published engine.
+#
 #  COMPUTE BUDGET (the co-author asked for this to be tight):
-#      1 self-test run (:sse, seed 1111)          ~11 min
-#      5 treatment runs (:chi2, all five seeds)   ~55 min
-#      ------------------------------------------------
-#      6 runs total                               ~1.1 h on the recorded CPU box
-#  The :sse arm is NOT re-run at the other four seeds -- those numbers are already
-#  published and re-deriving them would buy nothing.
+#      28 :sse runs  (seed 1111 is the self-test)
+#      28 :chi2 runs (5 already on disk from the pilot, reused)
+#      ------------------------------------------------------
+#      51 new runs x ~8 min measured on this box  ~=  6.8 h unattended
+#
+#  RESUMABLE, BECAUSE 6.8 h IS TOO LONG TO LOSE TO A CRASH.  A (objective, seed)
+#  cell is SKIPPED when its calcium probe already exists AND a summary row for it
+#  is already in noise_weighted_summary.csv; the stored row is carried forward.
+#  That makes the pilot's five :chi2 runs free and makes a re-run after a crash
+#  cost only what was actually lost.  NW_FORCE=1 disables skipping entirely.
+#  THE SELF-TEST IS NEVER SKIPPED -- it is the gate, not a result.
+#  The summary CSV is rewritten after EVERY run, so a killed job leaves usable
+#  output.  The loop is SEED-MAJOR (:sse then :chi2 within a seed) so that a
+#  partial run leaves COMPLETE PAIRS rather than a long arm and a short one.
 #
 #  Run:  julia --project=. noise_weighted_ude.jl
 # =============================================================================
@@ -74,8 +96,17 @@
 const ROOT = @__DIR__
 
 # MUST precede the includes: RESULTS_DIR/FIG_DIR are consts read at include time.
-ENV["HH_RESULTS_DIR"] = get(ENV, "NW_RESULTS_DIR", joinpath(ROOT, "results_noiseweighted"))
-ENV["HH_FIG_DIR"]     = get(ENV, "NW_FIG_DIR",     joinpath(ROOT, "figures_noiseweighted"))
+#  A SMOKE RUN MUST NEVER SHARE A TREE WITH REAL OUTPUT.  NW_SMOKE=1 produces
+#  reduced-budget probes whose numbers are meaningless; written into
+#  results_noiseweighted/ they would silently replace real ones under the same
+#  filenames, and the resume cache would then treat them as done.  So the smoke
+#  default is a SEPARATE tree, and NW_RESULTS_DIR must be set explicitly to
+#  override that.
+const _NW_SMOKE_ENV = get(ENV, "NW_SMOKE", "0") == "1"
+ENV["HH_RESULTS_DIR"] = get(ENV, "NW_RESULTS_DIR",
+    joinpath(ROOT, _NW_SMOKE_ENV ? "results_nw_smoke" : "results_noiseweighted"))
+ENV["HH_FIG_DIR"]     = get(ENV, "NW_FIG_DIR",
+    joinpath(ROOT, _NW_SMOKE_ENV ? "figures_nw_smoke" : "figures_noiseweighted"))
 delete!(ENV, "HH_SMOKE")   # never let a stray smoke flag shrink the budgets here
 
 include(joinpath(ROOT, "src", "hh_core.jl"))
@@ -88,12 +119,20 @@ using Printf, Statistics, DataFrames, CSV
 const NW_GCA        = 2.0
 const NW_NOISE      = 0.02
 const NW_TWIN       = 30.0
-const NW_SEEDS      = [1111, 2222, 3333, 4444, 5555]
+#  Seeds are 1111*k, k = 1..NW_NSEEDS -- ONE arithmetic rule that CONTAINS the
+#  five published seeds at k = 1..5, so the set cannot be read as chosen after
+#  seeing the numbers. NW_NSEEDS exists so a smoke run costs 5 runs, not 56; it
+#  is not a scientific dial and the default is the pre-registered 28.
+const NW_NSEEDS     = parse(Int, get(ENV, "NW_NSEEDS", _NW_SMOKE_ENV ? "2" : "28"))
+const NW_SEEDS      = [1111 * k for k in 1:NW_NSEEDS]
+const NW_OBJECTIVES = [:sse, :chi2]
+#  NW_FORCE=1 re-runs every cell even if its probe and summary row already exist.
+const NW_FORCE      = get(ENV, "NW_FORCE", "0") == "1"
 #  NW_ADAM / NW_BFGS default to the published budget. NW_SMOKE=1 shrinks them to
 #  exercise the plumbing in ~1 min per run -- it is a PIPELINE CHECK ONLY and its
 #  numbers are meaningless, so it also disables the self-test comparison (which
 #  would fail by construction at a reduced budget) and tags its output loudly.
-const NW_SMOKE      = get(ENV, "NW_SMOKE", "0") == "1"
+const NW_SMOKE      = _NW_SMOKE_ENV
 const NW_ADAM       = NW_SMOKE ? 30 : 5000
 const NW_BFGS       = NW_SMOKE ? 5   : 300
 
@@ -193,7 +232,7 @@ end
 #  1. SELF-TEST — prove this harness IS the engine before trusting anything.
 # =============================================================================
 println("\n=== SELF-TEST: :sse arm, seed 1111, must reproduce the published run ===")
-st_run = run_weighted(; seed = 1111, objective = :sse, tag = "nw_selftest_sse")
+st_run = run_weighted(; seed = 1111, objective = :sse, tag = "nw_sse_seed1111")
 st_val = pick(st_run.metrics, "forecast", "V_rmse")
 st_rel = abs(st_val - SELFTEST_TARGET) / SELFTEST_TARGET
 @printf("  published : %.16f\n  this run  : %.16f\n  rel diff  : %.3e (tol %.0e)\n",
@@ -215,40 +254,93 @@ end
 println()
 
 # =============================================================================
-#  2. TREATMENT — the noise-weighted objective, all five seeds.
+#  2. BOTH ARMS, ALL SEEDS.
 # =============================================================================
-println("=== TREATMENT: :chi2 arm, five seeds ===")
-rows = NamedTuple[]
+#  Seed-major so a killed job leaves complete PAIRS. Skip-if-present so the
+#  pilot's :chi2 runs are reused and a crash costs only what was lost.
+# =============================================================================
+const SUMMARY_CSV = joinpath(ENV["HH_RESULTS_DIR"], "noise_weighted_summary.csv")
 
-push!(rows, (; objective = "sse", seed = 1111, arm = "selftest",
-               final_loss = st_run.final_loss, bfgs_ok = st_run.bfgs_ok,
-               forecast_V_rmse = st_val,
-               forecast_ICa_rmse = pick(st_run.metrics, "forecast", "ICa_rmse"),
-               train_V_rmse = pick(st_run.metrics, "train", "V_rmse")))
+nw_tag(objective, seed) = "nw_$(objective)_seed$(seed)"
+nw_probe(objective, seed) =
+    joinpath(ENV["HH_RESULTS_DIR"], "calcium", "probe_$(nw_tag(objective, seed)).csv")
 
-for s in NW_SEEDS
-    r = run_weighted(; seed = s, objective = :chi2, tag = "nw_chi2_seed$(s)")
-    push!(rows, (; objective = "chi2", seed = s, arm = "treatment",
-                   final_loss = r.final_loss, bfgs_ok = r.bfgs_ok,
-                   forecast_V_rmse = pick(r.metrics, "forecast", "V_rmse"),
-                   forecast_ICa_rmse = pick(r.metrics, "forecast", "ICa_rmse"),
-                   train_V_rmse = pick(r.metrics, "train", "V_rmse")))
+# Rows already on disk, keyed (objective, seed), so a skipped cell is carried
+# forward rather than dropped. Anything that is not a clean read is ignored:
+# a missing or malformed cache must cost compute, never correctness.
+cached = Dict{Tuple{String,Int},NamedTuple}()
+if !NW_FORCE && isfile(SUMMARY_CSV)
+    try
+        for r in CSV.File(SUMMARY_CSV)
+            cached[(String(r.objective), Int(r.seed))] =
+                (; objective = String(r.objective), seed = Int(r.seed), arm = String(r.arm),
+                   final_loss = Float64(r.final_loss), bfgs_ok = Bool(r.bfgs_ok),
+                   forecast_V_rmse = Float64(r.forecast_V_rmse),
+                   forecast_ICa_rmse = Float64(r.forecast_ICa_rmse),
+                   train_V_rmse = Float64(r.train_V_rmse))
+        end
+        @printf("resume: read %d cached rows from %s\n", length(cached), SUMMARY_CSV)
+    catch err
+        @warn "resume: could not read the summary CSV; running every cell." exception = err
+        empty!(cached)
+    end
 end
 
-df  = DataFrame(rows)
-out = joinpath(ENV["HH_RESULTS_DIR"], "noise_weighted_summary.csv")
-CSV.write(out, df)
+# The pilot wrote its :sse seed-1111 row under arm="selftest" and its probe under
+# the tag nw_selftest_sse. Neither matches the naming used from here on, and the
+# self-test is re-run every time regardless, so drop that row rather than let a
+# stale key shadow the fresh one.
+delete!(cached, ("sse", 1111))
+
+rows = NamedTuple[]
+
+function record!(r)
+    push!(rows, r)
+    CSV.write(SUMMARY_CSV, DataFrame(rows))   # rewritten after EVERY run
+end
+
+record!((; objective = "sse", seed = 1111, arm = "selftest",
+           final_loss = st_run.final_loss, bfgs_ok = st_run.bfgs_ok,
+           forecast_V_rmse = st_val,
+           forecast_ICa_rmse = pick(st_run.metrics, "forecast", "ICa_rmse"),
+           train_V_rmse = pick(st_run.metrics, "train", "V_rmse")))
+
+for s in NW_SEEDS, obj in NW_OBJECTIVES
+    key = (String(obj), s)
+    obj === :sse && s == 1111 && continue      # that IS the self-test, already recorded
+
+    if haskey(cached, key) && isfile(nw_probe(obj, s))
+        @printf("[skip] %s seed %d -- probe and summary row already on disk\n", obj, s)
+        record!(cached[key])
+        continue
+    end
+
+    r = run_weighted(; seed = s, objective = obj, tag = nw_tag(obj, s))
+    record!((; objective = String(obj), seed = s, arm = "treatment",
+               final_loss = r.final_loss, bfgs_ok = r.bfgs_ok,
+               forecast_V_rmse = pick(r.metrics, "forecast", "V_rmse"),
+               forecast_ICa_rmse = pick(r.metrics, "forecast", "ICa_rmse"),
+               train_V_rmse = pick(r.metrics, "train", "V_rmse")))
+end
+
+df = DataFrame(rows)
 
 println("\n=== SUMMARY ===")
-show(stdout, df; allrows = true, allcols = true)
-println("\n\nwrote $out")
+@printf("%d rows: %d :sse, %d :chi2\n",
+        nrow(df), sum(df.objective .== "sse"), sum(df.objective .== "chi2"))
+println("wrote $SUMMARY_CSV")
 
-chi = df[df.objective .== "chi2", :]
-@printf("\nchi2 arm, n=%d: forecast V RMSE %.4f +- %.4f mV   (published sse arm: 0.2452 +- 0.0284)\n",
-        nrow(chi), mean(chi.forecast_V_rmse), std(chi.forecast_V_rmse))
+for obj in ("sse", "chi2")
+    a = df[df.objective .== obj, :]
+    nrow(a) < 2 && continue
+    @printf("%-5s arm, n=%2d: forecast V RMSE %.4f +- %.4f mV\n",
+            obj, nrow(a), mean(a.forecast_V_rmse), std(a.forecast_V_rmse))
+end
+
 println("""
 NOTE: forecast error is NOT the headline for this experiment. The question is
-whether the distilled conductance comes back. Next step, no retraining needed:
-point the traj-train distillation at results_noiseweighted/calcium/ and compare
-a_hat against the published 1.645 +- 0.672.
+whether the distilled conductance comes back, and whether its SPREAD separates
+the two arms once n is large enough for F(n-1,n-1) to have any power at all.
+Next step, no retraining needed:
+    python scripts/distil_noise_weighted.py
 """)
