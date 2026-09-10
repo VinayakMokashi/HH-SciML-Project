@@ -1,0 +1,56 @@
+quantity,value,note
+E1N,28,seeds per arm in the noise-weighting experiment
+E1SseAhatMean,1.543,"sse arm a_hat mean, n=28"
+E1SseAhatStd,1.237,"sse arm a_hat sd, n=28"
+E1SseRelSd,0.802,"sse arm a_hat relative sd, n=28"
+E1SseNeg,3,sse arm seeds recovering a NEGATIVE conductance
+E1SseWithin,12,sse arm seeds within 25% of the true gCa
+E1ChiAhatMean,1.925,"chi2 arm a_hat mean, n=28"
+E1ChiAhatStd,0.605,"chi2 arm a_hat sd, n=28"
+E1ChiRelSd,0.314,"chi2 arm a_hat relative sd, n=28"
+E1ChiNeg,0,chi2 arm seeds recovering a NEGATIVE conductance
+E1ChiWithin,17,chi2 arm seeds within 25% of the true gCa
+E1F,4.177,variance ratio sse/chi2
+E1Fdf,27,"degrees of freedom, each arm"
+E1Fp,0.0002,one-sided F test p-value
+E1LeveneP,0.041,Brown-Forsythe p-value (robust)
+E1WilcoxonP,0.01,"paired Wilcoxon on |a_hat-2|, sse worse"
+E1SsePubFiveRelSd,0.408,sse relative sd over the five PUBLISHED seeds
+E1SseFcastMean,0.363,sse forecast V RMSE mean (mV)
+E1SseFcastStd,0.192,sse forecast V RMSE sd (mV)
+E1ChiFcastMean,0.233,chi2 forecast V RMSE mean (mV)
+E1ChiFcastStd,0.14,chi2 forecast V RMSE sd (mV)
+E1FcastP,0.0033,"paired Wilcoxon, sse forecast worse than chi2"
+E1FcastBetter,20,seeds where chi2 forecasts better than sse
+E2ParamN,28,seeds in the direct two-parameter fit
+E2NmMean,1.966,"Nelder-Mead gCa mean, n=28"
+E2NmStd,0.132,"Nelder-Mead gCa sd, n=28"
+E2NmRelSd,0.067,Nelder-Mead relative sd -- the DENOMINATOR
+E2AbRelSd,0.067,Adam+BFGS relative sd at two parameters
+E2OptRatio,1.0,OPTIMISER share at two parameters
+E2ReprRatio,4.69,"REPRESENTATION share: chi2 closure over the direct fit, matched objective"
+E2SseOverParam,11.95,sse closure over the direct fit (objective NOT matched)
+E2WorstCell,3.5e-06,worst relative gCa difference over all 168 cells
+E2Cells,168,total Adam+BFGS fits
+E3SseVarInit,-0.022,sse: initialisation variance component
+E3SseVarData,0.286,sse: data-draw variance component
+E3SseVarInter,0.209,sse: interaction variance component
+E3SsePctData,58,sse: data share of variance (%)
+E3SsePctInter,42,sse: interaction share (%)
+E3SseFInit,0.474,sse: F for initialisation
+E3SseFInitP,0.754,sse: p for initialisation
+E3SseFData,7.82,sse: F for the data draw
+E3SseFDataP,0.0011,sse: p for the data draw
+E3SseDf,16,sse: residual degrees of freedom
+E3ChiVarInit,0.017,chi2: initialisation variance component
+E3ChiVarData,0.25,chi2: data-draw variance component
+E3ChiVarInter,0.031,chi2: interaction variance component
+E3ChiPctData,84,chi2: data share of variance (%)
+E3ChiPctInter,10,chi2: interaction share (%)
+E3ChiFInit,3.684,chi2: F for initialisation
+E3ChiFInitP,0.026,chi2: p for initialisation
+E3ChiFData,41.35,chi2: F for the data draw
+E3ChiFDataP,0.0001,"chi2: p for the data draw -- BOUND: true value is smaller, quote as 'p <'"
+E3ChiDf,16,chi2: residual degrees of freedom
+E3Grid,5,levels per factor in the crossed grid
+E3Cells,50,total cells across both arms

@@ -1978,3 +1978,444 @@ macros:
 #     common_eval points (t > 50). Derived from TSTEPS; recompute, cite make_split.
 #
 # =============================================================================
+
+# =============================================================================
+#  E1 / E2 / E3 -- the post-submission experiment round (2026-09-10/11)
+# =============================================================================
+#  ADDED, NEVER MODIFIED. Every entry below is new. The 322 macros above back
+#  BOTH paper/main.tex AND the FROZEN workshop submission, so changing any one
+#  of them would alter a document that is under review and cannot be edited.
+#
+#  `source` escapes results_root with `../` deliberately. extract_metrics joins
+#  with pathlib, so this reaches the isolated experiment trees without copying
+#  anything into results/ -- the tree the published macros come from and which
+#  nothing may write to.
+#
+#  All values are DERIVED (ratios, F statistics, variance components, counts of
+#  seeds satisfying a predicate). extract_metrics cannot compute those, so
+#  scripts/emit_experiment_macros.py computes them once from the committed
+#  per-seed evidence and self-tests against the distillation output. Re-run it
+#  if any experiment tree changes.
+# =============================================================================
+
+  - name: NwSeeds
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1N}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      Seeds per arm in the n=28 noise-weighting experiment.
+
+  - name: NwSseAhatMean
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1SseAhatMean}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      SSE-trained closure, recovered gCa, mean over 28 seeds.
+
+  - name: NwSseAhatStd
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1SseAhatStd}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      SSE-trained closure, recovered gCa, sample SD.
+
+  - name: NwSseRelSd
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1SseRelSd}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      SSE arm relative SD. *** The published five seeds gave 0.408; this is the same quantity at n=28 and it is nearly twice as large. ***
+
+  - name: NwSsePubRelSd
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1SsePubFiveRelSd}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      SSE relative SD over the FIVE PUBLISHED seeds only, recomputed here so the text can set it beside the n=28 value.
+
+  - name: NwChiAhatMean
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1ChiAhatMean}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      chi2-trained closure, recovered gCa, mean over 28 seeds.
+
+  - name: NwChiAhatStd
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1ChiAhatStd}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      chi2-trained closure, recovered gCa, sample SD.
+
+  - name: NwChiRelSd
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1ChiRelSd}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      chi2 arm relative SD at n=28.
+
+  - name: NwSseNeg
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1SseNeg}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      SSE seeds recovering a NEGATIVE conductance -- not a wide estimate, a physically impossible one.
+
+  - name: NwChiNeg
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1ChiNeg}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      chi2 seeds recovering a negative conductance. Zero.
+
+  - name: NwSseWithin
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1SseWithin}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      SSE seeds landing within 25% of the true gCa, out of 28.
+
+  - name: NwChiWithin
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1ChiWithin}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      chi2 seeds landing within 25% of the true gCa, out of 28.
+
+  - name: NwF
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1F}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      Variance ratio SSE/chi2 for the recovered gCa.
+
+  - name: NwFdf
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1Fdf}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      Degrees of freedom per arm in the F test.
+
+  - name: NwFp
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1Fp}
+    column: value
+    emit: value
+    round: 4
+    note: >-
+      One-sided F-test p-value. The n=5 pilot gave F=1.94 and p=0.27.
+
+  - name: NwLeveneP
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1LeveneP}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      Brown-Forsythe p-value -- the robust check on the same spread question.
+
+  - name: NwWilcoxonP
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1WilcoxonP}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      Paired Wilcoxon on |gCa_hat - 2|. *** Tests ACCURACY, not spread. Do not quote it for the spread claim. ***
+
+  - name: NwSseFcastMean
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1SseFcastMean}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      SSE arm forecast V RMSE, mV, n=28.
+
+  - name: NwSseFcastStd
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1SseFcastStd}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      SSE arm forecast V RMSE SD, mV.
+
+  - name: NwChiFcastMean
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1ChiFcastMean}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      chi2 arm forecast V RMSE, mV, n=28.
+
+  - name: NwChiFcastStd
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1ChiFcastStd}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      chi2 arm forecast V RMSE SD, mV.
+
+  - name: NwFcastP
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1FcastP}
+    column: value
+    emit: value
+    round: 4
+    note: >-
+      Paired Wilcoxon on forecast error. chi2 forecasts BETTER, which at n=5 had looked like a slight cost.
+
+  - name: NwFcastBetter
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E1FcastBetter}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      Seeds, of 28, where chi2 forecasts better than SSE.
+
+  - name: OptNmRelSd
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E2NmRelSd}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      Direct two-parameter fit under multi-start Nelder-Mead, relative SD, n=28. The DENOMINATOR of the representation ratio.
+
+  - name: OptAbRelSd
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E2AbRelSd}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      The same two-parameter fit under the CLOSURE's optimiser (Adam+BFGS, same budget).
+
+  - name: OptRatio
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E2OptRatio}
+    column: value
+    emit: value
+    round: 2
+    note: >-
+      Optimiser share at two parameters. 1.00 = the optimiser contributes nothing measurable.
+
+  - name: OptCells
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E2Cells}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      Total Adam+BFGS fits: 28 seeds x 2 coordinate scalings x 3 starts.
+
+  - name: OptWorstCell
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E2WorstCell}
+    column: value
+    emit: value
+    note: >-
+      Worst relative gCa difference between the two optimisers over all 168 cells.
+
+  - name: ReprRatio
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E2ReprRatio}
+    column: value
+    emit: value
+    round: 2
+    note: >-
+      *** REPRESENTATION share, objective AND optimiser now both controlled. *** Replaces the old 'at most twofold' bound at the two-parameter end.
+
+  - name: IdGrid
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3Grid}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      Levels per factor in the crossed initialisation x data grid.
+
+  - name: IdSseVarInit
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3SseVarInit}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      SSE: initialisation variance component. NEGATIVE method-of-moments estimate, i.e. indistinguishable from zero.
+
+  - name: IdSseVarData
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3SseVarData}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      SSE: data-draw variance component.
+
+  - name: IdSseVarInter
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3SseVarInter}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      SSE: interaction. Training is deterministic given (init, data), so this is interaction and NOT run-to-run noise.
+
+  - name: IdSsePctData
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3SsePctData}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      SSE: data share of the decomposed variance, %.
+
+  - name: IdSseFInit
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3SseFInit}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      SSE: F for initialisation. Below 1.
+
+  - name: IdSseFInitP
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3SseFInitP}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      SSE: p for initialisation.
+
+  - name: IdSseFData
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3SseFData}
+    column: value
+    emit: value
+    round: 2
+    note: >-
+      SSE: F for the data draw.
+
+  - name: IdSseFDataP
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3SseFDataP}
+    column: value
+    emit: value
+    round: 4
+    note: >-
+      SSE: p for the data draw.
+
+  - name: IdSseDf
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3SseDf}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      Residual degrees of freedom, (I-1)(D-1).
+
+  - name: IdChiVarInit
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3ChiVarInit}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      chi2: initialisation variance component.
+
+  - name: IdChiVarData
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3ChiVarData}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      chi2: data-draw variance component.
+
+  - name: IdChiVarInter
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3ChiVarInter}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      chi2: interaction. Down 85% from the SSE arm -- this is HOW noise-weighting helps.
+
+  - name: IdChiPctData
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3ChiPctData}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      chi2: data share of the decomposed variance, %.
+
+  - name: IdChiFInit
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3ChiFInit}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      chi2: F for initialisation. Small but detectable, unlike the SSE arm.
+
+  - name: IdChiFInitP
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3ChiFInitP}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      chi2: p for initialisation.
+
+  - name: IdChiFData
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3ChiFData}
+    column: value
+    emit: value
+    round: 2
+    note: >-
+      chi2: F for the data draw.
+
+  - name: IdChiFDataP
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E3ChiFDataP}
+    column: value
+    emit: value
+    round: 4
+    note: >-
+      chi2: p for the data draw. *** A BOUND: the true value is smaller. Quote as 'p <', never 'p ='. ***

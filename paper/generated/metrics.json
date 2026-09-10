@@ -3834,5 +3834,475 @@
       "noise_level": 0.1
     },
     "n": 1
+  },
+  "NwSeeds": {
+    "macro": "valNwSeeds",
+    "value": "28",
+    "raw": 28.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1N"
+    },
+    "n": 1
+  },
+  "NwSseAhatMean": {
+    "macro": "valNwSseAhatMean",
+    "value": "1.543",
+    "raw": 1.543,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1SseAhatMean"
+    },
+    "n": 1
+  },
+  "NwSseAhatStd": {
+    "macro": "valNwSseAhatStd",
+    "value": "1.237",
+    "raw": 1.237,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1SseAhatStd"
+    },
+    "n": 1
+  },
+  "NwSseRelSd": {
+    "macro": "valNwSseRelSd",
+    "value": "0.802",
+    "raw": 0.802,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1SseRelSd"
+    },
+    "n": 1
+  },
+  "NwSsePubRelSd": {
+    "macro": "valNwSsePubRelSd",
+    "value": "0.408",
+    "raw": 0.408,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1SsePubFiveRelSd"
+    },
+    "n": 1
+  },
+  "NwChiAhatMean": {
+    "macro": "valNwChiAhatMean",
+    "value": "1.925",
+    "raw": 1.925,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1ChiAhatMean"
+    },
+    "n": 1
+  },
+  "NwChiAhatStd": {
+    "macro": "valNwChiAhatStd",
+    "value": "0.605",
+    "raw": 0.605,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1ChiAhatStd"
+    },
+    "n": 1
+  },
+  "NwChiRelSd": {
+    "macro": "valNwChiRelSd",
+    "value": "0.314",
+    "raw": 0.314,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1ChiRelSd"
+    },
+    "n": 1
+  },
+  "NwSseNeg": {
+    "macro": "valNwSseNeg",
+    "value": "3",
+    "raw": 3.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1SseNeg"
+    },
+    "n": 1
+  },
+  "NwChiNeg": {
+    "macro": "valNwChiNeg",
+    "value": "0",
+    "raw": 0.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1ChiNeg"
+    },
+    "n": 1
+  },
+  "NwSseWithin": {
+    "macro": "valNwSseWithin",
+    "value": "12",
+    "raw": 12.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1SseWithin"
+    },
+    "n": 1
+  },
+  "NwChiWithin": {
+    "macro": "valNwChiWithin",
+    "value": "17",
+    "raw": 17.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1ChiWithin"
+    },
+    "n": 1
+  },
+  "NwF": {
+    "macro": "valNwF",
+    "value": "4.177",
+    "raw": 4.177,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1F"
+    },
+    "n": 1
+  },
+  "NwFdf": {
+    "macro": "valNwFdf",
+    "value": "27",
+    "raw": 27.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1Fdf"
+    },
+    "n": 1
+  },
+  "NwFp": {
+    "macro": "valNwFp",
+    "value": "0.0002",
+    "raw": 0.0002,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1Fp"
+    },
+    "n": 1
+  },
+  "NwLeveneP": {
+    "macro": "valNwLeveneP",
+    "value": "0.041",
+    "raw": 0.041,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1LeveneP"
+    },
+    "n": 1
+  },
+  "NwWilcoxonP": {
+    "macro": "valNwWilcoxonP",
+    "value": "0.010",
+    "raw": 0.01,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1WilcoxonP"
+    },
+    "n": 1
+  },
+  "NwSseFcastMean": {
+    "macro": "valNwSseFcastMean",
+    "value": "0.363",
+    "raw": 0.363,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1SseFcastMean"
+    },
+    "n": 1
+  },
+  "NwSseFcastStd": {
+    "macro": "valNwSseFcastStd",
+    "value": "0.192",
+    "raw": 0.192,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1SseFcastStd"
+    },
+    "n": 1
+  },
+  "NwChiFcastMean": {
+    "macro": "valNwChiFcastMean",
+    "value": "0.233",
+    "raw": 0.233,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1ChiFcastMean"
+    },
+    "n": 1
+  },
+  "NwChiFcastStd": {
+    "macro": "valNwChiFcastStd",
+    "value": "0.140",
+    "raw": 0.14,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1ChiFcastStd"
+    },
+    "n": 1
+  },
+  "NwFcastP": {
+    "macro": "valNwFcastP",
+    "value": "0.0033",
+    "raw": 0.0033,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1FcastP"
+    },
+    "n": 1
+  },
+  "NwFcastBetter": {
+    "macro": "valNwFcastBetter",
+    "value": "20",
+    "raw": 20.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E1FcastBetter"
+    },
+    "n": 1
+  },
+  "OptNmRelSd": {
+    "macro": "valOptNmRelSd",
+    "value": "0.067",
+    "raw": 0.067,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E2NmRelSd"
+    },
+    "n": 1
+  },
+  "OptAbRelSd": {
+    "macro": "valOptAbRelSd",
+    "value": "0.067",
+    "raw": 0.067,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E2AbRelSd"
+    },
+    "n": 1
+  },
+  "OptRatio": {
+    "macro": "valOptRatio",
+    "value": "1.00",
+    "raw": 1.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E2OptRatio"
+    },
+    "n": 1
+  },
+  "OptCells": {
+    "macro": "valOptCells",
+    "value": "168",
+    "raw": 168.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E2Cells"
+    },
+    "n": 1
+  },
+  "OptWorstCell": {
+    "macro": "valOptWorstCell",
+    "value": "0.000",
+    "raw": 3.5e-06,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E2WorstCell"
+    },
+    "n": 1
+  },
+  "ReprRatio": {
+    "macro": "valReprRatio",
+    "value": "4.69",
+    "raw": 4.69,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E2ReprRatio"
+    },
+    "n": 1
+  },
+  "IdGrid": {
+    "macro": "valIdGrid",
+    "value": "5",
+    "raw": 5.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3Grid"
+    },
+    "n": 1
+  },
+  "IdSseVarInit": {
+    "macro": "valIdSseVarInit",
+    "value": "-0.022",
+    "raw": -0.022,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3SseVarInit"
+    },
+    "n": 1
+  },
+  "IdSseVarData": {
+    "macro": "valIdSseVarData",
+    "value": "0.286",
+    "raw": 0.286,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3SseVarData"
+    },
+    "n": 1
+  },
+  "IdSseVarInter": {
+    "macro": "valIdSseVarInter",
+    "value": "0.209",
+    "raw": 0.209,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3SseVarInter"
+    },
+    "n": 1
+  },
+  "IdSsePctData": {
+    "macro": "valIdSsePctData",
+    "value": "58",
+    "raw": 58.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3SsePctData"
+    },
+    "n": 1
+  },
+  "IdSseFInit": {
+    "macro": "valIdSseFInit",
+    "value": "0.474",
+    "raw": 0.474,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3SseFInit"
+    },
+    "n": 1
+  },
+  "IdSseFInitP": {
+    "macro": "valIdSseFInitP",
+    "value": "0.754",
+    "raw": 0.754,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3SseFInitP"
+    },
+    "n": 1
+  },
+  "IdSseFData": {
+    "macro": "valIdSseFData",
+    "value": "7.82",
+    "raw": 7.82,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3SseFData"
+    },
+    "n": 1
+  },
+  "IdSseFDataP": {
+    "macro": "valIdSseFDataP",
+    "value": "0.0011",
+    "raw": 0.0011,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3SseFDataP"
+    },
+    "n": 1
+  },
+  "IdSseDf": {
+    "macro": "valIdSseDf",
+    "value": "16",
+    "raw": 16.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3SseDf"
+    },
+    "n": 1
+  },
+  "IdChiVarInit": {
+    "macro": "valIdChiVarInit",
+    "value": "0.017",
+    "raw": 0.017,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3ChiVarInit"
+    },
+    "n": 1
+  },
+  "IdChiVarData": {
+    "macro": "valIdChiVarData",
+    "value": "0.250",
+    "raw": 0.25,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3ChiVarData"
+    },
+    "n": 1
+  },
+  "IdChiVarInter": {
+    "macro": "valIdChiVarInter",
+    "value": "0.031",
+    "raw": 0.031,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3ChiVarInter"
+    },
+    "n": 1
+  },
+  "IdChiPctData": {
+    "macro": "valIdChiPctData",
+    "value": "84",
+    "raw": 84.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3ChiPctData"
+    },
+    "n": 1
+  },
+  "IdChiFInit": {
+    "macro": "valIdChiFInit",
+    "value": "3.684",
+    "raw": 3.684,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3ChiFInit"
+    },
+    "n": 1
+  },
+  "IdChiFInitP": {
+    "macro": "valIdChiFInitP",
+    "value": "0.026",
+    "raw": 0.026,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3ChiFInitP"
+    },
+    "n": 1
+  },
+  "IdChiFData": {
+    "macro": "valIdChiFData",
+    "value": "41.35",
+    "raw": 41.35,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3ChiFData"
+    },
+    "n": 1
+  },
+  "IdChiFDataP": {
+    "macro": "valIdChiFDataP",
+    "value": "0.0001",
+    "raw": 0.0001,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E3ChiFDataP"
+    },
+    "n": 1
   }
 }

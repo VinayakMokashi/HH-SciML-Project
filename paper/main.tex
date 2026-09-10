@@ -939,9 +939,11 @@ Every headline metric is a mean $\pm$ sample standard deviation over
 $\valUdeForecastVRmseN$ seeds. The conductance sweep is likewise run over all
 $\valUdeForecastVRmseN$ seeds (Sec.~\ref{sec:results-ablations}); the remaining
 ablations are single runs at the pre-registered baseline seed. A seed jointly redraws \emph{both} the network initialisation and
-the Ornstein--Uhlenbeck noise realisation, so the reported spread is a joint
-init-and-data spread and the two sources cannot be separated from these runs; we
-report it as such and run no statistical test.
+the Ornstein--Uhlenbeck noise realisation, so every spread reported in
+Secs.~\ref{sec:results-forecasting}--\ref{sec:results-retrain} is a joint
+init-and-data spread; we report it as such and run no statistical test on those
+runs. The two sources are separated in Sec.~\ref{sec:results-decomposition} by a
+crossed design, which finds the data draw to be the dominant term.
 % claim: rep-seed-is-guarded-not-cherry-picked
 The single seed used for the trajectory and parity panels is the pre-registered
 baseline, fixed before the seed spread was known, and a guardrail confirms it is
@@ -1803,6 +1805,105 @@ comparison points to.
 \end{table}
 
 % =========================================================================
+% ADDED 2026-09-11. Reports the post-submission experiment round (E1/E2/E3).
+% Evidence: results_noiseweighted/ and results_initdata/, both committed.
+% Macros: scripts/emit_experiment_macros.py -> paper_macros_e1e3.csv.
+% NOTE FOR CO-AUTHORS: none of this was in the workshop submission, which was
+% frozen on 30 Aug. Sec. 4.7's numbers supersede the five-seed spread quoted
+% earlier in this section; they do not contradict it (see the first paragraph).
+% =========================================================================
+\subsection{What the spread is made of: objective, optimiser, and seed}
+\label{sec:results-decomposition}
+
+Every spread quoted so far is a single number doing three jobs at once. It
+mixes the choice of objective, the choice of optimiser, and the seed --- and the
+seed itself redraws two independent things. This section separates them. Three
+experiments were run after the results above were fixed, and they change what can
+be claimed rather than what was measured: the five-seed figures reported earlier
+remain correct \emph{for those five seeds}, and the question here is what they
+support.
+
+\paragraph{The five published seeds were a benign draw.}
+Repeating the comparison at $\valNwSeeds$ seeds on both arms leaves the
+unweighted closure at $\valNwSseAhatMean \pm \valNwSseAhatStd$, a relative spread
+of $\valNwSseRelSd$ against the $\valNwSsePubRelSd$ the five seeds gave. The
+spread nearly doubles. The direct two-parameter fit barely moves over the same
+extension ($\valOptNmRelSd$), so this is a property of the closure and not of the
+sample size. Two consequences are worth stating plainly. $\valNwSseNeg$ of
+$\valNwSeeds$ seeds recover a \emph{negative} conductance --- not a wide estimate
+but a physically impossible one --- against $\valNwChiNeg$ under the
+noise-weighted objective; and only $\valNwSseWithin$ of $\valNwSeeds$ land within
+a quarter of the true value, against $\valNwChiWithin$. We expected more seeds to
+tighten the picture. They widened it, and the failure they exposed is qualitative,
+not merely wider error bars.
+
+\paragraph{Noise-weighting the objective is what recovers the conductance.}
+Training the same closure against the noise-weighted $\chi^2$ instead of the
+unweighted sum of squares gives $\valNwChiAhatMean \pm \valNwChiAhatStd$, a
+relative spread of $\valNwChiRelSd$. The variance ratio is
+$F(\valNwFdf,\valNwFdf) = \valNwF$, $p = \valNwFp$; the Brown--Forsythe test,
+which does not assume normality, agrees ($p = \valNwLeveneP$). Both test
+\emph{spread}, which is the claim. A paired test on $|\hat{g}_{Ca} - g_{Ca}|$ is
+better powered because the arms share the noise draw and the initialisation
+within a seed, and it also separates them ($p = \valNwWilcoxonP$) --- but it tests
+\emph{accuracy}, a different question, and we quote it as such. The change costs
+nothing in forecasting: $\valNwChiFcastMean \pm \valNwChiFcastStd$\,mV against
+$\valNwSseFcastMean \pm \valNwSseFcastStd$\,mV, better on $\valNwFcastBetter$ of
+$\valNwSeeds$ seeds ($p = \valNwFcastP$).
+
+\paragraph{The optimiser is not the culprit, where that can be checked.}
+The matched-objective control of Sec.~\ref{sec:results-parametric} swaps the
+objective but keeps multi-start Nelder--Mead, so its residual has always been
+representation and optimiser together. Refitting the same two parameters, on the
+same data, under the same $\chi^2$, with the \emph{closure's} optimiser and its
+exact budget --- Adam followed by BFGS --- gives $\valOptAbRelSd$ against
+Nelder--Mead's $\valOptNmRelSd$: a ratio of $\valOptRatio$. Across all
+$\valOptCells$ fits the two optimisers agree on the recovered conductance to a
+relative difference of $\valOptWorstCell$. With the optimiser contributing
+nothing measurable, the closure's residual excess over the direct fit under a
+matched objective is $\valReprRatio\times$, and it is attributable to the
+representation. \textbf{This isolates the optimiser only at the two-parameter
+end.} Nelder--Mead cannot be run on the closure's $\NparamUde$ parameters,
+so what is shown is that the choice of optimiser does not matter where the
+optimum is unique and well conditioned. It is not evidence that the optimiser
+contributes nothing at $\NparamUde$ parameters, where representation and
+optimiser may not be separable even in principle: the flexible representation is
+precisely what creates the landscape the optimiser must navigate.
+
+\paragraph{The seed's two roles, separated.}
+A seed sets the network initialisation and the noise realisation through
+independent random streams that merely share an integer. Crossing them on a
+$\valIdGrid \times \valIdGrid$ grid --- every initialisation against every data
+draw, on both objectives --- decomposes the variance. Under the unweighted
+objective the initialisation component is indistinguishable from zero
+($F = \valIdSseFInit$, below one, $p = \valIdSseFInitP$) while the data draw
+carries $\valIdSsePctData$\,\% ($F = \valIdSseFData$, $p = \valIdSseFDataP$). The
+closure is not finding different optima on identical data; it is at the mercy of
+which noise realisation it was given.
+
+The remaining term is the interaction, and it is the informative one. Training is
+deterministic given an initialisation and a data draw --- every diagonal cell of
+the grid reproduces its corresponding single-seed run exactly --- so there is no
+run-to-run term for it to absorb, and the residual is interaction rather than
+noise. Under the unweighted objective it is $\valIdSseVarInter$, comparable to
+the data component itself: a given initialisation is good or bad depending on
+which noise draw it meets. Under the noise-weighted objective it falls to
+$\valIdChiVarInter$, while the data component is essentially unchanged
+($\valIdSseVarData \rightarrow \valIdChiVarData$). \emph{The objective does not
+make the closure less sensitive to the data. It stops the initialisation and the
+data draw from interacting.} That is the mechanism behind the recovery reported
+above, and it is not visible in any single-seed-per-condition design.
+
+\paragraph{What this does and does not license.}
+The grid's data seeds are the five originally published ones, which the first
+experiment showed to be benign, so the data component measured here is an
+understatement; a less favourable sample would strengthen the conclusion, not
+weaken it. The decomposition rests on one run per cell, which confounds the
+interaction with nothing only because training is deterministic here --- a
+stochastic trainer would need replicates. And all of it remains one system, one
+hidden current, and one closure family.
+
+% =========================================================================
 \section{Discussion}
 \label{sec:discussion}
 
@@ -1935,10 +2036,13 @@ closure learned with what that projection discards. We therefore read the gap
 between them as a contrast in kind, not as one error bar against another --- and
 not as a single effect either, since the matched-objective control of
 Sec.~\ref{sec:results-parametric} attributes roughly a threefold inflation to the
-objective alone. What that control does \emph{not} isolate is the optimiser: it
-swaps the objective while keeping multi-start Nelder--Mead, so the residual
-twofold is the representation and the optimiser together, and the
-representation's own share is at most that and probably less.
+objective alone. That control does not isolate the optimiser --- it swaps the
+objective while keeping multi-start Nelder--Mead --- so on its own evidence the
+residual twofold bounds the representation and the optimiser jointly. The
+two-parameter refit of Sec.~\ref{sec:results-decomposition} closes that gap at
+one end, finding the optimiser worth $\valOptRatio$ there; but Nelder--Mead
+cannot be run at $\NparamUde$ parameters, so for the closure itself the
+representation's own share remains bounded rather than measured.
 
 Three further limitations bound the claims. The training-window and noise
 ablations remain single-seed and carry no error bars; only the conductance sweep
@@ -1957,8 +2061,11 @@ about either.
 
 % claim: seeds-confound-init-and-noise
 Finally, the seeds redraw the network initialisation and the noise realisation
-jointly, so every spread we report is a joint init-and-data spread and the two
-cannot be separated from these runs.
+jointly, so every spread reported outside
+Sec.~\ref{sec:results-decomposition} is a joint init-and-data spread. The
+crossed grid of that section separates them for the baseline condition only; the
+ablations, the sweep and the retrain control were not re-run that way, so their
+spreads remain joint.
 
 % =========================================================================
 \section{Conclusion}

@@ -36,6 +36,31 @@
 
 groups:
 
+  - id: optimiser-share-is-two-parameter-only
+    why: >-
+      Added 2026-09-11 after the E2 refit. Refitting the SAME two parameters
+      under the closure's own Adam+BFGS gives the same spread as multi-start
+      Nelder-Mead (ratio 1.00), so at two parameters the optimiser contributes
+      nothing and the residual is the representation. THE SCOPE IS THE WHOLE
+      CLAIM: Nelder-Mead cannot be run on the closure's 337 parameters, so this
+      says nothing about the optimiser's share THERE -- and at 337 parameters
+      representation and optimiser may not be separable even in principle,
+      because the flexible representation is what creates the landscape the
+      optimiser must navigate. Any site quoting the isolated optimiser result
+      must carry the two-parameter qualification.
+      Sibling of representation-share-is-an-upper-bound, which is deliberately
+      left in force: it still guards the FROZEN workshop cut, whose evidence
+      genuinely stops at a bound.
+    files: [paper/main.tex]
+    probe: '(optimiser|optimizer)[^.]{0,240}?(contributes nothing|worth \$?\\valOptRatio|ratio of \$?\\valOptRatio|is not the culprit)'
+    require: '(two-parameter|two parameters|\\NparamUde|at one end|where that can be checked)'
+    forbid: >-
+      (the optimiser is ruled out|
+       the optimiser plays no role|
+       optimisation variability is eliminated|
+       the residual is entirely the representation)
+    min_sites: 1
+
   - id: representation-share-is-an-upper-bound
     why: >-
       The matched-objective control swaps the objective but keeps multi-start

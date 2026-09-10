@@ -19,7 +19,7 @@
 %   * The provenance line above each macro is the audit trail: file, filter, column,
 %     full unrounded value, and n. Rounding here loses nothing an auditor needs.
 %   * No timestamp is emitted on purpose: it would churn git and defeat --check.
-% 322 macros from 17 results file(s).
+% 369 macros from 18 results file(s).
 %======================================================================================
 
 % note: *** GUARDED — see claim-guards.md G2. THIS MACRO MUST NOT BE A HEADLINE. *** It exists so that if the number appears at all (e.g. an appendix table of raw metrics) it is traceable, NOT so that it can be quoted as "3951 ± 3561 mV". Per-seed: 4122.7 / 229.1 / 1134.0 / 5056.6 / 9213.4 — a 40x spread; the distribution is nowhere near normal and the std exceeds any meaningful voltage scale. This is a diverged integration, and rmse_safe (src/metrics.jl:20-25) drops non-finite pairs, so it is the RMSE of the *finite part* of a blown-up solve, over an unreported subset of timesteps. The honest headline for NODE failure is NodeForecastRollout. Prose: "diverges (V RMSE 10^2–10^4 mV across seeds)".
@@ -142,23 +142,23 @@
 % source=results/metrics_baseline_multiseed.csv filter={model=UDE, observed=voltage, window=forecast, metric=ICa_rmse} column=n_seeds raw=5 n=5
 \newcommand{\valUdeVoltageForecastICaRmseN}{5}
 
-% note: ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:151-153). The normalizer is recomputed per window, so the train and forecast values use different denominators and are not comparable to each other. Its value is as the unit-free scale that makes the gCa sweep (Block 3) interpretable: >1 means the closure's error exceeds the signal's own variation. This is also the seed-spread yardstick (±0.025) for judging which single-seed ablation gaps in Block 3 are real.
+% note: ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:162-164). The normalizer is recomputed per window, so the train and forecast values use different denominators and are not comparable to each other. Its value is as the unit-free scale that makes the gCa sweep (Block 3) interpretable: >1 means the closure's error exceeds the signal's own variation. This is also the seed-spread yardstick (±0.025) for judging which single-seed ablation gaps in Block 3 are real.
 % source=results/metrics_baseline_multiseed.csv filter={model=UDE, observed=full, window=forecast, metric=ICa_rmse_norm} column=mean/std raw={mean=0.1403411215254637, std=0.02458393492014376} n=5
 \newcommand{\valUdeForecastICaRmseNorm}{0.140 \pm 0.025}
 
-% note: ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:151-153). The normalizer is recomputed per window, so the train and forecast values use different denominators and are not comparable to each other. Its value is as the unit-free scale that makes the gCa sweep (Block 3) interpretable: >1 means the closure's error exceeds the signal's own variation. This is also the seed-spread yardstick (±0.025) for judging which single-seed ablation gaps in Block 3 are real.
+% note: ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:162-164). The normalizer is recomputed per window, so the train and forecast values use different denominators and are not comparable to each other. Its value is as the unit-free scale that makes the gCa sweep (Block 3) interpretable: >1 means the closure's error exceeds the signal's own variation. This is also the seed-spread yardstick (±0.025) for judging which single-seed ablation gaps in Block 3 are real.
 % source=results/metrics_baseline_multiseed.csv filter={model=UDE, observed=full, window=forecast, metric=ICa_rmse_norm} column=mean/std raw={mean=0.1403411215254637, std=0.02458393492014376} n=5
 \newcommand{\valUdeForecastICaRmseNormMeanStd}{0.140 \pm 0.025}
 
-% note: ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:151-153). The normalizer is recomputed per window, so the train and forecast values use different denominators and are not comparable to each other. Its value is as the unit-free scale that makes the gCa sweep (Block 3) interpretable: >1 means the closure's error exceeds the signal's own variation. This is also the seed-spread yardstick (±0.025) for judging which single-seed ablation gaps in Block 3 are real.
+% note: ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:162-164). The normalizer is recomputed per window, so the train and forecast values use different denominators and are not comparable to each other. Its value is as the unit-free scale that makes the gCa sweep (Block 3) interpretable: >1 means the closure's error exceeds the signal's own variation. This is also the seed-spread yardstick (±0.025) for judging which single-seed ablation gaps in Block 3 are real.
 % source=results/metrics_baseline_multiseed.csv filter={model=UDE, observed=full, window=forecast, metric=ICa_rmse_norm} column=mean raw=0.1403411215254637 n=5
 \newcommand{\valUdeForecastICaRmseNormMean}{0.140}
 
-% note: ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:151-153). The normalizer is recomputed per window, so the train and forecast values use different denominators and are not comparable to each other. Its value is as the unit-free scale that makes the gCa sweep (Block 3) interpretable: >1 means the closure's error exceeds the signal's own variation. This is also the seed-spread yardstick (±0.025) for judging which single-seed ablation gaps in Block 3 are real.
+% note: ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:162-164). The normalizer is recomputed per window, so the train and forecast values use different denominators and are not comparable to each other. Its value is as the unit-free scale that makes the gCa sweep (Block 3) interpretable: >1 means the closure's error exceeds the signal's own variation. This is also the seed-spread yardstick (±0.025) for judging which single-seed ablation gaps in Block 3 are real.
 % source=results/metrics_baseline_multiseed.csv filter={model=UDE, observed=full, window=forecast, metric=ICa_rmse_norm} column=std raw=0.02458393492014376 n=5
 \newcommand{\valUdeForecastICaRmseNormStd}{0.025}
 
-% note: ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:151-153). The normalizer is recomputed per window, so the train and forecast values use different denominators and are not comparable to each other. Its value is as the unit-free scale that makes the gCa sweep (Block 3) interpretable: >1 means the closure's error exceeds the signal's own variation. This is also the seed-spread yardstick (±0.025) for judging which single-seed ablation gaps in Block 3 are real.
+% note: ICa_rmse / std(ICa_true) WITHIN THAT WINDOW (src/metrics.jl:162-164). The normalizer is recomputed per window, so the train and forecast values use different denominators and are not comparable to each other. Its value is as the unit-free scale that makes the gCa sweep (Block 3) interpretable: >1 means the closure's error exceeds the signal's own variation. This is also the seed-spread yardstick (±0.025) for judging which single-seed ablation gaps in Block 3 are real.
 % source=results/metrics_baseline_multiseed.csv filter={model=UDE, observed=full, window=forecast, metric=ICa_rmse_norm} column=n_seeds raw=5 n=5
 \newcommand{\valUdeForecastICaRmseNormN}{5}
 
@@ -246,7 +246,7 @@
 % source=results/metrics_baseline_multiseed.csv filter={model=UDE, observed=voltage, window=forecast, metric=rollout_horizon_ms} column=mean raw=70.0 n=1
 \newcommand{\valUdeVoltageForecastRollout}{\ge 70}
 
-% note: *** GUARDED — claim-guards.md G1. emit: ge IS MANDATORY HERE. *** 70.0 is cap_ms (src/metrics.jl:81-82), returned when the 10 mV tube is NEVER breached — a right-censored value, not a measured horizon. It is also exactly 100 − 30, i.e. the entire remaining trajectory: the metric is saturated for all 5 seeds and cannot discriminate among them. A macro emitting "70.0 ± 0.0 ms" asserts zero variance on a number that is really "≥ 70 and unknown" — the single most misleading rendering available in this results tree. Renders "\ge 70"; the caption must name the cap. Same censoring applies to UDE/voltage (also 70.0 ± 0.0); add a parallel entry only if the paper quotes it separately.
+% note: *** GUARDED — claim-guards.md G1. emit: ge IS MANDATORY HERE. *** 70.0 is cap_ms (src/metrics.jl:92-93), returned when the 10 mV tube is NEVER breached — a right-censored value, not a measured horizon. It is also exactly 100 − 30, i.e. the entire remaining trajectory: the metric is saturated for all 5 seeds and cannot discriminate among them. A macro emitting "70.0 ± 0.0 ms" asserts zero variance on a number that is really "≥ 70 and unknown" — the single most misleading rendering available in this results tree. Renders "\ge 70"; the caption must name the cap. Same censoring applies to UDE/voltage (also 70.0 ± 0.0); add a parallel entry only if the paper quotes it separately.
 % source=results/metrics_baseline_multiseed.csv filter={model=UDE, observed=full, window=forecast, metric=rollout_horizon_ms} column=mean raw=70.0 n=1
 \newcommand{\valUdeForecastRollout}{\ge 70}
 
@@ -1254,3 +1254,191 @@
 % note: Forecast voltage error at the largest noise level swept. Pair with NoiseAblVRmseZero: the voltage forecast degrades about 24x across the axis while forecast_rollout_horizon_ms stays pinned at 70.0 on every row, i.e. the UDE never leaves the 10 mV tube at any noise level tested. Single seed (G13).
 % source=results/ablation_noise.csv filter={noise_level=0.1} column=forecast_V_rmse raw=1.0907001908106033 n=1
 \newcommand{\valNoiseAblVRmseTenPct}{1.091}
+
+% note: Seeds per arm in the n=28 noise-weighting experiment.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1N} column=value raw=28.0 n=1
+\newcommand{\valNwSeeds}{28}
+
+% note: SSE-trained closure, recovered gCa, mean over 28 seeds.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1SseAhatMean} column=value raw=1.543 n=1
+\newcommand{\valNwSseAhatMean}{1.543}
+
+% note: SSE-trained closure, recovered gCa, sample SD.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1SseAhatStd} column=value raw=1.237 n=1
+\newcommand{\valNwSseAhatStd}{1.237}
+
+% note: SSE arm relative SD. *** The published five seeds gave 0.408; this is the same quantity at n=28 and it is nearly twice as large. ***
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1SseRelSd} column=value raw=0.802 n=1
+\newcommand{\valNwSseRelSd}{0.802}
+
+% note: SSE relative SD over the FIVE PUBLISHED seeds only, recomputed here so the text can set it beside the n=28 value.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1SsePubFiveRelSd} column=value raw=0.408 n=1
+\newcommand{\valNwSsePubRelSd}{0.408}
+
+% note: chi2-trained closure, recovered gCa, mean over 28 seeds.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1ChiAhatMean} column=value raw=1.925 n=1
+\newcommand{\valNwChiAhatMean}{1.925}
+
+% note: chi2-trained closure, recovered gCa, sample SD.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1ChiAhatStd} column=value raw=0.605 n=1
+\newcommand{\valNwChiAhatStd}{0.605}
+
+% note: chi2 arm relative SD at n=28.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1ChiRelSd} column=value raw=0.314 n=1
+\newcommand{\valNwChiRelSd}{0.314}
+
+% note: SSE seeds recovering a NEGATIVE conductance -- not a wide estimate, a physically impossible one.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1SseNeg} column=value raw=3.0 n=1
+\newcommand{\valNwSseNeg}{3}
+
+% note: chi2 seeds recovering a negative conductance. Zero.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1ChiNeg} column=value raw=0.0 n=1
+\newcommand{\valNwChiNeg}{0}
+
+% note: SSE seeds landing within 25% of the true gCa, out of 28.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1SseWithin} column=value raw=12.0 n=1
+\newcommand{\valNwSseWithin}{12}
+
+% note: chi2 seeds landing within 25% of the true gCa, out of 28.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1ChiWithin} column=value raw=17.0 n=1
+\newcommand{\valNwChiWithin}{17}
+
+% note: Variance ratio SSE/chi2 for the recovered gCa.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1F} column=value raw=4.177 n=1
+\newcommand{\valNwF}{4.177}
+
+% note: Degrees of freedom per arm in the F test.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1Fdf} column=value raw=27.0 n=1
+\newcommand{\valNwFdf}{27}
+
+% note: One-sided F-test p-value. The n=5 pilot gave F=1.94 and p=0.27.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1Fp} column=value raw=0.0002 n=1
+\newcommand{\valNwFp}{0.0002}
+
+% note: Brown-Forsythe p-value -- the robust check on the same spread question.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1LeveneP} column=value raw=0.041 n=1
+\newcommand{\valNwLeveneP}{0.041}
+
+% note: Paired Wilcoxon on |gCa_hat - 2|. *** Tests ACCURACY, not spread. Do not quote it for the spread claim. ***
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1WilcoxonP} column=value raw=0.01 n=1
+\newcommand{\valNwWilcoxonP}{0.010}
+
+% note: SSE arm forecast V RMSE, mV, n=28.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1SseFcastMean} column=value raw=0.363 n=1
+\newcommand{\valNwSseFcastMean}{0.363}
+
+% note: SSE arm forecast V RMSE SD, mV.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1SseFcastStd} column=value raw=0.192 n=1
+\newcommand{\valNwSseFcastStd}{0.192}
+
+% note: chi2 arm forecast V RMSE, mV, n=28.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1ChiFcastMean} column=value raw=0.233 n=1
+\newcommand{\valNwChiFcastMean}{0.233}
+
+% note: chi2 arm forecast V RMSE SD, mV.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1ChiFcastStd} column=value raw=0.14 n=1
+\newcommand{\valNwChiFcastStd}{0.140}
+
+% note: Paired Wilcoxon on forecast error. chi2 forecasts BETTER, which at n=5 had looked like a slight cost.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1FcastP} column=value raw=0.0033 n=1
+\newcommand{\valNwFcastP}{0.0033}
+
+% note: Seeds, of 28, where chi2 forecasts better than SSE.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E1FcastBetter} column=value raw=20.0 n=1
+\newcommand{\valNwFcastBetter}{20}
+
+% note: Direct two-parameter fit under multi-start Nelder-Mead, relative SD, n=28. The DENOMINATOR of the representation ratio.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E2NmRelSd} column=value raw=0.067 n=1
+\newcommand{\valOptNmRelSd}{0.067}
+
+% note: The same two-parameter fit under the CLOSURE's optimiser (Adam+BFGS, same budget).
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E2AbRelSd} column=value raw=0.067 n=1
+\newcommand{\valOptAbRelSd}{0.067}
+
+% note: Optimiser share at two parameters. 1.00 = the optimiser contributes nothing measurable.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E2OptRatio} column=value raw=1.0 n=1
+\newcommand{\valOptRatio}{1.00}
+
+% note: Total Adam+BFGS fits: 28 seeds x 2 coordinate scalings x 3 starts.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E2Cells} column=value raw=168.0 n=1
+\newcommand{\valOptCells}{168}
+
+% note: Worst relative gCa difference between the two optimisers over all 168 cells.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E2WorstCell} column=value raw=3.5e-06 n=1
+\newcommand{\valOptWorstCell}{0.000}
+
+% note: *** REPRESENTATION share, objective AND optimiser now both controlled. *** Replaces the old 'at most twofold' bound at the two-parameter end.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E2ReprRatio} column=value raw=4.69 n=1
+\newcommand{\valReprRatio}{4.69}
+
+% note: Levels per factor in the crossed initialisation x data grid.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3Grid} column=value raw=5.0 n=1
+\newcommand{\valIdGrid}{5}
+
+% note: SSE: initialisation variance component. NEGATIVE method-of-moments estimate, i.e. indistinguishable from zero.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3SseVarInit} column=value raw=-0.022 n=1
+\newcommand{\valIdSseVarInit}{-0.022}
+
+% note: SSE: data-draw variance component.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3SseVarData} column=value raw=0.286 n=1
+\newcommand{\valIdSseVarData}{0.286}
+
+% note: SSE: interaction. Training is deterministic given (init, data), so this is interaction and NOT run-to-run noise.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3SseVarInter} column=value raw=0.209 n=1
+\newcommand{\valIdSseVarInter}{0.209}
+
+% note: SSE: data share of the decomposed variance, %.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3SsePctData} column=value raw=58.0 n=1
+\newcommand{\valIdSsePctData}{58}
+
+% note: SSE: F for initialisation. Below 1.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3SseFInit} column=value raw=0.474 n=1
+\newcommand{\valIdSseFInit}{0.474}
+
+% note: SSE: p for initialisation.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3SseFInitP} column=value raw=0.754 n=1
+\newcommand{\valIdSseFInitP}{0.754}
+
+% note: SSE: F for the data draw.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3SseFData} column=value raw=7.82 n=1
+\newcommand{\valIdSseFData}{7.82}
+
+% note: SSE: p for the data draw.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3SseFDataP} column=value raw=0.0011 n=1
+\newcommand{\valIdSseFDataP}{0.0011}
+
+% note: Residual degrees of freedom, (I-1)(D-1).
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3SseDf} column=value raw=16.0 n=1
+\newcommand{\valIdSseDf}{16}
+
+% note: chi2: initialisation variance component.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3ChiVarInit} column=value raw=0.017 n=1
+\newcommand{\valIdChiVarInit}{0.017}
+
+% note: chi2: data-draw variance component.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3ChiVarData} column=value raw=0.25 n=1
+\newcommand{\valIdChiVarData}{0.250}
+
+% note: chi2: interaction. Down 85% from the SSE arm -- this is HOW noise-weighting helps.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3ChiVarInter} column=value raw=0.031 n=1
+\newcommand{\valIdChiVarInter}{0.031}
+
+% note: chi2: data share of the decomposed variance, %.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3ChiPctData} column=value raw=84.0 n=1
+\newcommand{\valIdChiPctData}{84}
+
+% note: chi2: F for initialisation. Small but detectable, unlike the SSE arm.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3ChiFInit} column=value raw=3.684 n=1
+\newcommand{\valIdChiFInit}{3.684}
+
+% note: chi2: p for initialisation.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3ChiFInitP} column=value raw=0.026 n=1
+\newcommand{\valIdChiFInitP}{0.026}
+
+% note: chi2: F for the data draw.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3ChiFData} column=value raw=41.35 n=1
+\newcommand{\valIdChiFData}{41.35}
+
+% note: chi2: p for the data draw. *** A BOUND: the true value is smaller. Quote as 'p <', never 'p ='. ***
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3ChiFDataP} column=value raw=0.0001 n=1
+\newcommand{\valIdChiFDataP}{0.0001}
