@@ -76,3 +76,8 @@ sim2science_upload.zip
 # evidence and belongs in history.
 results_nw_smoke/
 figures_nw_smoke/
+
+# Smoke output from init_vs_data_grid.jl (E3_SMOKE=1). Reduced budgets, so its
+# numbers are MEANINGLESS. Same reasoning as results_nw_smoke/ above.
+results_e3_smoke/
+figures_e3_smoke/
