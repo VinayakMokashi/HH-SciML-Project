@@ -31,7 +31,15 @@
 #  published estimator and its 28-seed spread cannot be set beside the published
 #  one, so the script EXITS NON-ZERO.  Same discipline as noise_weighted_ude.jl.
 #
-#  ISOLATION.  Writes results_noiseweighted/parametric_chi2_28seed.csv ONLY.
+#  EXTENDED 2026-09-12: PM_OBJECTIVE selects the objective (chi2 | sse_full |
+#  sse_v), default chi2, so the E2 denominator above is reproduced unchanged.
+#  PM_OBJECTIVE=sse_full supplies the one cell the n=28 decomposition was
+#  missing: the direct fit under the closure's OWN unweighted objective. Without
+#  it the paper's "at most a further twofold" bound could only be argued, not
+#  tested -- and that bound rested on the objective's effect transferring
+#  unchanged from two parameters to the closure, which E1 showed it does not.
+#
+#  ISOLATION.  Writes results_noiseweighted/parametric_<objective>_28seed.csv ONLY.
 #  identifiability_parametric.jl is included with IDENT_PARTS=0, which matches no
 #  part, so including it defines the machinery and runs nothing and writes
 #  nothing.  NOTHING under results/ is modified -- those files back published
@@ -50,10 +58,12 @@ include(joinpath(ROOT, "identifiability_parametric.jl"))
 using Printf, Statistics
 
 const GCA_TRUE   = 2.0
-const CHI2_INDEX = 3                      # make_objective's noise-weighted reduction
+const PM_OBJECTIVE = get(ENV, "PM_OBJECTIVE", "chi2")
+#  make_objective returns (sse_full, sse_v, chi2) in that order.
+const OBJ_INDEX = Dict("sse_full" => 1, "sse_v" => 2, "chi2" => 3)[PM_OBJECTIVE]
 const NSEEDS     = parse(Int, get(ENV, "PM_NSEEDS", "28"))
 const PM_SEEDS   = [1111 * k for k in 1:NSEEDS]   # identical rule to NW_SEEDS
-const OUT_CSV    = joinpath(ROOT, "results_noiseweighted", "parametric_chi2_28seed.csv")
+const OUT_CSV    = joinpath(ROOT, "results_noiseweighted", "parametric_$(PM_OBJECTIVE)_28seed.csv")
 const PUBLISHED  = joinpath(OUT_DIR, "parametric_matched_objective.csv")
 const SELFTEST_RTOL = 1e-6
 
@@ -77,15 +87,15 @@ function fit_params_on(eval_all, idx::Int)
     return (; gCa = best_x[1], ECa = best_x[2], fmin = best_f)
 end
 
-@printf("\n=== Parametric chi2 fit, gCa = %.1f, %d seeds ===\n", GCA_TRUE, length(PM_SEEDS))
+@printf("\n=== Parametric %s fit, gCa = %.1f, %d seeds ===\n", PM_OBJECTIVE, GCA_TRUE, length(PM_SEEDS))
 println("Same estimator as the published n=5 row; only the seed list is longer.\n")
 
 rows = NamedTuple[]
 for seed in PM_SEEDS
     s   = setup(GCA_TRUE, seed)
-    fit = fit_params_on(s.eval_all, CHI2_INDEX)
+    fit = fit_params_on(s.eval_all, OBJ_INDEX)
     fV  = forecast_rmse(fit.gCa, fit.ECa, s.data_clean, s.split.forecast_idx, s.u0)
-    push!(rows, (; gCa_true = GCA_TRUE, seed, objective = "chi2",
+    push!(rows, (; gCa_true = GCA_TRUE, seed, objective = PM_OBJECTIVE,
                    gCa_hat = fit.gCa, ECa_hat = fit.ECa,
                    a_hat = fit.gCa, b_hat = -fit.gCa * fit.ECa,
                    objective_value = fit.fmin, forecast_V_rmse = fV))
@@ -102,7 +112,7 @@ if !isfile(PUBLISHED)
     exit(1)
 end
 pub = DataFrame(CSV.File(PUBLISHED))
-pub = pub[(pub.gCa_true .== GCA_TRUE) .& (pub.objective .== "chi2"), :]
+pub = pub[(pub.gCa_true .== GCA_TRUE) .& (pub.objective .== PM_OBJECTIVE), :]
 
 # WRAPPED IN A FUNCTION DELIBERATELY. An accumulator assigned inside a top-level
 # `for` is a new local under Julia's soft scope and never reaches the global, so
@@ -144,7 +154,7 @@ CSV.write(OUT_CSV, df)
 # =============================================================================
 a = df.a_hat
 pub5 = pub.a_hat
-@printf("\n=== gCa recovered by the DIRECT two-parameter fit, chi2 objective ===\n")
+@printf("\n=== gCa recovered by the DIRECT two-parameter fit, %s objective ===\n", PM_OBJECTIVE)
 @printf("  published n=%d : %.3f +- %.3f   rel sd %.3f\n",
         length(pub5), mean(pub5), std(pub5), std(pub5) / abs(mean(pub5)))
 @printf("  this run  n=%d : %.3f +- %.3f   rel sd %.3f\n",

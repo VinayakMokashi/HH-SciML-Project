@@ -36,6 +36,22 @@
 
 groups:
 
+  - id: representation-share-is-measured-not-bounded
+    why: >-
+      Added 2026-09-12. The five-seed decomposition was ARITHMETIC: it measured the
+      objective's effect on the direct fit (~3.2x) and called the remainder (~2x) an
+      upper bound on the representation, assuming the objective inflates the closure
+      by the same factor. At n=28 all four cells were measured and that assumption
+      fails (objective 3.95x on the direct fit, 2.55x on the closure). The
+      representation is 3.02x under SSE and 4.69x under chi2 and owns 45-62% of the
+      11.95x gap on a log scale. So the old reading -- "the objective is the larger
+      share", "at most a further twofold is the representation's" -- is FALSE at
+      n=28 and must not return to the archival or the README. The frozen cut still
+      carries it; that one site is guarded by representation-share-is-an-upper-bound.
+    files: [paper/main.tex, README.md]
+    probe: null
+    forbid: '(at\s+most\s+(about\s+)?(a\s+further\s+)?(twofold|a\s+factor\s+of\s+(about\s+)?two)|bounds\s+the\s+representation.s\s+own\s+contribution|larger\s+share\s+(of\s+the\s+gap\s+)?(on\s+a\s+log\s+scale\s+)?is\s+the\s+objective|less\s+than\s+the\s+objective.s\s+share|remainder\s+bounds\s+the\s+representation)'
+
   - id: optimiser-share-is-two-parameter-only
     why: >-
       Added 2026-09-11 after the E2 refit. Refitting the SAME two parameters
@@ -63,19 +79,27 @@ groups:
 
   - id: representation-share-is-an-upper-bound
     why: >-
+      RESCOPED 2026-09-12 TO THE FROZEN WORKSHOP CUT ONLY. At n=28 all four cells
+      of {closure, direct fit} x {SSE, chi2} were measured and this bound is
+      EXCEEDED (representation 3.02x under SSE, 4.69x under chi2; 45-62% of the
+      log gap). The archival and README now state the measured split and are
+      guarded by representation-share-is-measured-not-bounded. This group stays
+      because the cut is frozen and still carries the bound; do not "fix" the cut
+      from here -- it changes only via a camera-ready branched from the tag.
+      ORIGINAL RATIONALE FOLLOWS.
       The matched-objective control swaps the objective but keeps multi-start
       Nelder-Mead, so it never isolates the optimiser. The residual ~2.1x is
       representation AND optimiser together. Every site that quotes the
       representation's share must mark it as a bound, never as a measured value.
       Round 5 blocker: the abstract said "is" while Limitations said "at most".
-    files: [paper/main.tex, paper/sim2science/main.tex, README.md]
+    files: [paper/sim2science/main.tex]
     probe: '(twofold|factor of about two|two-fifths)[^.]{0,200}?representation|representation[^.]{0,200}?(twofold|factor of about two|two-fifths)'
     require: '(at most|bounds|bounding|upper bound|no more than|remainder bounds)'
     forbid: >-
       (representation's own contribution is a factor|
        objective and the representation each account for roughly half|
        representation owns a factor of about two)
-    min_sites: 4
+    min_sites: 1
 
   - id: retired-data-side-thesis
     why: >-
@@ -257,6 +281,11 @@ groups:
       go on saying five. This group pins the count by refusing any other number of
       seeds anywhere in the manuscript. "Four of the five seeds" is not caught:
       the words are not adjacent.
+      EXCEPTION BY DESIGN (2026-09-12): paper/main.tex Sec. 4.8 and the passages
+      that cite it report a 28-seed experiment. They write that count ONLY as
+      \valNwSeeds, which this regex cannot see and check_numbers can trace to the
+      evidence. NEVER write the 28 as a word or a digit in either manuscript; the
+      README, which has no macros, is outside this group and says 28 in plain text.
     files: [paper/main.tex, paper/sim2science/main.tex]
     probe: null
     forbid: '\b(one|two|three|four|six|seven|eight|nine|ten|[0-9]+) seeds\b'

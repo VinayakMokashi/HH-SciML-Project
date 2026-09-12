@@ -4304,5 +4304,105 @@
       "quantity": "E3ChiFDataP"
     },
     "n": 1
+  },
+  "DirSseRelSd": {
+    "macro": "valDirSseRelSd",
+    "value": "0.265",
+    "raw": 0.265,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E2SseNmRelSd"
+    },
+    "n": 1
+  },
+  "DirSseMean": {
+    "macro": "valDirSseMean",
+    "value": "1.970",
+    "raw": 1.97,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E2SseNmMean"
+    },
+    "n": 1
+  },
+  "DirSseStd": {
+    "macro": "valDirSseStd",
+    "value": "0.523",
+    "raw": 0.523,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "E2SseNmStd"
+    },
+    "n": 1
+  },
+  "DecTotal": {
+    "macro": "valDecTotal",
+    "value": "11.95",
+    "raw": 11.95,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "DecTotal"
+    },
+    "n": 1
+  },
+  "DecObjAtFit": {
+    "macro": "valDecObjAtFit",
+    "value": "3.95",
+    "raw": 3.95,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "DecObjAtFit"
+    },
+    "n": 1
+  },
+  "DecObjAtClo": {
+    "macro": "valDecObjAtClo",
+    "value": "2.55",
+    "raw": 2.55,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "DecObjAtClo"
+    },
+    "n": 1
+  },
+  "DecRepAtSse": {
+    "macro": "valDecRepAtSse",
+    "value": "3.02",
+    "raw": 3.02,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "DecRepAtSse"
+    },
+    "n": 1
+  },
+  "DecRepAtChi": {
+    "macro": "valDecRepAtChi",
+    "value": "4.69",
+    "raw": 4.69,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "DecRepAtChi"
+    },
+    "n": 1
+  },
+  "DecRepLogShareLo": {
+    "macro": "valDecRepLogShareLo",
+    "value": "45",
+    "raw": 45.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "DecRepLogShareLo"
+    },
+    "n": 1
+  },
+  "DecRepLogShareHi": {
+    "macro": "valDecRepLogShareHi",
+    "value": "62",
+    "raw": 62.0,
+    "source": "results_noiseweighted/paper_macros_e1e3.csv",
+    "filter": {
+      "quantity": "DecRepLogShareHi"
+    },
+    "n": 1
   }
 }

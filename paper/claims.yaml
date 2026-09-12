@@ -997,6 +997,8 @@ claims:
       - macro: SymbolicAHat
       - macro: SymbolicAHatTrajTrain
       - macro: ParamFitGcaHatPointFour
+      - macro: DecRepLogShareLo
+      - macro: DecRepLogShareHi
     scope: >-
       One system, one trajectory, one closure architecture (2->16->16->1 tanh MLP, 337 parameters).
       Quantitatively: 2.092 +/- 0.130 parametric vs 1.596 +/- 0.905 through the closure at gCa=2.0
@@ -1015,12 +1017,18 @@ claims:
       2.478 +/- 0.489 (19.7%) against 2.092 +/- 0.130 (6.2%) under the likelihood
       (ParamFitGcaHatTwoSseFull). Its self-test re-fits the chi-square row through the same code
       path and reproduces parametric_fit.csv with worst relative disagreement exactly 0, so the sole
-      variable is the objective. DECOMPOSITION, with one caveat that must travel with it: the control swaps the OBJECTIVE
-      but keeps multi-start Nelder-Mead, so it does NOT isolate the optimiser. The residual factor
-      is therefore representation-plus-optimiser, and the representation's own share is AT MOST
-      ~2.1x. Say "at most", never "is". Licensed split: objective ~3.2x
-      (6.2 -> 19.7%), representation ~2.1x (19.7 -> 40.9%). Quote the ~2x figure for the
-      representation, NEVER the ~6-7x ratio, which is objective and representation compounded. The
+      variable is the objective. DECOMPOSITION -- SUPERSEDED 2026-09-12, READ THIS BEFORE QUOTING ANY SPLIT.
+      The n=5 split (objective ~3.2x, representation "at most ~2.1x") was ARITHMETIC: it
+      measured the objective's effect on the direct fit and assumed the same factor applies to
+      the closure. The n=28 run measured all four cells of {closure, direct} x {SSE, chi2} and
+      that assumption fails -- objective 3.95x on the direct fit, 2.55x on the closure
+      (DecObjAtFit, DecObjAtClo). The representation is 3.02x under SSE and 4.69x under chi2
+      (DecRepAtSse, DecRepAtChi), so the old bound is EXCEEDED, and it owns 45-62% of the
+      11.95x gap on a log scale depending on ordering (DecRepLogShareLo/Hi). Quote that
+      INTERVAL, never one ordering alone, and never the whole-gap ratio, which is the two
+      effects multiplied. The optimiser is measured negligible only at two parameters
+      (OptRatio = 1.00); at 337 parameters the representation figures still include it.
+      The frozen workshop cut still carries the n=5 reading. The
       one-directional inference is untouched and remains the load-bearing part: some estimator
       recovers gCa to 6% from this single trajectory, so the information IS in the data and the
       closure's scatter cannot be blamed on the data. The same run at every other gCa setting shows

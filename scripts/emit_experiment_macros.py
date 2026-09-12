@@ -135,6 +135,38 @@ worst = max(abs(float(r["gCa_hat"]) - nmv) / abs(nmv)
 put("E2WorstCell", float(f"{worst:.1e}"), "worst relative gCa difference over all 168 cells")
 put("E2Cells", len(ab_rows), "total Adam+BFGS fits")
 
+# ---- the missing cell: the direct fit under the closure's OWN objective, n=28 ----
+# parametric_matched_objective_28seed.jl with PM_OBJECTIVE=sse_full.
+import math as _m
+sse_nm = [float(r["a_hat"]) for r in rd(NW / "parametric_sse_full_28seed.csv")]
+put("E2SseNmMean", round(statistics.mean(sse_nm), 3), "direct fit under the UNWEIGHTED SSE, gCa mean, n=28")
+put("E2SseNmStd", round(statistics.stdev(sse_nm), 3), "direct fit under the unweighted SSE, gCa sd, n=28")
+put("E2SseNmRelSd", round(relsd(sse_nm), 3), "direct fit under the unweighted SSE, relative sd, n=28")
+
+r_cs, r_cc = relsd(a["sse"]), relsd(a["chi2"])     # closure, SSE / chi2
+r_ds, r_dc = relsd(sse_nm), relsd(nm)              # direct,  SSE / chi2
+total      = r_cs / r_dc
+obj_fit    = r_ds / r_dc     # objective effect, measured on the direct fit
+obj_clo    = r_cs / r_cc     # objective effect, measured on the closure
+rep_sse    = r_cs / r_ds     # representation effect under the SSE objective
+rep_chi    = r_cc / r_dc     # representation effect under the chi2 objective
+
+# The identity that makes the two orderings a decomposition at all.
+for lhs, rhs, nm_ in ((obj_fit * rep_sse, total, "fit-first"),
+                      (obj_clo * rep_chi, total, "closure-first")):
+    if abs(lhs - rhs) / rhs > 1e-12:
+        print(f"*** SELF-TEST FAILED: {nm_} ordering does not multiply to the total. ***")
+        sys.exit(1)
+
+put("DecTotal",     round(total, 2),   "closure SSE over direct chi2: the full gap, n=28 (n=5: 6.57)")
+put("DecObjAtFit",  round(obj_fit, 2), "objective effect on the DIRECT fit, n=28 (n=5: 3.2)")
+put("DecObjAtClo",  round(obj_clo, 2), "objective effect on the CLOSURE, n=28")
+put("DecRepAtSse",  round(rep_sse, 2), "representation effect under the SSE objective, n=28 (n=5: 2.07, the old 'twofold')")
+put("DecRepAtChi",  round(rep_chi, 2), "representation effect under the chi2 objective, n=28")
+lo, hi = sorted((_m.log(rep_sse) / _m.log(total), _m.log(rep_chi) / _m.log(total)))
+put("DecRepLogShareLo", round(lo * 100), "representation's share of the gap on a log scale, lower ordering (%) (n=5: 39, 'two-fifths')")
+put("DecRepLogShareHi", round(hi * 100), "representation's share of the gap on a log scale, upper ordering (%)")
+
 # =============================================================================
 #  E3 — the variance decomposition
 # =============================================================================

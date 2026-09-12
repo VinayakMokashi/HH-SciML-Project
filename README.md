@@ -15,10 +15,11 @@ functional identifiability fails for this closure, under both the constrained an
 unconstrained distillation we ran. The data confine the conductance
 to a short, bounded stretch of the `gCa`-`ECa` trade-off, and the estimates read off the
 closure scatter well beyond it. The two arms also differ in objective and optimiser, not
-only in representation: a matched-objective control attributes a roughly threefold
-inflation to the objective alone, and because it holds the optimiser fixed it bounds the
-representation's own contribution at about a further factor of two rather than measuring
-it.
+only in representation. Measuring all four combinations of estimator and objective on 28
+seeds, the objective and the representation contribute comparably to the gap: the
+representation owns 45-62% of it on a log scale, depending on which effect is removed
+first. Refitting the two-parameter model with the closure's own optimiser changes
+nothing, so where the optimiser can be isolated, at two parameters, it is not the cause.
 
 ---
 

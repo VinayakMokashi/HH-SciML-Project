@@ -247,14 +247,17 @@ asymptotic relative standard error of $\valCondRelSeGcaTwoMean$. The
 representative seed's own estimate is the lowest of the five, and the
 profile-likelihood 95\% interval centred on \emph{that} estimate is $[1.6065, 2.1477]$; % numok: Delta-chi2 = 3.8415 crossings, linearly interpolated between the bracketing grid points of results/identifiability/profile_gca_gca2.0.csv
 each realisation owns its own interval. % claim: closure-induced-nonidentifiability
-The data determine the conductance to about six per cent under the correctly
-weighted likelihood, whereas the estimate distilled from the closure scatters
-roughly six times wider. Repeating that fit under the closure's own
-voltage-dominated objective, changing nothing else, gives about twenty per cent,
-so the objective alone accounts for a roughly threefold inflation --- the larger
-share. That control holds the optimiser fixed, so the remaining twofold is the
-representation and the optimiser together, and bounds the representation's own
-contribution at about a factor of two.
+The data determine the conductance to a relative spread of $\valOptNmRelSd$
+under the correctly weighted likelihood, whereas the estimate distilled from the
+closure scatters $\valDecTotal$ times wider over the same $\valNwSeeds$ seeds.
+Measuring every combination of estimator and objective splits that gap between
+two causes of comparable size: descending the closure's voltage-dominated loss
+instead of the likelihood, and representing the current with a network instead
+of its true form. The representation's share of the gap on a log scale lies
+between $\valDecRepLogShareLo$ and $\valDecRepLogShareHi$\,\%, depending on which
+effect is removed first. Refitting the two-parameter model with the closure's own
+optimiser changes nothing, so at the two-parameter end, the only place it can be
+isolated, the optimiser is not the cause.
 % claim: retrain-improves-loss-worsens-recovery
 Nor is it under-training: quadrupling the budget lowers the training loss by
 \LossDropPct\,\% while making every recovery quantity worse, including agreement with
@@ -330,8 +333,8 @@ pins the conductance to about six per cent, while the estimates distilled from
 the closure scatter across a factor of two and all but one of them fall outside
 the short stretch of the trade-off the likelihood tolerates. The two arms also
 differ in how they are fitted, and we measure that rather than assume it away:
-the objective accounts for about a threefold inflation of the parametric spread,
-and at most a further twofold is attributable to the representation.
+with every combination of estimator and objective run on $\valNwSeeds$ seeds, the
+objective and the representation turn out to contribute comparably to the gap.
 
 \subsection{Contributions}
 
@@ -386,11 +389,15 @@ and at most a further twofold is attributable to the representation.
   standard error $\valCondRelSeGcaTwoMean$, $\chi^2$ per point
   $\valParamFitChiSqPerPointTwo$). One trajectory identifies the conductance to
   about six per cent; the same conductance distilled from a $\NparamUde$-parameter
-  closure scatters about six times wider. We do not attribute all of that to the
-  representation, because the two arms also differ in objective: repeating the
-  identical parametric fit under the closure's own voltage-dominated loss gives
-  $\valParamFitGcaHatTwoSseFullMeanStd$, so the objective accounts for about a
-  threefold inflation and at most a further twofold is the representation's. What
+  closure scatters about six times wider at five seeds and $\valDecTotal$ times
+  wider at $\valNwSeeds$. We do not attribute all of that to the representation,
+  because the two arms also differ in objective: repeating the identical
+  parametric fit under the closure's own voltage-dominated loss gives
+  $\valParamFitGcaHatTwoSseFullMeanStd$. Measured on all four combinations of
+  estimator and objective over $\valNwSeeds$ seeds, the objective and the
+  representation each inflate the spread several-fold, the representation owning
+  $\valDecRepLogShareLo$--$\valDecRepLogShareHi$\,\% of the gap on a log scale
+  (Sec.~\ref{sec:results-decomposition}). What
   fails is the practical recovery of the physical coefficient from this flexible
   closure, under the tested objectives and distillation procedures: parametric
   identifiability holds while functional identifiability fails for this closure,
@@ -1532,13 +1539,19 @@ the same starting points, changing nothing but which residual is minimised. It
 returns $\valParamFitGcaHatTwoSseFullMeanStd$: a relative spread of roughly
 twenty per cent, against six per cent under the likelihood. Descending a
 voltage-dominated objective, rather than representing the current with a network,
-therefore accounts for about a threefold inflation on its own. The closure's
-forty per cent sits a further twofold above \emph{that}. % claim: closure-induced-nonidentifiability
-The representation is not innocent, but it owns at most about two-fifths of the
-gap on a log scale --- less than the objective's share, not all of it, and an
-upper bound rather than a value, because this control holds the optimiser fixed
-and cannot separate it from the representation. We quote that twofold figure
-rather than the sixfold one wherever the two arms are compared. (The voltage-only objective
+therefore accounts for about a threefold inflation on its own at these five
+seeds, and the closure's forty per cent sits a further twofold above
+\emph{that}.
+% claim: closure-induced-nonidentifiability
+We first read that remainder as an upper bound on the representation's share. It
+is not one. The arithmetic assumes the objective inflates the closure by the same
+factor it inflates the direct fit, and when both are measured
+(Sec.~\ref{sec:results-decomposition}) they differ. With all four combinations of
+estimator and objective run on $\valNwSeeds$ seeds, the representation owns
+$\valDecRepLogShareLo$--$\valDecRepLogShareHi$\,\% of the gap on a log scale,
+depending on which effect is removed first: comparable to the objective's share,
+and not below it. Neither the old ratio nor the new one should be quoted for the
+whole gap, which is the two effects multiplied. (The voltage-only objective
 returns the same estimate to the precision we report it, which is what
 \eqref{eq:loss} being \LossShareV\,\% voltage predicts.)
 
@@ -1827,9 +1840,10 @@ support.
 Repeating the comparison at $\valNwSeeds$ seeds on both arms leaves the
 unweighted closure at $\valNwSseAhatMean \pm \valNwSseAhatStd$, a relative spread
 of $\valNwSseRelSd$ against the $\valNwSsePubRelSd$ the five seeds gave. The
-spread nearly doubles. The direct two-parameter fit barely moves over the same
-extension ($\valOptNmRelSd$), so this is a property of the closure and not of the
-sample size. Two consequences are worth stating plainly. $\valNwSseNeg$ of
+spread nearly doubles. The direct two-parameter fit under the likelihood barely
+moves over the same extension ($\valOptNmRelSd$), and under the unweighted
+objective it widens far less than the closure does ($\valDirSseRelSd$), so the
+doubling is a property of the closure and not of the sample size. Two consequences are worth stating plainly. $\valNwSseNeg$ of
 $\valNwSeeds$ seeds recover a \emph{negative} conductance --- not a wide estimate
 but a physically impossible one --- against $\valNwChiNeg$ under the
 noise-weighted objective; and only $\valNwSseWithin$ of $\valNwSeeds$ land within
@@ -1869,6 +1883,24 @@ optimum is unique and well conditioned. It is not evidence that the optimiser
 contributes nothing at $\NparamUde$ parameters, where representation and
 optimiser may not be separable even in principle: the flexible representation is
 precisely what creates the landscape the optimiser must navigate.
+
+\paragraph{The arithmetic split, replaced by a measured one.}
+Sec.~\ref{sec:results-parametric} split the gap at five seeds by measuring the
+objective's effect on the direct fit and attributing the remainder to the
+representation. That arithmetic assumes the objective inflates both estimators by
+the same factor. With the direct fit also run under the unweighted objective at
+$\valNwSeeds$ seeds, all four cells are measured on the same data, and the
+assumption fails: the objective inflates the direct fit $\valDecObjAtFit$-fold but
+the closure only $\valDecObjAtClo$-fold. The representation's factor therefore
+depends on the objective it is measured under --- $\valDecRepAtSse\times$ under the
+unweighted loss, $\valDecRepAtChi\times$ under the likelihood --- and the old
+remainder of about two is exceeded under either. On a log scale the representation
+owns $\valDecRepLogShareLo$--$\valDecRepLogShareHi$\,\% of the whole
+$\valDecTotal$-fold gap, according to which effect is removed first. The two
+causes are comparable; the five-seed reading, in which the objective took the
+larger share and the remainder capped the representation, does not survive more
+seeds. Both ratios still carry the optimiser at $\NparamUde$ parameters, for the
+reason given above.
 
 \paragraph{The seed's two roles, separated.}
 A seed sets the network initialisation and the noise realisation through
@@ -2034,15 +2066,14 @@ likelihood behind it; $\hat a$ is an ordinary-least-squares projection of an
 already-learned function onto a two-term basis, so its scatter compounds what the
 closure learned with what that projection discards. We therefore read the gap
 between them as a contrast in kind, not as one error bar against another --- and
-not as a single effect either, since the matched-objective control of
-Sec.~\ref{sec:results-parametric} attributes roughly a threefold inflation to the
-objective alone. That control does not isolate the optimiser --- it swaps the
-objective while keeping multi-start Nelder--Mead --- so on its own evidence the
-residual twofold bounds the representation and the optimiser jointly. The
-two-parameter refit of Sec.~\ref{sec:results-decomposition} closes that gap at
-one end, finding the optimiser worth $\valOptRatio$ there; but Nelder--Mead
-cannot be run at $\NparamUde$ parameters, so for the closure itself the
-representation's own share remains bounded rather than measured.
+not as a single effect either. Measured on all four combinations of estimator and
+objective (Sec.~\ref{sec:results-decomposition}), the objective and the
+representation contribute comparably, the representation owning
+$\valDecRepLogShareLo$--$\valDecRepLogShareHi$\,\% of the gap on a log scale. Those
+figures do not isolate the optimiser at the closure's scale. The two-parameter
+refit finds the optimiser worth $\valOptRatio$ at that end, but Nelder--Mead cannot
+be run at $\NparamUde$ parameters, so for the closure itself the representation's
+factor still includes whatever the optimiser contributes there.
 
 Three further limitations bound the claims. The training-window and noise
 ablations remain single-seed and carry no error bars; only the conductance sweep
@@ -2086,11 +2117,12 @@ standing, since the regression is exonerated, the fitting domain is immaterial,
 the signal-amplitude sweep moves about eightfold end to end, and quadrupled
 optimisation lowers the training loss while worsening every recovered quantity.
 Two things besides the representation differ between the two arms, the objective
-and the optimiser, and we measured the first rather than assume it away:
-repeating the parametric fit under the closure's own voltage-dominated objective
-widens its spread to about twenty per cent, so the larger share of the gap on a
-log scale is the objective. The remainder bounds the representation at a factor
-of about two, since the optimiser was held fixed and is not separated from it.
+and the optimiser, and we measured both rather than assume them away. With every
+combination of estimator and objective run on $\valNwSeeds$ seeds, the objective
+and the representation account for comparable shares of the gap, the
+representation $\valDecRepLogShareLo$--$\valDecRepLogShareHi$\,\% of it on a log
+scale; the optimiser is negligible at the two-parameter end, the only place it can
+be isolated.
 
 The practical consequence for scientific machine learning is a caution with a
 concrete remedy. A UDE coefficient is a physical estimate only when the data

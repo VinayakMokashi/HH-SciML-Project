@@ -32,6 +32,16 @@ E2ReprRatio,4.69,"REPRESENTATION share: chi2 closure over the direct fit, matche
 E2SseOverParam,11.95,sse closure over the direct fit (objective NOT matched)
 E2WorstCell,3.5e-06,worst relative gCa difference over all 168 cells
 E2Cells,168,total Adam+BFGS fits
+E2SseNmMean,1.97,"direct fit under the UNWEIGHTED SSE, gCa mean, n=28"
+E2SseNmStd,0.523,"direct fit under the unweighted SSE, gCa sd, n=28"
+E2SseNmRelSd,0.265,"direct fit under the unweighted SSE, relative sd, n=28"
+DecTotal,11.95,"closure SSE over direct chi2: the full gap, n=28 (n=5: 6.57)"
+DecObjAtFit,3.95,"objective effect on the DIRECT fit, n=28 (n=5: 3.2)"
+DecObjAtClo,2.55,"objective effect on the CLOSURE, n=28"
+DecRepAtSse,3.02,"representation effect under the SSE objective, n=28 (n=5: 2.07, the old 'twofold')"
+DecRepAtChi,4.69,"representation effect under the chi2 objective, n=28"
+DecRepLogShareLo,45,"representation's share of the gap on a log scale, lower ordering (%) (n=5: 39, 'two-fifths')"
+DecRepLogShareHi,62,"representation's share of the gap on a log scale, upper ordering (%)"
 E3SseVarInit,-0.022,sse: initialisation variance component
 E3SseVarData,0.286,sse: data-draw variance component
 E3SseVarInter,0.209,sse: interaction variance component

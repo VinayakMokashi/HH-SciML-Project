@@ -19,7 +19,7 @@
 %   * The provenance line above each macro is the audit trail: file, filter, column,
 %     full unrounded value, and n. Rounding here loses nothing an auditor needs.
 %   * No timestamp is emitted on purpose: it would churn git and defeat --check.
-% 369 macros from 18 results file(s).
+% 379 macros from 18 results file(s).
 %======================================================================================
 
 % note: *** GUARDED — see claim-guards.md G2. THIS MACRO MUST NOT BE A HEADLINE. *** It exists so that if the number appears at all (e.g. an appendix table of raw metrics) it is traceable, NOT so that it can be quoted as "3951 ± 3561 mV". Per-seed: 4122.7 / 229.1 / 1134.0 / 5056.6 / 9213.4 — a 40x spread; the distribution is nowhere near normal and the std exceeds any meaningful voltage scale. This is a diverged integration, and rmse_safe (src/metrics.jl:20-25) drops non-finite pairs, so it is the RMSE of the *finite part* of a blown-up solve, over an unreported subset of timesteps. The honest headline for NODE failure is NodeForecastRollout. Prose: "diverges (V RMSE 10^2–10^4 mV across seeds)".
@@ -1442,3 +1442,43 @@
 % note: chi2: p for the data draw. *** A BOUND: the true value is smaller. Quote as 'p <', never 'p ='. ***
 % source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E3ChiFDataP} column=value raw=0.0001 n=1
 \newcommand{\valIdChiFDataP}{0.0001}
+
+% note: Direct two-parameter fit under the closure's OWN unweighted SSE, relative sd, n=28. The cell the old n=5 decomposition was missing. (n=5: 0.197)
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E2SseNmRelSd} column=value raw=0.265 n=1
+\newcommand{\valDirSseRelSd}{0.265}
+
+% note: Direct fit under the unweighted SSE, gCa mean, n=28.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E2SseNmMean} column=value raw=1.97 n=1
+\newcommand{\valDirSseMean}{1.970}
+
+% note: Direct fit under the unweighted SSE, gCa sd, n=28.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=E2SseNmStd} column=value raw=0.523 n=1
+\newcommand{\valDirSseStd}{0.523}
+
+% note: The whole gap: closure under SSE over direct fit under chi2, n=28. (n=5: 6.57, 'six times')
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=DecTotal} column=value raw=11.95 n=1
+\newcommand{\valDecTotal}{11.95}
+
+% note: Objective effect measured on the DIRECT fit, n=28. (n=5: 3.2, 'threefold')
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=DecObjAtFit} column=value raw=3.95 n=1
+\newcommand{\valDecObjAtFit}{3.95}
+
+% note: Objective effect measured on the CLOSURE, n=28. Differs from DecObjAtFit -- which is why the old arithmetic split, assuming they were equal, does not hold.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=DecObjAtClo} column=value raw=2.55 n=1
+\newcommand{\valDecObjAtClo}{2.55}
+
+% note: Representation effect under the SSE objective, n=28. *** This is the quantity the old 'at most a further twofold' bounded. ***
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=DecRepAtSse} column=value raw=3.02 n=1
+\newcommand{\valDecRepAtSse}{3.02}
+
+% note: Representation effect under the chi2 objective, n=28. Same number as ReprRatio.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=DecRepAtChi} column=value raw=4.69 n=1
+\newcommand{\valDecRepAtChi}{4.69}
+
+% note: Representation's share of the gap on a log scale, the LOWER of the two orderings, %. (n=5: about two-fifths)
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=DecRepLogShareLo} column=value raw=45.0 n=1
+\newcommand{\valDecRepLogShareLo}{45}
+
+% note: Representation's share of the gap on a log scale, the UPPER ordering, %. Quote Lo--Hi as an interval, never one of them alone.
+% source=results_noiseweighted/paper_macros_e1e3.csv filter={quantity=DecRepLogShareHi} column=value raw=62.0 n=1
+\newcommand{\valDecRepLogShareHi}{62}

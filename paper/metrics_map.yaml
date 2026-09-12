@@ -2419,3 +2419,98 @@ macros:
     round: 4
     note: >-
       chi2: p for the data draw. *** A BOUND: the true value is smaller. Quote as 'p <', never 'p ='. ***
+
+# ---- n=28 decomposition (2026-09-12). ADDED, NEVER MODIFIED. ----
+#  All four cells of {closure, direct fit} x {SSE, chi2} on the same 28 seeds.
+#  Replaces the n=5 ARITHMETIC split (which assumed the objective's effect is the
+#  same on the direct fit and on the closure; E1 showed it is not).
+
+  - name: DirSseRelSd
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E2SseNmRelSd}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      Direct two-parameter fit under the closure's OWN unweighted SSE, relative sd, n=28. The cell the old n=5 decomposition was missing. (n=5: 0.197)
+
+  - name: DirSseMean
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E2SseNmMean}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      Direct fit under the unweighted SSE, gCa mean, n=28.
+
+  - name: DirSseStd
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: E2SseNmStd}
+    column: value
+    emit: value
+    round: 3
+    note: >-
+      Direct fit under the unweighted SSE, gCa sd, n=28.
+
+  - name: DecTotal
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: DecTotal}
+    column: value
+    emit: value
+    round: 2
+    note: >-
+      The whole gap: closure under SSE over direct fit under chi2, n=28. (n=5: 6.57, 'six times')
+
+  - name: DecObjAtFit
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: DecObjAtFit}
+    column: value
+    emit: value
+    round: 2
+    note: >-
+      Objective effect measured on the DIRECT fit, n=28. (n=5: 3.2, 'threefold')
+
+  - name: DecObjAtClo
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: DecObjAtClo}
+    column: value
+    emit: value
+    round: 2
+    note: >-
+      Objective effect measured on the CLOSURE, n=28. Differs from DecObjAtFit -- which is why the old arithmetic split, assuming they were equal, does not hold.
+
+  - name: DecRepAtSse
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: DecRepAtSse}
+    column: value
+    emit: value
+    round: 2
+    note: >-
+      Representation effect under the SSE objective, n=28. *** This is the quantity the old 'at most a further twofold' bounded. ***
+
+  - name: DecRepAtChi
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: DecRepAtChi}
+    column: value
+    emit: value
+    round: 2
+    note: >-
+      Representation effect under the chi2 objective, n=28. Same number as ReprRatio.
+
+  - name: DecRepLogShareLo
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: DecRepLogShareLo}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      Representation's share of the gap on a log scale, the LOWER of the two orderings, %. (n=5: about two-fifths)
+
+  - name: DecRepLogShareHi
+    source: ../results_noiseweighted/paper_macros_e1e3.csv
+    filter: {quantity: DecRepLogShareHi}
+    column: value
+    emit: value
+    round: 0
+    note: >-
+      Representation's share of the gap on a log scale, the UPPER ordering, %. Quote Lo--Hi as an interval, never one of them alone.
